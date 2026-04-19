@@ -1,0 +1,23 @@
+name = "lbmd-portal-api"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Account ID
+account_id = "7b69eaaaea3389e222f85ef951327c45"
+
+# Routes — serves portal.myluckyblackmedia.com
+routes = [
+  { pattern = "portal.myluckyblackmedia.com/*", zone_name = "myluckyblackmedia.com" }
+]
+
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "lbmd-portal-db"
+database_id = "3f49abe8-644f-4df0-a79a-ba4acf7402ea"
+
+# KV Namespace binding (sessions)
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "006815380b47486c8c47928265161ae2"

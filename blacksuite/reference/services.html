@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Services &amp; Pricing | Lucky Black Media &amp; Design</title>
+  <meta name="description" content="Explore LBM&rsquo;s full range of services: Brand Identity, Social Media Design, Print &amp; Events, Digital Campaigns, Sponsor Decks, Photography, and Videography. Authority-grade design. Built to command.">
+  <meta name="author" content="Lucky Black Media &amp; Design">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#080808">
+  <link rel="canonical" href="https://services.myluckyblackmedia.com/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Lucky Black Media &amp; Design">
+  <meta property="og:title" content="Services &amp; Pricing | Lucky Black Media &amp; Design">
+  <meta property="og:description" content="Brand Identity, Social Media Design, Photography, Videography, and more — engineered to position your business as the premium option.">
+  <meta property="og:url" content="https://services.myluckyblackmedia.com/">
+  <meta property="og:image" content="https://myluckyblackmedia.com/images/lbm-og-image.jpg">
+  <meta property="og:locale" content="en_US">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@myluckyblackmedia">
+  <meta name="twitter:title" content="Services &amp; Pricing | Lucky Black Media &amp; Design">
+  <meta name="twitter:description" content="Authority-grade design services built to command. Brand Identity, Social Media, Photography, Videography, and more.">
+  <meta name="twitter:image" content="https://myluckyblackmedia.com/images/lbm-og-image.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── TOKENS ── */
+    :root {
+      --gold:    #B8962E;
+      --gold-l:  #D4AF5A;
+      --black:   #080808;
+      --dark:    #111111;
+      --dark2:   #161616;
+      --navy:    #0D1B33;
+      --silver:  #c0c0c0;
+      --mid:     #d8d8d8;
+      --offwhite:#F7F4EE;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: #080808 !important;
+      color: #F7F4EE;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    .lbm-nav {
+      background: #080808 !important;
+      border-bottom: 1px solid rgba(184,150,46,0.22);
+      padding: 0 !important;
+      position: sticky; top: 0; z-index: 1000;
+      backdrop-filter: blur(14px);
+    }
+    .lbm-nav > .container {
+      height: 68px; display: flex; align-items: center;
+    }
+    @media (min-width: 768px) {
+      .lbm-nav .navbar-collapse { display: flex !important; flex-basis: auto !important; align-items: center !important; }
+      .lbm-nav .navbar-nav { flex-direction: row !important; align-items: center !important; }
+    }
+    .lbm-logomark { display:flex; align-items:center; gap:11px; text-decoration:none !important; flex-shrink:0; }
+    .lbm-logomark:hover { text-decoration:none !important; }
+    .lbm-logomark-name {
+      font-family: 'Montserrat', sans-serif; font-size:9px; font-weight:700;
+      letter-spacing:0.2em; text-transform:uppercase; color:#F7F4EE; line-height:1.45; white-space:nowrap;
+    }
+    .lbm-nav .nav-link {
+      font-family: 'Montserrat', sans-serif !important; font-size:10px !important; font-weight:600 !important;
+      letter-spacing:0.22em !important; text-transform:uppercase !important;
+      color:#999999 !important; padding:0 16px !important; line-height:68px;
+      transition:color 0.2s ease !important; position:relative; white-space:nowrap;
+    }
+    .lbm-nav .nav-link::after {
+      content:''; position:absolute; bottom:0; left:16px; right:16px;
+      height:2px; background:#B8962E; transform:scaleX(0); transition:transform 0.22s ease;
+    }
+    .lbm-nav .nav-link:hover { color:#F7F4EE !important; }
+    .lbm-nav .nav-link:hover::after { transform:scaleX(1); }
+    .lbm-nav .nav-link.active { color:#B8962E !important; }
+    .lbm-nav .nav-link.active::after { transform:scaleX(1); }
+    .lbm-nav .nav-link.lbm-nav-cta {
+      background:#B8962E !important; color:#080808 !important;
+      padding:0 20px !important; margin-left:8px; height:34px; line-height:34px;
+      display:inline-flex !important; align-items:center !important;
+    }
+    .lbm-nav .nav-link.lbm-nav-cta:hover { background:#D4AF5A !important; color:#080808 !important; }
+    .lbm-nav .nav-link.lbm-nav-cta::after { display:none !important; }
+    @media (max-width:767px) {
+      .lbm-nav > .container { height:auto; min-height:64px; flex-wrap:wrap; }
+      .lbm-nav .navbar-collapse { padding:8px 0 16px; width:100%; }
+      .lbm-nav .navbar-nav { flex-direction:column !important; }
+      .lbm-nav .nav-link { line-height:46px !important; padding:0 4px !important; }
+      .lbm-nav .nav-link.lbm-nav-cta { width:fit-content; margin:6px 0 0; height:38px; line-height:38px; }
+    }
+
+    /* ── PAGE HERO ── */
+    .lbm-page-hero {
+      background: #080808 !important;
+      border-bottom: 1px solid rgba(184,150,46,0.12);
+      padding: 80px 0 64px;
+      position: relative; overflow: hidden;
+    }
+    .lbm-page-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 50% 0%, rgba(13,27,51,0.6) 0%, transparent 65%);
+    }
+    .lbm-page-hero .container { position: relative; z-index: 1; }
+
+    .lbm-eyebrow {
+      font-family: 'Montserrat', sans-serif; font-size:9px; font-weight:700;
+      letter-spacing:0.42em; text-transform:uppercase; color:#B8962E;
+      display:inline-flex; align-items:center; gap:12px; margin-bottom:14px;
+    }
+    .lbm-eyebrow::before, .lbm-eyebrow::after {
+      content:''; display:block; width:28px; height:1px; background:#B8962E; opacity:0.5;
+    }
+
+    /* ── SERVICE ANCHOR STRIP ── */
+    .lbm-service-strip {
+      background: #111111 !important;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      position: sticky; top: 68px; z-index: 900;
+    }
+    .lbm-service-strip .container {
+      display: flex; overflow-x: auto;
+    }
+    .lbm-strip-link {
+      font-family: 'Montserrat', sans-serif; font-size:9px; font-weight:700;
+      letter-spacing:0.22em; text-transform:uppercase; color:#bbbbbb !important;
+      padding: 18px 24px; white-space:nowrap; text-decoration:none !important;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s ease; flex-shrink: 0;
+    }
+    .lbm-strip-link:hover { color:#F7F4EE !important; border-bottom-color: rgba(184,150,46,0.4); }
+    .lbm-strip-link.active { color:#B8962E !important; border-bottom-color:#B8962E; }
+    .lbm-strip-link span {
+      font-family: 'Cormorant Garamond', serif; font-size:13px; font-weight:600;
+      color: rgba(184,150,46,0.75); margin-right:8px;
+    }
+
+    /* ── SERVICE SECTIONS ── */
+    .lbm-service-section {
+      padding: 96px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .lbm-service-section:nth-child(even) { background: #111111 !important; }
+    .lbm-service-section:nth-child(odd)  { background: #080808 !important; }
+
+    .lbm-svc-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 100px; font-weight: 600; line-height: 1;
+      color: rgba(184,150,46,0.55);
+      letter-spacing: -0.04em;
+      margin-bottom: -16px;
+      display: block;
+    }
+    .lbm-svc-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(32px,4vw,52px); font-weight:400;
+      color: #FFFFFF; line-height:1.05; margin-bottom:6px;
+    }
+    .lbm-svc-title em { font-style:italic; color:#B8962E; }
+
+    /* Service card grid */
+    .lbm-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .lbm-svc-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(184,150,46,0.15);
+      padding: 22px 20px;
+      position: relative;
+    }
+    .lbm-svc-card.lbm-card-featured {
+      background: rgba(184,150,46,0.05);
+      border-color: rgba(184,150,46,0.30);
+    }
+    .lbm-card-badge {
+      position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
+      background: #B8962E; padding: 2px 14px;
+      font-family: 'Montserrat', sans-serif; font-size: 8px; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase; color: #080808;
+      white-space: nowrap;
+    }
+    .lbm-card-name {
+      font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600;
+      color: #F7F4EE; margin-bottom: 6px;
+    }
+    .lbm-card-price {
+      font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 700;
+      color: #B8962E; line-height: 1; margin-bottom: 6px;
+    }
+    .lbm-card-price-note {
+      font-family: 'Inter', sans-serif; font-size: 11px; color: #555555;
+      margin-bottom: 14px; display: block;
+    }
+    .lbm-card-desc {
+      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 300;
+      color: #c8c8c8; line-height: 1.7; margin-bottom: 14px;
+    }
+    .lbm-card-bullets {
+      list-style: none; padding: 0; margin: 0 0 18px;
+    }
+    .lbm-card-bullets li {
+      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 300;
+      color: #c8c8c8; padding: 4px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .lbm-card-bullets li:last-child { border-bottom: none; }
+    .lbm-card-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      background: #B8962E; color: #080808 !important;
+      padding: 10px 18px; text-decoration: none !important;
+      transition: background 0.2s ease; white-space: nowrap;
+    }
+    .lbm-card-cta:hover { background: #D4AF5A; color: #080808 !important; text-decoration: none !important; }
+    .lbm-card-cta-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      border: 1px solid rgba(184,150,46,0.35); color: #B8962E !important;
+      padding: 10px 18px; text-decoration: none !important;
+      transition: all 0.2s ease; white-space: nowrap;
+    }
+    .lbm-card-cta-outline:hover { border-color: #B8962E; color: #D4AF5A !important; text-decoration: none !important; }
+
+    /* Service visual panel */
+    .lbm-svc-visual {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(184,150,46,0.12);
+      height: 100%; min-height: 380px;
+      position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .lbm-svc-visual-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 200px; font-weight: 700; line-height: 1;
+      color: rgba(184,150,46,0.06);
+      letter-spacing: -0.05em; user-select: none;
+    }
+    .lbm-svc-visual-label {
+      position: absolute; bottom: 24px; left: 28px; right: 28px;
+    }
+    .lbm-svc-visual-label h3 {
+      font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600;
+      color: #F7F4EE; margin: 0 0 8px;
+    }
+    .lbm-svc-visual-label .lbm-gold-line {
+      width: 32px; height: 1px; background: #B8962E;
+    }
+    .lbm-svc-visual::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #B8962E, transparent);
+    }
+
+    /* Buttons */
+    .lbm-btn-primary {
+      display: inline-flex; align-items: center; gap: 10px; padding: 14px 30px;
+      background: #B8962E; color: #080808 !important;
+      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      border: none; cursor: pointer; transition: all 0.22s ease; text-decoration: none !important;
+    }
+    .lbm-btn-primary:hover {
+      background: #D4AF5A; color: #080808 !important; transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(184,150,46,0.28); text-decoration: none !important;
+    }
+    .lbm-btn-outline {
+      display: inline-flex; align-items: center; gap: 10px; padding: 14px 30px;
+      background: transparent; color: #F7F4EE !important;
+      font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      border: 1px solid rgba(255,255,255,0.18); cursor: pointer;
+      transition: all 0.22s ease; text-decoration: none !important;
+    }
+    .lbm-btn-outline:hover { border-color: #B8962E; color: #B8962E !important; text-decoration: none !important; }
+
+    /* ── PROCESS SECTION ── */
+    .lbm-process {
+      background: #0D1B33 !important;
+      padding: 96px 0;
+      border-top: 1px solid rgba(184,150,46,0.12);
+      border-bottom: 1px solid rgba(184,150,46,0.12);
+    }
+    .lbm-process-step { text-align: center; padding: 0 20px; }
+    .lbm-process-num {
+      font-family: 'Cormorant Garamond', serif; font-size: 56px; font-weight: 600;
+      color: rgba(184,150,46,0.25); line-height: 1; display: block; margin-bottom: 12px;
+    }
+    .lbm-process-title {
+      font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600;
+      color: #FFFFFF; margin-bottom: 12px;
+    }
+    .lbm-process-desc {
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 300; color: #999999;
+    }
+
+    /* ── FAQ ── */
+    .lbm-faq { background: #080808 !important; padding: 96px 0; }
+    .lbm-faq-item { border-bottom: 1px solid rgba(255,255,255,0.06); padding: 0; }
+    .lbm-faq-q {
+      width: 100%; background: none; border: none; text-align: left; padding: 24px 0;
+      font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 400;
+      color: #F7F4EE; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+    }
+    .lbm-faq-q:hover { color: #B8962E; }
+    .lbm-faq-q .faq-icon {
+      width: 20px; height: 20px; flex-shrink: 0;
+      border: 1px solid rgba(184,150,46,0.3); display: flex; align-items: center; justify-content: center;
+    }
+    .lbm-faq-q .faq-icon svg { transition: transform 0.25s ease; }
+    .lbm-faq-q.open .faq-icon { background: rgba(184,150,46,0.1); border-color: #B8962E; }
+    .lbm-faq-q.open .faq-icon svg { transform: rotate(45deg); }
+    .lbm-faq-a {
+      display: none; padding: 0 0 24px 0;
+      font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 300; color: #999999; line-height: 1.85;
+    }
+    .lbm-faq-a.open { display: block; }
+
+    /* ── FINAL CTA ── */
+    .lbm-final-cta {
+      background: #080808 !important; padding: 112px 0;
+      border-top: 1px solid rgba(184,150,46,0.10);
+      text-align: center; position: relative;
+    }
+    .lbm-final-cta::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 50% 60% at 50% 0%, rgba(13,27,51,0.5) 0%, transparent 70%);
+    }
+    .lbm-final-cta > .container { position: relative; z-index: 1; }
+
+    /* ── FOOTER ── */
+    .lbm-footer {
+      background: #111111 !important;
+      padding: 56px 0 40px;
+    }
+    .lbm-footer-tagline {
+      font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; color: #bbbbbb;
+    }
+    .lbm-footer-nav-link {
+      font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase; color: #999999 !important;
+      padding: 0 14px; transition: color 0.2s ease; text-decoration: none !important;
+    }
+    .lbm-footer-nav-link:hover { color: #B8962E !important; }
+    .lbm-footer-copy {
+      font-family: 'Inter', sans-serif; font-size: 11px; color: rgba(200,200,200,0.5);
+    }
+    .lbm-footer-copy a { color: rgba(200,200,200,0.5); text-decoration: none; }
+    .lbm-footer-copy a:hover { color: #B8962E; }
+    .lbm-footer-est {
+      font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 600;
+      letter-spacing: 0.3em; text-transform: uppercase; color: #B8962E;
+    }
+
+    .gold-rule { width: 44px; height: 2px; background: #B8962E; margin: 20px auto; }
+    .gold-rule-left { width: 44px; height: 2px; background: #B8962E; margin: 20px 0 28px; }
+
+    /* Loading skeleton */
+    .lbm-loading {
+      text-align: center; padding: 80px 0;
+      font-family: 'Montserrat', sans-serif; font-size: 9px; font-weight: 700;
+      letter-spacing: 0.3em; text-transform: uppercase; color: rgba(184,150,46,0.4);
+    }
+    .lbm-error {
+      text-align: center; padding: 60px 0;
+      font-family: 'Inter', sans-serif; font-size: 14px; color: #999999;
+    }
+
+    @media (max-width:767px) {
+      .lbm-service-section { padding: 64px 0; }
+      .lbm-svc-visual-num { font-size: 130px; }
+      .lbm-process { padding: 64px 0; }
+      .lbm-process-step { margin-bottom: 40px; }
+      .lbm-faq { padding: 64px 0; }
+      .lbm-final-cta { padding: 80px 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVIGATION ══ -->
+<header>
+  <nav class="navbar navbar-expand-md lbm-nav">
+    <div class="container">
+      <a class="lbm-logomark navbar-brand" href="https://www.myluckyblackmedia.com">
+        <img src="/images/logo-mark.png" alt="LBM" style="height:36px;width:auto;">
+        <span class="lbm-logomark-name">Lucky Black<br>Media &amp; Design</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#lbmServicesNav"
+        aria-controls="lbmServicesNav" aria-expanded="false"
+        style="border:1px solid rgba(184,150,46,0.4);padding:8px 10px;background:transparent;">
+        <svg width="18" height="14" viewBox="0 0 18 14" fill="none">
+          <path d="M0 1H18M0 7H18M0 13H18" stroke="#B8962E" stroke-width="1.5"/>
+        </svg>
+      </button>
+      <div class="collapse navbar-collapse" id="lbmServicesNav">
+        <ul class="navbar-nav ml-auto align-items-md-center">
+          <li class="nav-item"><a href="https://www.myluckyblackmedia.com" class="nav-link">Home</a></li>
+          <li class="nav-item"><a href="https://services.myluckyblackmedia.com" class="nav-link active">Services</a></li>
+          <li class="nav-item"><a href="https://portfolio.myluckyblackmedia.com" class="nav-link">Portfolio</a></li>
+          <li class="nav-item"><a href="https://www.myluckyblackmedia.com/pages/about/" class="nav-link">About</a></li>
+          <li class="nav-item"><a href="https://admin.myluckyblackmedia.com/book.html" class="nav-link lbm-nav-cta">Book Now</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+
+<!-- ══ PAGE HERO ══ -->
+<section class="lbm-page-hero">
+  <div class="container">
+    <div class="row justify-content-center text-center">
+      <div class="col-12 col-lg-8">
+        <div class="lbm-eyebrow" style="justify-content:center;">Services &amp; Pricing</div>
+        <h1 style="font-family:'Cormorant Garamond',serif; font-size:clamp(40px,6vw,74px);
+                   font-weight:400; color:#FFFFFF; line-height:1.0; margin-bottom:20px;">
+          Built to <em style="font-style:italic;color:#B8962E;">command.</em>
+        </h1>
+        <div class="gold-rule"></div>
+        <p style="font-family:'Inter',sans-serif; font-size:1rem; font-weight:300;
+                  color:#999999; line-height:1.82; max-width:520px; margin:0 auto 36px;">
+          From brand identity to video production &mdash; every service is engineered to make your presence impossible to ignore.
+        </p>
+        <a href="https://admin.myluckyblackmedia.com/book.html" class="lbm-btn-primary">
+          Start a Project
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5H11M7 2.5L11 6.5L7 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ SERVICE ANCHOR STRIP ══ -->
+<nav class="lbm-service-strip" id="service-strip-nav" aria-label="Service navigation">
+  <div class="container" id="service-strip">
+    <!-- Populated by JS -->
+  </div>
+</nav>
+
+
+<!-- ══ SERVICES CONTAINER ══ -->
+<div id="services-container">
+  <div class="lbm-loading">Loading services&hellip;</div>
+</div>
+
+
+<!-- ══ HOW WE WORK ══ -->
+<section class="lbm-process">
+  <div class="container">
+    <div class="row justify-content-center" style="margin-bottom:60px;">
+      <div class="col-12 col-lg-6 text-center">
+        <div class="lbm-eyebrow" style="justify-content:center;">Our Process</div>
+        <h2 style="font-family:'Cormorant Garamond',serif; font-size:clamp(30px,4vw,48px);
+                   font-weight:400; color:#FFFFFF; line-height:1.08; margin-bottom:14px;">
+          From first call to <em style="font-style:italic;color:#B8962E;">final delivery</em>
+        </h2>
+        <div class="gold-rule"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-3" style="margin-bottom:40px;">
+        <div class="lbm-process-step">
+          <span class="lbm-process-num">01</span>
+          <div class="lbm-process-title">Discovery Call</div>
+          <p class="lbm-process-desc">We learn your brand, goals, audience, and vision. No templates — every project starts with deep listening.</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3" style="margin-bottom:40px;">
+        <div class="lbm-process-step">
+          <span class="lbm-process-num">02</span>
+          <div class="lbm-process-title">Strategy &amp; Direction</div>
+          <p class="lbm-process-desc">We develop your creative brief, positioning strategy, and visual direction before a single design is made.</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3" style="margin-bottom:40px;">
+        <div class="lbm-process-step">
+          <span class="lbm-process-num">03</span>
+          <div class="lbm-process-title">Design &amp; Refine</div>
+          <p class="lbm-process-desc">We build your assets with precision. Rounds of revision are built in — nothing ships until it's right.</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-3" style="margin-bottom:40px;">
+        <div class="lbm-process-step">
+          <span class="lbm-process-num">04</span>
+          <div class="lbm-process-title">Deliver &amp; Launch</div>
+          <p class="lbm-process-desc">Final files, guidelines, and a walkthrough so you know exactly how to use everything we've built together.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ FAQ ══ -->
+<section class="lbm-faq">
+  <div class="container">
+    <div class="row justify-content-center" style="margin-bottom:56px;">
+      <div class="col-12 col-lg-7 text-center">
+        <div class="lbm-eyebrow" style="justify-content:center;">FAQ</div>
+        <h2 style="font-family:'Cormorant Garamond',serif; font-size:clamp(30px,4vw,48px);
+                   font-weight:400; color:#FFFFFF; line-height:1.08;">
+          Common <em style="font-style:italic;color:#B8962E;">questions</em>
+        </h2>
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8">
+
+        <div class="lbm-faq-item">
+          <button class="lbm-faq-q" onclick="toggleFAQ(this)">
+            How long does a project take?
+            <span class="faq-icon"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1V9M1 5H9" stroke="#B8962E" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          </button>
+          <div class="lbm-faq-a">
+            Timelines vary by service. Brand identity projects typically take 2–4 weeks. Individual social media graphics and print projects: 3–5 business days standard. Campaign packages and sponsor decks: 3–7 business days. Photography and videography sessions are scheduled within your timeframe. Rush turnaround (24–48 hours) is available on most design services at +35%.
+          </div>
+        </div>
+
+        <div class="lbm-faq-item">
+          <button class="lbm-faq-q" onclick="toggleFAQ(this)">
+            How many revisions are included?
+            <span class="faq-icon"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1V9M1 5H9" stroke="#B8962E" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          </button>
+          <div class="lbm-faq-a">
+            Revision rounds are included per service tier: most individual items include 1–2 rounds; campaign packages include 2–3 rounds; premium sponsor decks include up to 3 rounds. Additional revision rounds are available at $95/round. We present concepts clearly so revisions stay focused and efficient.
+          </div>
+        </div>
+
+        <div class="lbm-faq-item">
+          <button class="lbm-faq-q" onclick="toggleFAQ(this)">
+            Do you offer payment plans?
+            <span class="faq-icon"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1V9M1 5H9" stroke="#B8962E" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          </button>
+          <div class="lbm-faq-a">
+            Yes — a 50% deposit is required to begin all projects. The final balance is due before delivery. For photography and videography, full payment is due before the session date. Rush orders (24–48 hr turnaround) are available at +35% of the project rate.
+          </div>
+        </div>
+
+        <div class="lbm-faq-item">
+          <button class="lbm-faq-q" onclick="toggleFAQ(this)">
+            Can I bundle multiple services together?
+            <span class="faq-icon"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1V9M1 5H9" stroke="#B8962E" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          </button>
+          <div class="lbm-faq-a">
+            Absolutely — bundling is the most cost-effective way to work with LBM. The Photo + Video Combo, for example, saves $150/hr vs. booking separately. Combining Brand Identity with Social Media Design ensures total visual consistency and typically comes with a package discount. Mention your goals in your inquiry and we'll build a custom package.
+          </div>
+        </div>
+
+        <div class="lbm-faq-item">
+          <button class="lbm-faq-q" onclick="toggleFAQ(this)">
+            What do you need from me to get started?
+            <span class="faq-icon"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1V9M1 5H9" stroke="#B8962E" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+          </button>
+          <div class="lbm-faq-a">
+            Just reach out — we do the heavy lifting. For design services, think about your target audience, the feeling you want your brand to convey, and any visual references you love. For photo and video sessions, have your location preferences and a rough shot list in mind. We'll guide you through everything else from there.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══ FINAL CTA ══ -->
+<section class="lbm-final-cta">
+  <div class="container">
+    <div class="lbm-eyebrow" style="justify-content:center;">Ready to Elevate?</div>
+    <h2 style="font-family:'Cormorant Garamond',serif; font-size:clamp(36px,5vw,64px);
+               font-weight:400; color:#FFFFFF; line-height:1.05; margin-bottom:20px;">
+      Your brand deserves work<br>
+      <em style="font-style:italic;color:#B8962E;">that actually performs.</em>
+    </h2>
+    <p style="font-family:'Inter',sans-serif; font-size:1rem; font-weight:300;
+              color:#999999; line-height:1.82; max-width:520px; margin:0 auto 40px;">
+      From brand identity to video production &mdash; every service is built to make your presence impossible to ignore. See the work, then let&rsquo;s talk about yours.
+    </p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:center;">
+      <a href="https://portfolio.myluckyblackmedia.com/" class="lbm-btn-outline" style="border-radius:50px;padding:14px 32px;">
+        View Our Work
+      </a>
+      <a href="https://admin.myluckyblackmedia.com/book.html" class="lbm-btn-primary">
+        Start a Project
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5H11M7 2.5L11 6.5L7 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+    <p style="font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:0.2em;
+              text-transform:uppercase;color:#555555;margin-top:32px;">
+      project_inquiries@myluckyblackmedia.com &nbsp;&middot;&nbsp; Est. 2013
+    </p>
+  </div>
+</section>
+
+
+<!-- ══ FOOTER ══ -->
+<footer class="lbm-footer">
+  <div class="container">
+
+    <div class="row align-items-center" style="padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,0.05);">
+      <div class="col-12 col-md-5" style="margin-bottom:28px;">
+        <a href="https://www.myluckyblackmedia.com" style="display:inline-flex;align-items:center;gap:12px;text-decoration:none !important;">
+          <img src="/images/logo-mark.png" alt="LBM" style="height:32px;width:auto;">
+          <span style="font-family:'Montserrat',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#F7F4EE;">Lucky Black<br>Media &amp; Design</span>
+        </a>
+        <div class="lbm-footer-tagline" style="margin-top:12px;">Authority-grade design.<br>Built to command.</div>
+      </div>
+      <div class="col-12 col-md-7">
+        <ul class="nav justify-content-md-end justify-content-start flex-wrap">
+          <li class="nav-item"><a href="https://www.myluckyblackmedia.com" class="lbm-footer-nav-link">Home</a></li>
+          <li class="nav-item"><a href="https://services.myluckyblackmedia.com/" class="lbm-footer-nav-link" style="color:#B8962E !important;">Services</a></li>
+          <li class="nav-item"><a href="https://portfolio.myluckyblackmedia.com/" class="lbm-footer-nav-link">Portfolio</a></li>
+          <li class="nav-item"><a href="https://www.myluckyblackmedia.com/pages/about/" class="lbm-footer-nav-link">About</a></li>
+          <li class="nav-item"><a href="https://admin.myluckyblackmedia.com/book.html" class="lbm-footer-nav-link" style="color:#B8962E !important;">Book Now</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="row align-items-center" style="padding-top:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,0.04);">
+      <div class="col-12 col-md-6 text-md-left text-center" style="margin-bottom:12px;">
+        <span class="lbm-footer-est">Est. 2013 &middot; Strategic Visuals</span>
+      </div>
+      <div class="col-12 col-md-6 text-md-right text-center">
+        <a href="https://www.instagram.com/myluckyblackmedia" target="_blank" rel="noopener"
+           style="display:inline-flex;align-items:center;gap:7px;font-family:'Montserrat',sans-serif;
+                  font-size:9px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;
+                  color:#999999;text-decoration:none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+            <circle cx="12" cy="12" r="4"/>
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+          </svg>
+          @myluckyblackmedia
+        </a>
+      </div>
+    </div>
+
+    <div class="row" style="padding-top:20px;">
+      <div class="col-12 text-center">
+        <span class="lbm-footer-copy">
+          &copy; 2026 Lucky Black Media &amp; Design. All Rights Reserved.
+          &nbsp;&middot;&nbsp;
+          <a href="https://www.myluckyblackmedia.com/pages/disclaimer/">Disclaimer</a>
+          &nbsp;&middot;&nbsp;
+          <a href="https://www.myluckyblackmedia.com/pages/privacy/">Privacy</a>
+          &nbsp;&middot;&nbsp;
+          <a href="https://www.myluckyblackmedia.com/pages/terms/">Terms</a>
+        </span>
+        <div style="margin-top:10px;font-size:9px;opacity:0.3;letter-spacing:0.14em;font-family:'Montserrat',sans-serif;text-transform:uppercase;">
+          Powered by The BlackSuite
+        </div>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// ── FAQ toggle ────────────────────────────────────────────────────────────────
+function toggleFAQ(btn) {
+  const wasOpen = btn.classList.contains('open');
+  document.querySelectorAll('.lbm-faq-a').forEach(function(a) { a.classList.remove('open'); });
+  document.querySelectorAll('.lbm-faq-q').forEach(function(b) { b.classList.remove('open'); });
+  if (!wasOpen) {
+    btn.classList.add('open');
+    btn.nextElementSibling.classList.add('open');
+  }
+}
+
+// ── Scroll-spy for strip nav ──────────────────────────────────────────────────
+function setupScrollSpy() {
+  const links    = document.querySelectorAll('#service-strip .lbm-strip-link');
+  const sections = Array.from(links).map(l => {
+    const id = l.getAttribute('href').replace('#', '');
+    return document.getElementById(id);
+  }).filter(Boolean);
+
+  if (!sections.length) return;
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        links.forEach(l => {
+          l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+
+  sections.forEach(s => observer.observe(s));
+}
+
+// ── Render a single service card ──────────────────────────────────────────────
+function renderCard(card) {
+  const hasBadge  = card.badge && card.badge.trim();
+  const topPad    = hasBadge ? 'padding-top:26px;' : '';
+  const featured  = hasBadge ? ' lbm-card-featured' : '';
+  const badgeHtml = hasBadge
+    ? `<div class="lbm-card-badge">${escHtml(card.badge)}</div>`
+    : '';
+
+  const bullets = Array.isArray(card.bullets) ? card.bullets : [];
+  const bulletsHtml = bullets.length
+    ? `<ul class="lbm-card-bullets">${bullets.map(b => `<li>${escHtml(b)}</li>`).join('')}</ul>`
+    : '';
+
+  const ctaUrl  = card.cta_url || 'https://admin.myluckyblackmedia.com/book.html';
+  const ctaText = card.is_custom ? 'Get a Quote' : 'Book Now';
+  const ctaCls  = card.is_custom ? 'lbm-card-cta-outline' : 'lbm-card-cta';
+  const arrow   = `<svg width="10" height="10" viewBox="0 0 13 13" fill="none"><path d="M2 6.5H11M7 2.5L11 6.5L7 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+  const priceNote = card.price_note
+    ? `<span class="lbm-card-price-note">${escHtml(card.price_note)}</span>`
+    : '';
+
+  return `
+    <div class="lbm-svc-card${featured}" style="${topPad}">
+      ${badgeHtml}
+      <div class="lbm-card-name">${escHtml(card.name)}</div>
+      <div class="lbm-card-price">${escHtml(card.price_display)}</div>
+      ${priceNote}
+      <p class="lbm-card-desc">${escHtml(card.description)}</p>
+      ${bulletsHtml}
+      <a href="${escAttr(ctaUrl)}" class="${ctaCls}">${ctaText} ${arrow}</a>
+    </div>`;
+}
+
+// ── Gradient by category_num ──────────────────────────────────────────────────
+const GRADIENTS = [
+  'linear-gradient(145deg,#0f2040 0%,#080808 100%)',   // 01 Brand Identity
+  'linear-gradient(145deg,#0a0808 0%,#0d2010 50%,#0D1B33 100%)', // 02 Social
+  'linear-gradient(145deg,#1a0a0a 0%,#080808 100%)',   // 03 Print
+  'linear-gradient(145deg,#0a0a1a 0%,#080808 100%)',   // 04 Digital
+  'linear-gradient(145deg,#1a0f00 0%,#080808 100%)',   // 05 Sponsor
+  'linear-gradient(145deg,#0a1a10 0%,#080808 100%)',   // 06 Photography
+  'linear-gradient(145deg,#0d0d1a 0%,#080808 100%)',   // 07 Videography
+  'linear-gradient(145deg,#0f1a0a 0%,#0a0a1a 100%)',   // 08 Combo
+];
+
+// ── Render a full category section ───────────────────────────────────────────
+function renderSection(group, index) {
+  const num        = String(group.category_num).padStart(2, '0');
+  const gradient   = GRADIENTS[(group.category_num - 1) % GRADIENTS.length];
+  const isReversed = index % 2 === 1;
+  const rowClass   = isReversed ? 'flex-lg-row-reverse' : '';
+
+  return `
+    <section id="cat-${group.category_num}" class="lbm-service-section">
+      <div class="container">
+        <div class="row align-items-start ${rowClass}">
+          <div class="col-12 col-lg-7">
+            <span class="lbm-svc-number">${num}</span>
+            <h2 class="lbm-svc-title">${escHtml(group.category)}</h2>
+            <div class="gold-rule-left"></div>
+            <div class="lbm-card-grid">
+              ${group.cards.map(renderCard).join('')}
+            </div>
+          </div>
+          <div class="col-12 col-lg-5 mt-4 mt-lg-0">
+            <div class="lbm-svc-visual" style="background:${gradient};">
+              <div class="lbm-svc-visual-num">${num}</div>
+              <div class="lbm-svc-visual-label">
+                <h3>${escHtml(group.category)}</h3>
+                <div class="lbm-gold-line"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>`;
+}
+
+// ── Escape helpers ─────────────────────────────────────────────────────────────
+function escHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+function escAttr(str) { return escHtml(str); }
+
+// ── Load and render ───────────────────────────────────────────────────────────
+async function loadServices() {
+  const container = document.getElementById('services-container');
+  const strip     = document.getElementById('service-strip');
+
+  try {
+    const groups = await fetch('/api/page-services').then(r => {
+      if (!r.ok) throw new Error('API error ' + r.status);
+      return r.json();
+    });
+
+    if (!groups.length) {
+      container.innerHTML = '<div class="lbm-error" style="padding:80px 0;">No services available at this time.</div>';
+      return;
+    }
+
+    // Build strip nav
+    strip.innerHTML = groups.map(g =>
+      `<a href="#cat-${g.category_num}" class="lbm-strip-link">
+         <span>${String(g.category_num).padStart(2,'0')}</span>${escHtml(g.category)}
+       </a>`
+    ).join('');
+
+    // Build sections
+    container.innerHTML = groups.map((g, i) => renderSection(g, i)).join('');
+
+    // Activate scroll-spy
+    setupScrollSpy();
+
+  } catch (err) {
+    console.error('Services load error:', err);
+    container.innerHTML = `<div class="lbm-error">
+      <p>Services could not be loaded. <a href="https://admin.myluckyblackmedia.com/book.html" style="color:#B8962E;">Contact us directly &rarr;</a></p>
+    </div>`;
+  }
+}
+
+loadServices();
+</script>
+
+</body>
+</html>

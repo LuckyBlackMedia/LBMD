@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The BlackSuite — Client Portal UI Kit</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../colors_and_type.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+  body{background:#080808;color:#CDCCCA;font-family:'Satoshi',sans-serif;min-height:100vh}
+  input,button,textarea,select{font-family:inherit}
+  button{cursor:pointer;background:none;border:none;color:inherit}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+const G = {
+  gold:'#B8962E', goldLight:'#D4AF5A', goldDark:'#8C6D1F', goldPale:'#E8D49A',
+  black:'#080808', charcoal:'#111111', dark:'#1C1C1C',
+  silver:'#BBBBBB', mid:'#909090', offWhite:'#F7F4EE', text:'#DDDCDA',
+  border:'rgba(184,150,46,0.15)', borderStrong:'rgba(184,150,46,0.35)',
+  surface:'rgba(255,255,255,0.03)', navy:'#0D1B33',
+  error:'#a12c7b', success:'#6daa45',
+  tr:'180ms cubic-bezier(.16,1,.3,1)',
+};
+
+/* ─── ICON HELPERS ─── */
+const Icon = ({ d, size=16, stroke=G.gold, w=1.5 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth={w} strokeLinecap="round" strokeLinejoin="round">
+    <path d={d}/>
+  </svg>
+);
+
+/* ─── PORTAL NAV ─── */
+function PortalNav({ screen, setScreen }) {
+  const links = [
+    { id:'dashboard', label:'Dashboard', d:'M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z' },
+    { id:'proofing',  label:'Proofing',  d:'M15 12a3 3 0 11-6 0 3 3 0 016 0zM2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z' },
+    { id:'delivery',  label:'Delivery',  d:'M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3' },
+    { id:'invoices',  label:'Invoices',  d:'M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8' },
+    { id:'admin',     label:'Admin Hub', d:'M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z' },
+  ];
+  return (
+    <nav style={{ position:'fixed',top:0,left:0,right:0,zIndex:100,display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 32px',height:68,background:'rgba(8,8,8,0.96)',backdropFilter:'blur(16px)',borderBottom:`1px solid ${G.border}` }}>
+      <div style={{ display:'flex',alignItems:'center',gap:10 }}>
+        <img src="../../assets/logo-lockup.png" style={{ height:55,width:'auto' }} alt="Lucky Black Media & Design" />
+      </div>
+      <div style={{ display:'flex',gap:4 }}>
+        {links.map(l => (
+          <button key={l.id} onClick={()=>setScreen(l.id)} style={{ display:'flex',alignItems:'center',gap:7,padding:'6px 12px',borderRadius:6,background:screen===l.id?'rgba(184,150,46,0.1)':'transparent',border:`1px solid ${screen===l.id?G.border:'transparent'}`,color:screen===l.id?G.gold:G.silver,fontSize:11,fontWeight:700,letterSpacing:'0.15em',textTransform:'uppercase',transition:`all ${G.tr}` }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d={l.d}/></svg>
+            {l.label}
+          </button>
+        ))}
+      </div>
+      <div style={{ display:'flex',alignItems:'center',gap:8 }}>
+        <div style={{ width:6,height:6,borderRadius:'50%',background:G.gold,animation:'pulse 2s infinite' }}/>
+        <span style={{ fontSize:10,fontWeight:700,letterSpacing:'0.15em',textTransform:'uppercase',color:G.mid }}>Session Active</span>
+      </div>
+      <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}`}</style>
+    </nav>
+  );
+}
+
+/* ─── STAT CARD ─── */
+function StatCard({ label, value, sub, accent }) {
+  return (
+    <div style={{ background:G.charcoal,border:`1px solid ${G.border}`,borderRadius:8,padding:'20px 24px' }}>
+      <div style={{ fontSize:9,fontWeight:700,letterSpacing:'0.35em',textTransform:'uppercase',color:G.gold,marginBottom:8 }}>{label}</div>
+      <div style={{ fontFamily:"'Cormorant Garamond',serif",fontSize:32,fontWeight:600,color:accent||G.gold,lineHeight:1,marginBottom:4 }}>{value}</div>
+      {sub && <div style={{ fontSize:10,color:G.mid,letterSpacing:'0.05em' }}>{sub}</div>}
+    </div>
+  );
+}
+
+/* ─── DASHBOARD SCREEN ─── */
+function Dashboard({ setScreen }) {
+  const projects = [
+    { name:'Apex Financial',type:'Photography',status:'Proofing',statusColor:G.gold },
+    { name:'Noir Studio',type:'Brand Design',status:'Finals Ready',statusColor:G.success },
+    { name:'Vantage Group',type:'Event',status:'Delivered',statusColor:G.mid },
+    { name:'Crown & Co.',type:'Videography',status:'Invoice Sent',statusColor:G.goldLight },
+  ];
+  return (
+    <div style={{ padding:'80px 32px 40px',maxWidth:1160,margin:'0 auto' }}>
+      <div style={{ marginBottom:8,fontSize:9,fontWeight:700,letterSpacing:'0.45em',textTransform:'uppercase',color:G.gold }}>Admin Dashboard</div>
+      <h1 style={{ fontFamily:"'Cormorant Garamond',serif",fontSize:36,fontWeight:700,color:G.offWhite,letterSpacing:'0.02em',marginBottom:4 }}>Dashboard</h1>
+      <div style={{ fontSize:13,color:G.silver,letterSpacing:'0.05em',marginBottom:32 }}>Client delivery, proofing &amp; invoicing — centralized.</div>
+      <div style={{ display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:3,marginBottom:32 }}>
+        <StatCard label="Active Projects" value="4" sub="2 need attention" />
+        <StatCard label="Proofing Pending" value="2" sub="Selections due" />
+        <StatCard label="Outstanding" value="$3,200" sub="2 invoices" accent={G.goldLight} />
+        <StatCard label="This Month" value="$8,400" sub="Paid &amp; cleared" accent={G.success} />
+      </div>
+      {/* section header */}
+      <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12 }}>
+        <div style={{ display:'flex',alignItems:'center',gap:12,fontSize:9,fontWeight:700,letterSpacing:'0.4em',textTransform:'uppercase',color:G.gold }}>
+          <div style={{ width:24,height:1,background:G.gold }}/>
+          Active Projects
+        </div>
+        <button style={{ fontSize:9,fontWeight:700,letterSpacing:'0.2em',textTransform:'uppercase',color:G.silver,border:`1px solid ${G.border}`,borderRadius:9999,padding:'4px 12px',transition:`all ${G.tr}` }}
+          onMouseEnter={e=>{e.currentTarget.style.borderColor=G.gold;e.currentTarget.style.color=G.gold}}
+          onMouseLeave={e=>{e.currentTarget.style.borderColor=G.border;e.currentTarget.style.color=G.silver}}>
+          + New Project
+        </button>
+      </div>
+      <div style={{ display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:3 }}>
+        {projects.map(p=>(
+          <div key={p.name} style={{ background:G.charcoal,border:`1px solid ${G.border}`,borderRadius:8,padding:'18px 20px',display:'flex',alignItems:'center',gap:16,cursor:'pointer',transition:`all ${G.tr}` }}
+            onMouseEnter={e=>{e.currentTarget.style.background='#161616';e.currentTarget.style.boxShadow='0 4px 12px rgba(0,0,0,.4)'}}
+            onMouseLeave={e=>{e.currentTarget.style.background=G.charcoal;e.currentTarget.style.boxShadow='none'}}>
+            <div style={{ width:40,height:40,borderRadius:8,background:'rgba(184,150,46,0.08)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,fontFamily:"'Cormorant Garamond',serif",fontSize:18,fontWeight:600,color:G.gold }}>
+              {p.name[0]}
+            </div>
+            <div style={{ flex:1,minWidth:0 }}>
+              <div style={{ fontSize:13,fontWeight:700,color:G.offWhite,marginBottom:2 }}>{p.name}</div>
+              <div style={{ fontSize:10,color:G.mid,letterSpacing:'0.08em' }}>{p.type}</div>
+            </div>
+            <span style={{ fontSize:9,fontWeight:700,letterSpacing:'0.15em',textTransform:'uppercase',color:p.statusColor,border:`1px solid ${p.statusColor}22`,padding:'3px 10px',borderRadius:9999 }}>{p.status}</span>
+          </div>
+        ))}
+      </div>
+      {/* Activity feed */}
+      <div style={{ marginTop:24 }}>
+        <div style={{ display:'flex',alignItems:'center',gap:12,fontSize:9,fontWeight:700,letterSpacing:'0.4em',textTransform:'uppercase',color:G.gold,marginBottom:12 }}>
+          <div style={{ width:24,height:1,background:G.gold }}/>Recent Activity
+        </div>
+        {[
+          { msg:'Apex Financial submitted proof selections',time:'2h ago',icon:'✓' },
+          { msg:'Invoice #004 viewed by Crown & Co.',time:'5h ago',icon:'◎' },
+          { msg:'Noir Studio finals delivery accessed',time:'Yesterday',icon:'↓' },
+        ].map((a,i)=>(
+          <div key={i} style={{ display:'flex',alignItems:'center',gap:14,padding:'12px 0',borderBottom:`1px solid ${G.surface}` }}>
+            <div style={{ width:28,height:28,borderRadius:6,background:'rgba(184,150,46,0.08)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,color:G.gold,flexShrink:0 }}>{a.icon}</div>
+            <div style={{ flex:1,fontSize:12,color:G.text,letterSpacing:'0.03em' }}>{a.msg}</div>
+            <div style={{ fontSize:10,color:G.mid,letterSpacing:'0.05em',flexShrink:0 }}>{a.time}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─── PROOFING SCREEN ─── */
+function Proofing() {
+  const [selections, setSelections] = React.useState({});
+  const [filter, setFilter] = React.useState('all');
+  const imgs = [1,2,3,4,5,6];
+  const reactions = { like:'♥', pass:'✕', maybe:'?' };
+  const colors = { like:G.gold, pass:G.error, maybe:G.silver };
+
+  const react = (id, r) => setSelections(s => ({ ...s, [id]: s[id]===r ? undefined : r }));
+  const filtered = filter==='all' ? imgs : imgs.filter(i => {
+    if(filter==='liked') return selections[i]==='like';
+    if(filter==='maybe') return selections[i]==='maybe';
+    if(filter==='passed') return selections[i]==='pass';
+    return true;
+  });
+
+  return (
+    <div style={{ padding:'80px 32px 40px',maxWidth:1160,margin:'0 auto' }}>
+      <div style={{ fontSize:9,fontWeight:700,letterSpacing:'0.45em',textTransform:'uppercase',color:G.gold,marginBottom:8 }}>Client Proofing</div>
+      <div style={{ display:'flex',alignItems:'flex-end',justifyContent:'space-between',marginBottom:28 }}>
+        <div>
+          <h1 style={{ fontFamily:"'Cormorant Garamond',serif",fontSize:32,fontWeight:700,color:G.offWhite,letterSpacing:'0.02em',marginBottom:4 }}>Apex Financial · Session 01</h1>
+          <div style={{ fontSize:12,color:G.silver }}>{Object.values(selections).filter(v=>v==='like').length} liked · {Object.values(selections).filter(v=>v==='maybe').length} maybe · {Object.values(selections).filter(v=>v==='pass').length} passed of {imgs.length}</div>
+        </div>
+        <button style={{ fontFamily:"'Satoshi',sans-serif",fontSize:10,fontWeight:700,letterSpacing:'0.2em',textTransform:'uppercase',padding:'10px 24px',background:G.gold,border:`1px solid ${G.gold}`,borderRadius:6,color:G.black }}>Submit Selections</button>
+      </div>
+      {/* filter tabs */}
+      <div style={{ display:'flex',gap:2,marginBottom:24 }}>
+        {['all','liked','maybe','passed'].map(f=>(
+          <button key={f} onClick={()=>setFilter(f)} style={{ fontSize:9,fontWeight:700,letterSpacing:'0.2em',textTransform:'uppercase',padding:'6px 14px',borderRadius:9999,border:`1px solid ${filter===f?G.border:'transparent'}`,background:filter===f?'rgba(184,150,46,0.1)':'transparent',color:filter===f?G.gold:G.mid,transition:`all ${G.tr}` }}>{f}</button>
+        ))}
+      </div>
+      <div style={{ display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:3 }}>
+        {filtered.map(i=>{
+          const sel = selections[i];
+          return (
+            <div key={i} style={{ background:G.charcoal,borderRadius:8,overflow:'hidden',border:`1px solid ${sel?colors[sel]+'44':G.border}`,transition:`border-color ${G.tr}` }}>
+              {/* placeholder image */}
+              <div style={{ aspectRatio:'4/3',background:`linear-gradient(135deg,#1A1A1A,#111)`,display:'flex',alignItems:'center',justifyContent:'center',position:'relative' }}>
+                <div style={{ fontFamily:"'Cormorant Garamond',serif",fontSize:32,fontWeight:600,color:'#222' }}>IMG {i}</div>
+                {sel && <div style={{ position:'absolute',top:10,right:10,width:32,height:32,borderRadius:9999,background:colors[sel],display:'flex',alignItems:'center',justifyContent:'center',fontSize:14,color:'#fff',fontWeight:700 }}>{reactions[sel]}</div>}
+              </div>
+              <div style={{ padding:'12px 14px',display:'flex',justifyContent:'space-between',alignItems:'center' }}>
+                <span style={{ fontSize:10,color:G.mid,letterSpacing:'0.08em' }}>APX-2024-{String(i).padStart(3,'0')}</span>
+                <div style={{ display:'flex',gap:6 }}>
+                  {Object.entries(reactions).map(([r,ico])=>(
+                    <button key={r} onClick={()=>react(i,r)} style={{ width:28,height:28,borderRadius:9999,border:`1px solid ${sel===r?colors[r]:G.border}`,background:sel===r?colors[r]+'22':'transparent',color:sel===r?colors[r]:G.mid,fontSize:12,display:'flex',alignItems:'center',justifyContent:'center',transition:`all ${G.tr}` }}>{ico}</button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ─── DELIVERY SCREEN ─── */
+function Delivery() {
+  const files = [
+    { name:'APX-Final-001.jpg',type:'photo',size:'8.2 MB' },
+    { name:'APX-Final-002.jpg',type:'photo',size:'7.1 MB' },
+    { name:'APX-Final-003.jpg',type:'photo',size:'9.4 MB' },
+    { name:'APX-Brand-Reel.mp4',type:'video',size:'124 MB' },
+    { name:'APX-BTS-Clip.mp4',type:'video',size:'88 MB' },
+  ];
+  return (
+    <div style={{ padding:'80px 32px 40px',maxWidth:1160,margin:'0 auto' }}>
+      <div style={{ fontSize:9,fontWeight:700,letterSpacing:'0.45em',textTransform:'uppercase',color:G.gold,marginBottom:8 }}>Finals Delivery</div>
+      <div style={{ display:'flex',alignItems:'flex-end',justifyContent:'space-between',marginBottom:8 }}>
+        <h1 style={{ fontFamily:"'Cormorant Garamond',serif",fontSize:32,fontWeight:700,color:G.offWhite,letterSpacing:'0.02em' }}>Apex Financial · Final Delivery</h1>
+        <button style={{ fontSize:10,fontWeight:700,letterSpacing:'0.2em',textTransform:'uppercase',padding:'10px 24px',background:G.gold,borderRadius:6,border:`1px solid ${G.gold}`,color:G.black }}>↓ Download All (ZIP)</button>
+      </div>
+      <div style={{ background:'rgba(184,150,46,0.06)',border:`1px solid ${G.border}`,borderRadius:8,padding:'14px 18px',marginBottom:28,fontSize:12,color:G.text,letterSpacing:'0.03em',lineHeight:1.6 }}>
+        <strong style={{ color:G.gold }}>Delivery Note:</strong> Your final edited selects from the Apex Financial brand session. All files at full resolution. Delivery expires in 30 days.
+      </div>
+      <div style={{ display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:3,marginBottom:24 }}>
+        {files.filter(f=>f.type==='photo').map(f=>(
+          <div key={f.name} style={{ background:G.charcoal,borderRadius:8,overflow:'hidden',border:`1px solid ${G.border}`,cursor:'pointer' }}>
+            <div style={{ aspectRatio:'4/3',background:'linear-gradient(135deg,#1A1A1A,#111)',display:'flex',alignItems:'center',justifyContent:'center' }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke={G.gold} strokeWidth="1" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            </div>
+            <div style={{ padding:'10px 12px',display:'flex',justifyContent:'space-between',alignItems:'center' }}>
+              <span style={{ fontSize:10,color:G.text,fontWeight:500,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'70%' }}>{f.name}</span>
+              <span style={{ fontSize:9,color:G.mid }}>{f.size}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display:'flex',alignItems:'center',gap:12,fontSize:9,fontWeight:700,letterSpacing:'0.4em',textTransform:'uppercase',color:G.gold,marginBottom:12 }}>
+        <div style={{ width:24,height:1,background:G.gold }}/>Video Files
+      </div>
+      {files.filter(f=>f.type==='video').map(f=>(
+        <div key={f.name} style={{ background:G.charcoal,border:`1px solid ${G.border}`,borderRadius:8,padding:'16px 20px',display:'flex',alignItems:'center',gap:16,marginBottom:3 }}>
+          <div style={{ width:40,height:40,borderRadius:8,background:'rgba(184,150,46,0.08)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={G.gold} strokeWidth="1.5"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+          <div style={{ flex:1 }}>
+            <div style={{ fontSize:13,fontWeight:500,color:G.offWhite,marginBottom:2 }}>{f.name}</div>
+            <div style={{ fontSize:10,color:G.mid }}>{f.size} · MP4</div>
+          </div>
+          <button style={{ fontSize:9,fontWeight:700,letterSpacing:'0.15em',textTransform:'uppercase',color:G.gold,border:`1px solid ${G.border}`,borderRadius:9999,padding:'5px 14px' }}>↓ Download</button>
+        </div>
+      ))}
+      <div style={{ marginTop:28,textAlign:'center',fontSize:10,color:G.mid,letterSpacing:'0.1em' }}>Powered by <strong style={{ color:G.gold }}>The BlackSuite</strong> · Lucky Black Media &amp; Design</div>
+    </div>
+  );
+}
+
+/* ─── INVOICE SCREEN ─── */
+function Invoices() {
+  const invoices = [
+    { id:'INV-001',client:'Apex Financial',amount:'$3,200',status:'Sent',statusColor:G.gold,date:'Apr 15, 2026' },
+    { id:'INV-002',client:'Noir Studio',amount:'$1,800',status:'Paid',statusColor:G.success,date:'Apr 10, 2026' },
+    { id:'INV-003',client:'Vantage Group',amount:'$5,500',status:'Paid',statusColor:G.success,date:'Mar 28, 2026' },
+    { id:'INV-004',client:'Crown & Co.',amount:'$2,400',status:'Overdue',statusColor:G.error,date:'Mar 14, 2026' },
+  ];
+  return (
+    <div style={{ padding:'80px 32px 40px',maxWidth:1160,margin:'0 auto' }}>
+      <div style={{ fontSize:9,fontWeight:700,letterSpacing:'0.45em',textTransform:'uppercase',color:G.gold,marginBottom:8 }}>Invoicing</div>
+      <div style={{ display:'flex',alignItems:'flex-end',justifyContent:'space-between',marginBottom:28 }}>
+        <h1 style={{ fontFamily:"'Cormorant Garamond',serif",fontSize:32,fontWeight:700,color:G.offWhite,letterSpacing:'0.02em' }}>Invoices</h1>
+        <button style={{ fontSize:10,fontWeight:700,letterSpacing:'0.2em',textTransform:'uppercase',padding:'10px 24px',background:G.gold,borderRadius:6,border:`1px solid ${G.gold}`,color:G.black }}>+ New Invoice</button>
+      </div>
+      <div style={{ display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:3,marginBottom:28 }}>
+        <StatCard label="Outstanding" value="$5,600" sub="2 invoices" />
+        <StatCard label="Paid This Month" value="$7,300" sub="3 invoices" accent={G.success} />
+        <StatCard label="Overdue" value="$2,400" sub="1 invoice" accent={G.error} />
+      </div>
+      <div style={{ background:G.charcoal,border:`1px solid ${G.border}`,borderRadius:8,overflow:'hidden' }}>
+        <div style={{ display:'grid',gridTemplateColumns:'1fr 1.5fr 1fr 1fr 1fr',gap:0,padding:'12px 20px',borderBottom:`1px solid ${G.border}` }}>
+          {['Invoice','Client','Amount','Status','Date'].map(h=>(
+            <div key={h} style={{ fontSize:8,fontWeight:700,letterSpacing:'0.3em',textTransform:'uppercase',color:G.mid }}>{h}</div>
+          ))}
+        </div>
+        {invoices.map((inv,i)=>(
+          <div key={inv.id} style={{ display:'grid',gridTemplateColumns:'1fr 1.5fr 1fr 1fr 1fr',gap:0,padding:'14px 20px',borderBottom:i<invoices.length-1?`1px solid rgba(255,255,255,0.03)`:'none',cursor:'pointer',transition:`background ${G.tr}` }}
+            onMouseEnter={e=>e.currentTarget.style.background='rgba(255,255,255,0.02)'}
+            onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
+            <div style={{ fontSize:11,fontWeight:700,color:G.gold,fontFamily:'monospace',letterSpacing:'0.05em' }}>{inv.id}</div>
+            <div style={{ fontSize:12,color:G.offWhite,fontWeight:500 }}>{inv.client}</div>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif",fontSize:16,fontWeight:600,color:G.offWhite }}>{inv.amount}</div>
+            <div><span style={{ fontSize:9,fontWeight:700,letterSpacing:'0.15em',textTransform:'uppercase',color:inv.statusColor,border:`1px solid ${inv.statusColor}33`,padding:'3px 10px',borderRadius:9999 }}>{inv.status}</span></div>
+            <div style={{ fontSize:11,color:G.mid }}>{inv.date}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─── ADMIN HUB SCREEN ─── */
+function AdminHub() {
+  const [note, setNote] = React.useState('Client deliveries going well this week. Follow up with Crown & Co. on overdue invoice.');
+  const links = [
+    { icon:'📋', label:'Booking Admin', desc:'Manage consultations and appointments', url:'lbm-booking-admin' },
+    { icon:'🎨', label:'Client Portal', desc:'Proofing, delivery, invoicing system', url:'blacksuite' },
+    { icon:'📄', label:'Services Page', desc:'Public-facing services and pricing', url:'services' },
+    { icon:'✉️', label:'Contact Forms', desc:'Incoming client enquiries', url:'contact' },
+    { icon:'📊', label:'Analytics', desc:'Website and campaign performance', url:'analytics' },
+    { icon:'⚙️', label:'Settings', desc:'System config and integrations', url:'settings' },
+  ];
+  return (
+    <div style={{ padding:'80px 32px 40px',maxWidth:1160,margin:'0 auto' }}>
+      <div style={{ fontSize:9,fontWeight:700,letterSpacing:'0.45em',textTransform:'uppercase',color:G.gold,marginBottom:8 }}>The BlackSuite</div>
+      <h1 style={{ fontFamily:"'Cormorant Garamond',serif",fontSize:36,fontWeight:700,color:G.offWhite,letterSpacing:'0.02em',marginBottom:4 }}>Admin Hub</h1>
+      <div style={{ fontSize:12,color:G.silver,marginBottom:8,letterSpacing:'0.05em' }}>Your centralized command center</div>
+      <div style={{ display:'flex',gap:32,paddingTop:16,paddingBottom:24,borderTop:`1px solid ${G.border}`,marginTop:16,marginBottom:28 }}>
+        {[['4','Active Clients'],['2','Pending Reviews'],['$12.7k','Monthly Revenue']].map(([v,l])=>(
+          <div key={l} style={{ display:'flex',flexDirection:'column',gap:2 }}>
+            <div style={{ fontFamily:"'Cormorant Garamond',serif",fontSize:24,fontWeight:600,color:G.gold,lineHeight:1 }}>{v}</div>
+            <div style={{ fontSize:9,fontWeight:700,letterSpacing:'0.25em',textTransform:'uppercase',color:G.silver }}>{l}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12 }}>
+        <div style={{ display:'flex',alignItems:'center',gap:12,fontSize:9,fontWeight:700,letterSpacing:'0.4em',textTransform:'uppercase',color:G.gold }}>
+          <div style={{ width:24,height:1,background:G.gold }}/>Quick Links
+        </div>
+        <button style={{ fontSize:9,fontWeight:700,letterSpacing:'0.2em',textTransform:'uppercase',color:G.silver,border:`1px solid ${G.border}`,borderRadius:9999,padding:'4px 12px' }}>+ Add Link</button>
+      </div>
+      <div style={{ display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:3,marginBottom:24 }}>
+        {links.map(l=>(
+          <div key={l.label} style={{ background:G.charcoal,border:`1px solid rgba(184,150,46,0.06)`,borderRadius:8,padding:'20px',display:'flex',flexDirection:'column',gap:10,cursor:'pointer',position:'relative',overflow:'hidden',transition:`all ${G.tr}` }}
+            onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.background='#161616';e.currentTarget.style.boxShadow='0 4px 12px rgba(0,0,0,.4)'}}
+            onMouseLeave={e=>{e.currentTarget.style.transform='none';e.currentTarget.style.background=G.charcoal;e.currentTarget.style.boxShadow='none'}}>
+            <div style={{ width:34,height:34,borderRadius:6,background:'rgba(184,150,46,0.08)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:16 }}>{l.icon}</div>
+            <div style={{ fontSize:9,fontWeight:700,letterSpacing:'0.22em',textTransform:'uppercase',color:G.gold }}>{l.label}</div>
+            <div style={{ fontSize:11,color:G.silver,lineHeight:1.65,letterSpacing:'0.03em' }}>{l.desc}</div>
+            <div style={{ fontSize:9,color:G.mid,fontFamily:'monospace',marginTop:'auto',paddingTop:8,borderTop:`1px solid rgba(255,255,255,0.04)` }}>/{l.url}</div>
+          </div>
+        ))}
+      </div>
+      {/* Quick notes */}
+      <div style={{ background:G.charcoal,border:`1px solid ${G.border}`,borderRadius:12,padding:'20px 24px' }}>
+        <div style={{ display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:14 }}>
+          <div style={{ fontSize:9,fontWeight:700,letterSpacing:'0.35em',textTransform:'uppercase',color:G.gold }}>Quick Notes</div>
+          <button style={{ fontSize:9,fontWeight:700,letterSpacing:'0.2em',textTransform:'uppercase',color:G.silver,border:`1px solid ${G.border}`,borderRadius:9999,padding:'3px 10px' }}>Save</button>
+        </div>
+        <textarea value={note} onChange={e=>setNote(e.target.value)} rows={3}
+          style={{ width:'100%',background:G.dark,border:`1px solid rgba(184,150,46,0.1)`,borderRadius:6,padding:'12px 14px',color:G.text,fontSize:12,lineHeight:1.65,resize:'vertical',outline:'none',transition:`border-color ${G.tr}` }}
+          onFocus={e=>e.target.style.borderColor=G.border}
+          onBlur={e=>e.target.style.borderColor='rgba(184,150,46,0.1)'} />
+      </div>
+    </div>
+  );
+}
+
+/* ─── APP ─── */
+function App() {
+  const [screen, setScreen] = React.useState(()=>localStorage.getItem('bs_screen')||'dashboard');
+  const nav = s => { setScreen(s); localStorage.setItem('bs_screen',s); window.scrollTo(0,0); };
+  return (
+    <div>
+      <PortalNav screen={screen} setScreen={nav} />
+      {screen==='dashboard' && <Dashboard setScreen={nav}/>}
+      {screen==='proofing' && <Proofing/>}
+      {screen==='delivery' && <Delivery/>}
+      {screen==='invoices' && <Invoices/>}
+      {screen==='admin' && <AdminHub/>}
+      <div style={{ textAlign:'center',padding:'20px',fontSize:9,color:G.mid,letterSpacing:'0.15em',borderTop:`1px solid rgba(255,255,255,0.03)` }}>
+        Powered by <strong style={{ color:G.gold }}>The BlackSuite</strong> · Lucky Black Media &amp; Design · Est. 2013
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

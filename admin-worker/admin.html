@@ -1,0 +1,2392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lucky Black Media & Design — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET ─────────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;scroll-behavior:smooth}
+button{cursor:pointer;background:none;border:none;color:inherit;font:inherit}
+a{text-decoration:none;color:inherit}
+input,select,textarea{font:inherit}
+img,svg{display:block;max-width:100%}
+
+/* ─── DESIGN TOKENS ──────────────────────────────────────────────────────── */
+:root{
+  /* Brand colors */
+  --navy:     #0a1628;
+  --charcoal: #1a1a1a;
+  --surface:  #111827;
+  --surface2: #1f2937;
+  --gold:         #B8962E;
+  --gold-light:   rgba(184,150,46,0.12);
+  --gold-border:  rgba(184,150,46,0.2);
+  --gold-hover:   #d4af5a;
+  --text:       #f9fafb;
+  --text-muted: #9ca3af;
+  --red:        #ef4444;
+  --red-light:  rgba(239,68,68,0.12);
+  --green:      #22c55e;
+  --green-light:rgba(34,197,94,0.12);
+  --yellow:     #eab308;
+  --yellow-light:rgba(234,179,8,0.12);
+  --orange:     #f97316;
+  --orange-light:rgba(249,115,22,0.12);
+
+  /* Layout */
+  --navbar-h: 56px;
+  --sidebar-w: 220px;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+
+  /* Typography */
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Transitions */
+  --transition: 160ms cubic-bezier(.16,1,.3,1);
+}
+
+/* ─── BASE ───────────────────────────────────────────────────────────────── */
+body{
+  min-height:100dvh;
+  background:var(--surface);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:.875rem;
+  line-height:1.5;
+  overflow-x:hidden;
+}
+
+/* ─── ANIMATIONS ─────────────────────────────────────────────────────────── */
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  15%,55%{transform:translateX(-8px)}
+  35%,75%{transform:translateX(8px)}
+}
+@keyframes slideInUp{
+  from{transform:translateY(20px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+@keyframes fadeIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+.shake{animation:shake .42s ease}
+
+/* ─── SPINNER ─────────────────────────────────────────────────────────────── */
+.spinner{
+  display:inline-block;
+  width:18px;height:18px;
+  border:2px solid var(--gold-border);
+  border-top-color:var(--gold);
+  border-radius:50%;
+  animation:spin .75s linear infinite;
+  vertical-align:middle;
+}
+.spinner-lg{width:36px;height:36px;border-width:3px}
+
+/* ─── LOCK SCREEN ────────────────────────────────────────────────────────── */
+#lock-screen{
+  position:fixed;inset:0;z-index:900;
+  background:var(--navy);
+  display:flex;align-items:center;justify-content:center;
+  animation:fadeIn .25s ease;
+}
+.lock-card{
+  width:min(400px,92vw);
+  background:var(--charcoal);
+  border:1px solid var(--gold-border);
+  border-radius:var(--radius);
+  padding:2.5rem 2rem;
+  display:flex;flex-direction:column;gap:1.25rem;
+  box-shadow:0 24px 64px rgba(0,0,0,.6);
+}
+.lock-brand{
+  font-family:var(--font-display);
+  font-size:.7rem;
+  font-weight:600;
+  letter-spacing:.4em;
+  text-transform:uppercase;
+  color:var(--gold);
+  text-align:center;
+}
+.lock-card h1{
+  font-family:var(--font-display);
+  font-size:1.75rem;
+  font-weight:700;
+  color:var(--text);
+  text-align:center;
+  line-height:1.1;
+  margin-top:-.25rem;
+}
+#lockout-bar{
+  display:none;
+  background:rgba(239,68,68,.1);
+  border:1px solid rgba(239,68,68,.25);
+  border-radius:var(--radius-sm);
+  padding:.5rem .875rem;
+  font-size:.75rem;
+  color:#f87171;
+  text-align:center;
+  font-weight:500;
+}
+#lock-form{
+  display:flex;flex-direction:column;gap:.75rem;
+}
+#lock-form input[type="password"],
+#lock-form input[type="text"]{
+  width:100%;
+  padding:.625rem .875rem;
+  background:var(--surface);
+  border:1px solid var(--gold-border);
+  border-radius:var(--radius-md);
+  color:var(--text);
+  font-size:.875rem;
+  outline:none;
+  transition:border-color var(--transition);
+}
+#lock-form input:focus{border-color:var(--gold)}
+#lock-form input::placeholder{color:var(--text-muted)}
+
+#login-btn{
+  width:100%;
+  padding:.65rem 1rem;
+  margin-top:.25rem;
+}
+#lock-err{
+  font-size:.75rem;
+  color:#f87171;
+  text-align:center;
+  min-height:1.25em;
+  transition:opacity var(--transition);
+}
+#recovery-wrap{
+  display:flex;flex-direction:column;gap:.625rem;
+  padding-top:.25rem;
+  border-top:1px solid var(--gold-border);
+  margin-top:.25rem;
+}
+
+/* ─── BUTTONS ────────────────────────────────────────────────────────────── */
+.btn-primary{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  padding:.5rem 1.25rem;
+  background:var(--gold);
+  color:#0a0a0a;
+  font-size:.75rem;
+  font-weight:700;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  border:1px solid var(--gold);
+  border-radius:var(--radius-md);
+  transition:background var(--transition),border-color var(--transition);
+}
+.btn-primary:hover{background:var(--gold-hover);border-color:var(--gold-hover)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+
+.btn-secondary{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  padding:.5rem 1.25rem;
+  background:none;
+  color:var(--text-muted);
+  font-size:.75rem;
+  font-weight:700;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  border:1px solid var(--gold-border);
+  border-radius:var(--radius-md);
+  transition:color var(--transition),border-color var(--transition);
+}
+.btn-secondary:hover{color:var(--gold);border-color:var(--gold)}
+.btn-secondary:disabled{opacity:.5;cursor:not-allowed}
+
+.btn-danger{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  padding:.5rem 1.25rem;
+  background:var(--red-light);
+  color:#f87171;
+  font-size:.75rem;
+  font-weight:700;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  border:1px solid rgba(239,68,68,.25);
+  border-radius:var(--radius-md);
+  transition:background var(--transition),border-color var(--transition);
+}
+.btn-danger:hover{background:rgba(239,68,68,.2);border-color:rgba(239,68,68,.4)}
+.btn-danger:disabled{opacity:.5;cursor:not-allowed}
+
+.btn-ghost{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  padding:.4rem .875rem;
+  background:none;
+  color:var(--text-muted);
+  font-size:.75rem;
+  font-weight:600;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:var(--radius-md);
+  transition:color var(--transition),border-color var(--transition);
+}
+.btn-ghost:hover{color:var(--text);border-color:rgba(255,255,255,.25)}
+
+/* ─── NAVBAR ─────────────────────────────────────────────────────────────── */
+#navbar{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  height:var(--navbar-h);
+  background:rgba(10,22,40,.96);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--gold-border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.5rem;
+}
+.nav-brand{
+  font-family:var(--font-display);
+  font-size:1.1rem;
+  font-weight:700;
+  color:var(--gold);
+  letter-spacing:.06em;
+  white-space:nowrap;
+}
+.nav-brand .nav-sub{
+  font-family:var(--font-body);
+  font-size:.65rem;
+  font-weight:600;
+  letter-spacing:.35em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  margin-left:.5rem;
+}
+.nav-right{
+  display:flex;align-items:center;gap:.75rem;
+}
+#session-badge{
+  font-size:.7rem;
+  font-weight:600;
+  letter-spacing:.12em;
+  color:var(--text-muted);
+  padding:.2rem .6rem;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:9999px;
+  white-space:nowrap;
+}
+#session-badge.expiring{
+  color:var(--yellow);
+  border-color:rgba(234,179,8,.3);
+  background:var(--yellow-light);
+}
+
+/* ─── APP LAYOUT ─────────────────────────────────────────────────────────── */
+#admin-main{display:none}
+.app-layout{
+  display:flex;
+  min-height:100dvh;
+  padding-top:var(--navbar-h);
+}
+
+/* ─── SIDEBAR ────────────────────────────────────────────────────────────── */
+#sidebar{
+  width:var(--sidebar-w);
+  flex-shrink:0;
+  background:var(--charcoal);
+  border-right:1px solid var(--gold-border);
+  position:sticky;
+  top:var(--navbar-h);
+  height:calc(100dvh - var(--navbar-h));
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:var(--gold-border) transparent;
+}
+#sidebar nav{
+  padding:1.25rem 0;
+}
+.sidebar-label{
+  font-size:.6rem;
+  font-weight:700;
+  letter-spacing:.4em;
+  text-transform:uppercase;
+  color:var(--gold);
+  padding:.5rem 1.25rem .25rem;
+  opacity:.6;
+}
+.nav-item{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.625rem 1.25rem;
+  font-size:.8125rem;
+  font-weight:500;
+  color:var(--text-muted);
+  cursor:pointer;
+  border-left:2px solid transparent;
+  transition:color var(--transition),background var(--transition),border-color var(--transition);
+  user-select:none;
+}
+.nav-item:hover{
+  color:var(--text);
+  background:rgba(255,255,255,.04);
+}
+.nav-item.active{
+  color:var(--gold);
+  background:var(--gold-light);
+  border-left-color:var(--gold);
+}
+.nav-item svg{
+  width:16px;height:16px;
+  flex-shrink:0;
+  opacity:.7;
+}
+.nav-item.active svg{opacity:1}
+.sidebar-divider{
+  height:1px;
+  background:var(--gold-border);
+  margin:.75rem 0;
+  opacity:.4;
+}
+
+/* ─── MAIN CONTENT ───────────────────────────────────────────────────────── */
+#main-content{
+  flex:1;
+  min-width:0;
+  padding:2rem 2.5rem;
+}
+.panel{animation:fadeIn .2s ease}
+.panel-placeholder{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:320px;
+  gap:1rem;
+  color:var(--text-muted);
+  text-align:center;
+}
+.panel-placeholder .ph-icon{
+  font-size:2.5rem;
+  opacity:.3;
+}
+.panel-placeholder .ph-title{
+  font-family:var(--font-display);
+  font-size:1.25rem;
+  color:var(--text-muted);
+}
+.panel-placeholder .ph-msg{
+  font-size:.8125rem;
+  max-width:360px;
+  opacity:.6;
+}
+
+/* ─── CARDS ──────────────────────────────────────────────────────────────── */
+.card{
+  background:var(--surface2);
+  border:1px solid var(--gold-border);
+  border-radius:var(--radius);
+  padding:1.5rem;
+}
+.card-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:1.25rem;
+}
+.card-title{
+  font-family:var(--font-display);
+  font-size:1.1rem;
+  font-weight:600;
+  color:var(--text);
+}
+
+/* ─── KPI CARDS ──────────────────────────────────────────────────────────── */
+.kpi-row{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:4px;
+  margin-bottom:2rem;
+}
+.kpi-card{
+  background:var(--surface2);
+  border:1px solid var(--gold-border);
+  border-radius:var(--radius);
+  padding:1.25rem 1.25rem 1rem;
+  display:flex;flex-direction:column;gap:.375rem;
+}
+.kpi-val{
+  font-family:var(--font-display);
+  font-size:2rem;
+  font-weight:700;
+  color:var(--gold);
+  line-height:1;
+}
+.kpi-label{
+  font-size:.65rem;
+  font-weight:700;
+  letter-spacing:.3em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+}
+
+/* ─── TABLE ──────────────────────────────────────────────────────────────── */
+.table-wrap{
+  background:var(--surface2);
+  border:1px solid var(--gold-border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.admin-table{
+  width:100%;
+  border-collapse:collapse;
+}
+.admin-table thead{
+  background:rgba(184,150,46,.06);
+  border-bottom:1px solid var(--gold-border);
+}
+.admin-table th{
+  font-size:.65rem;
+  font-weight:700;
+  letter-spacing:.3em;
+  text-transform:uppercase;
+  color:var(--gold);
+  padding:.625rem 1rem;
+  text-align:left;
+  white-space:nowrap;
+}
+.admin-table td{
+  padding:.5625rem 1rem;
+  font-size:.8125rem;
+  color:var(--text);
+  border-bottom:1px solid rgba(255,255,255,.04);
+  vertical-align:middle;
+}
+.admin-table tr:last-child td{border-bottom:none}
+.admin-table tbody tr:nth-child(even) td{background:rgba(255,255,255,.015)}
+.admin-table tbody tr:hover td{background:rgba(184,150,46,.04)}
+.empty-row td{
+  text-align:center;
+  padding:3rem 1rem;
+  color:var(--text-muted);
+  font-style:italic;
+}
+
+/* ─── BADGES ─────────────────────────────────────────────────────────────── */
+.badge{
+  display:inline-flex;align-items:center;
+  padding:2px 9px;
+  border-radius:9999px;
+  font-size:.65rem;
+  font-weight:700;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.badge-confirmed{
+  background:rgba(34,197,94,.12);
+  color:#4ade80;
+  border:1px solid rgba(34,197,94,.25);
+}
+.badge-pending{
+  background:rgba(234,179,8,.12);
+  color:#fbbf24;
+  border:1px solid rgba(234,179,8,.25);
+}
+.badge-pending-payment{
+  background:rgba(249,115,22,.12);
+  color:#fb923c;
+  border:1px solid rgba(249,115,22,.25);
+}
+.badge-cancelled{
+  background:rgba(156,163,175,.08);
+  color:var(--text-muted);
+  border:1px solid rgba(156,163,175,.2);
+}
+
+/* ─── FORMS ──────────────────────────────────────────────────────────────── */
+.form-group{display:flex;flex-direction:column;gap:.375rem}
+.form-label{
+  font-size:.65rem;
+  font-weight:700;
+  letter-spacing:.3em;
+  text-transform:uppercase;
+  color:var(--gold);
+}
+.form-input,
+.form-select,
+.form-textarea{
+  width:100%;
+  padding:.5625rem .875rem;
+  background:var(--surface);
+  border:1px solid var(--gold-border);
+  border-radius:var(--radius-md);
+  color:var(--text);
+  font-size:.875rem;
+  outline:none;
+  transition:border-color var(--transition);
+}
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus{border-color:var(--gold)}
+.form-input::placeholder,
+.form-textarea::placeholder{color:var(--text-muted)}
+.form-select option{background:var(--surface)}
+.form-textarea{min-height:80px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-hint{font-size:.7rem;color:var(--text-muted);margin-top:.125rem}
+
+/* ─── MODAL ──────────────────────────────────────────────────────────────── */
+.modal-overlay{
+  position:fixed;inset:0;z-index:800;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(6px);
+  display:none;
+  align-items:center;justify-content:center;
+}
+.modal-overlay.open{display:flex}
+.modal-dialog{
+  width:min(540px,92vw);
+  max-height:90dvh;
+  overflow-y:auto;
+  background:var(--charcoal);
+  border:1px solid var(--gold-border);
+  border-radius:var(--radius);
+  padding:2rem;
+  display:flex;flex-direction:column;gap:1.25rem;
+  box-shadow:0 24px 64px rgba(0,0,0,.55);
+  animation:slideInUp .2s ease;
+}
+.modal-header{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;
+}
+.modal-title{
+  font-family:var(--font-display);
+  font-size:1.35rem;
+  font-weight:700;
+  color:var(--text);
+}
+.modal-close{
+  width:30px;height:30px;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--gold-border);
+  border-radius:50%;
+  color:var(--text-muted);
+  flex-shrink:0;
+  font-size:1rem;
+  line-height:1;
+  transition:color var(--transition),border-color var(--transition);
+}
+.modal-close:hover{color:var(--gold);border-color:var(--gold)}
+.modal-actions{
+  display:flex;align-items:center;gap:.75rem;
+  justify-content:flex-end;
+  padding-top:.25rem;
+  border-top:1px solid var(--gold-border);
+}
+
+/* ─── TOAST ──────────────────────────────────────────────────────────────── */
+#toast-container{
+  position:fixed;
+  bottom:1.5rem;right:1.5rem;
+  z-index:1000;
+  display:flex;flex-direction:column;gap:.5rem;
+  pointer-events:none;
+  max-width:340px;
+}
+.toast{
+  display:flex;align-items:flex-start;gap:.625rem;
+  padding:.75rem 1rem;
+  background:var(--charcoal);
+  border:1px solid var(--gold-border);
+  border-radius:var(--radius-md);
+  font-size:.8125rem;
+  font-weight:500;
+  color:var(--text);
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+  opacity:0;
+  transform:translateY(12px);
+  transition:opacity .25s ease,transform .25s ease;
+  pointer-events:auto;
+}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast-icon{font-size:1rem;flex-shrink:0;margin-top:.05rem}
+.toast-msg{flex:1;line-height:1.4}
+.toast.toast-info .toast-icon{color:var(--gold)}
+.toast.toast-info{border-left:3px solid var(--gold)}
+.toast.toast-success .toast-icon{color:var(--green)}
+.toast.toast-success{border-left:3px solid var(--green)}
+.toast.toast-warn .toast-icon{color:var(--yellow)}
+.toast.toast-warn{border-left:3px solid var(--yellow)}
+.toast.toast-error .toast-icon{color:var(--red)}
+.toast.toast-error{border-left:3px solid var(--red)}
+
+/* ─── SECTION HEADERS ────────────────────────────────────────────────────── */
+.section-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:1.25rem;
+  gap:1rem;
+  flex-wrap:wrap;
+}
+.section-title{
+  font-family:var(--font-display);
+  font-size:1.35rem;
+  font-weight:600;
+  color:var(--text);
+}
+.section-sub{
+  font-size:.75rem;
+  color:var(--text-muted);
+  margin-top:.125rem;
+}
+.section-actions{
+  display:flex;align-items:center;gap:.5rem;
+  flex-shrink:0;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────────── */
+@media(max-width:900px){
+  #sidebar{display:none}
+  #main-content{padding:1.25rem 1rem}
+}
+@media(max-width:640px){
+  .form-row{grid-template-columns:1fr}
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .modal-dialog{padding:1.25rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     LOCK SCREEN
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div id="lock-screen">
+  <div class="lock-card">
+    <img src="/images/logo-wordmark.png" alt="Lucky Black Media & Design" style="height:clamp(140px,18vw,240px);width:auto;margin:0 auto 16px;display:block;">
+    <h1>Admin Access</h1>
+    <div id="lockout-bar"></div>
+    <form id="lock-form" onsubmit="return false">
+      <input id="pw" type="password" placeholder="Access code" autocomplete="current-password">
+      <button id="login-btn" class="btn-primary" onclick="checkPw()">Enter</button>
+      <p id="lock-err">&nbsp;</p>
+      <button type="button" class="btn-ghost" onclick="showRecovery()" style="width:100%">Forgot access code?</button>
+      <div id="recovery-wrap" style="display:none">
+        <input id="recovery-input" type="text" placeholder="Recovery code" autocomplete="off">
+        <button class="btn-secondary" style="width:100%" onclick="useRecoveryCode()">Use recovery code</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     ADMIN MAIN (hidden until auth)
+     ═══════════════════════════════════════════════════════════════════════ -->
+<div id="admin-main" style="display:none">
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <span class="nav-brand" style="display:flex;align-items:center;gap:8px;">
+      <img src="/images/logo-mark.png" alt="LBM" style="height:30px;width:auto;">
+      Lucky Black Media & Design
+      <span class="nav-sub">Admin</span>
+    </span>
+    <div class="nav-right">
+      <span id="session-badge"></span>
+      <button class="btn-ghost" onclick="lockScreen()">Lock</button>
+    </div>
+  </nav>
+
+  <!-- LAYOUT -->
+  <div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar">
+      <nav>
+        <div class="sidebar-label">Navigation</div>
+
+        <div class="nav-item active" data-panel="dashboard" onclick="showPanel('dashboard')">
+          <!-- dashboard icon -->
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="1" y="1" width="6" height="6" rx="1"/>
+            <rect x="9" y="1" width="6" height="6" rx="1"/>
+            <rect x="1" y="9" width="6" height="6" rx="1"/>
+            <rect x="9" y="9" width="6" height="6" rx="1"/>
+          </svg>
+          Dashboard
+        </div>
+
+        <div class="nav-item" data-panel="bookings" onclick="showPanel('bookings')">
+          <!-- calendar icon -->
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="1" y="2.5" width="14" height="12" rx="1.5"/>
+            <path d="M1 6.5h14"/>
+            <path d="M5 1v3M11 1v3"/>
+            <rect x="4" y="9" width="2" height="2" rx=".3" fill="currentColor" stroke="none"/>
+            <rect x="7.5" y="9" width="2" height="2" rx=".3" fill="currentColor" stroke="none"/>
+          </svg>
+          Bookings
+        </div>
+
+        <div class="nav-item" data-panel="services" onclick="showPanel('services')">
+          <!-- briefcase icon -->
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="1" y="5" width="14" height="9" rx="1.5"/>
+            <path d="M5 5V3.5A1.5 1.5 0 016.5 2h3A1.5 1.5 0 0111 3.5V5"/>
+            <path d="M1 9.5h14"/>
+          </svg>
+          Services
+        </div>
+
+        <div class="nav-item" data-panel="availability" onclick="showPanel('availability')">
+          <!-- clock icon -->
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="8" cy="8" r="6.5"/>
+            <path d="M8 5v3.5l2.5 1.5"/>
+          </svg>
+          Availability
+        </div>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="nav-item" data-panel="links" onclick="showPanel('links')">
+          <!-- link icon -->
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M6.5 9.5a3.54 3.54 0 005 0l2-2a3.54 3.54 0 00-5-5l-1 1"/>
+            <path d="M9.5 6.5a3.54 3.54 0 00-5 0l-2 2a3.54 3.54 0 005 5l1-1"/>
+          </svg>
+          Links
+        </div>
+
+        <div class="nav-item" data-panel="settings" onclick="showPanel('settings')">
+          <!-- gear icon -->
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="8" cy="8" r="2.5"/>
+            <path d="M8 1.5V3M8 13v1.5M1.5 8H3M13 8h1.5M3.22 3.22l1.06 1.06M11.72 11.72l1.06 1.06M3.22 12.78l1.06-1.06M11.72 4.28l1.06-1.06"/>
+          </svg>
+          Settings
+        </div>
+      </nav>
+    </aside>
+
+    <!-- PANEL CONTAINERS -->
+    <main id="main-content">
+      <div id="panel-dashboard" class="panel"></div>
+      <div id="panel-bookings"  class="panel" hidden></div>
+      <div id="panel-services"  class="panel" hidden></div>
+      <div id="panel-availability" class="panel" hidden></div>
+      <div id="panel-links"    class="panel" hidden></div>
+      <div id="panel-settings" class="panel" hidden></div>
+    </main>
+
+  </div><!-- /.app-layout -->
+</div><!-- /#admin-main -->
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ─────────────────────────────────────────────────────────────────────────
+   CONSTANTS
+   ───────────────────────────────────────────────────────────────────────── */
+const API_BASE          = '';           // same-origin Worker
+const SESSION_KEY_TOKEN = 'lbm_admin_token';
+const SESSION_KEY_EXP   = 'lbm_admin_exp';
+const SESSION_DURATION  = 4 * 60 * 60 * 1000; // 4 hours ms
+const MAX_LOGIN_ATTEMPTS= 5;
+const LOCKOUT_DURATION  = 5 * 60 * 1000; // 5 min ms
+
+/* ─────────────────────────────────────────────────────────────────────────
+   STATE
+   ───────────────────────────────────────────────────────────────────────── */
+const state = {
+  bookings:     [],
+  services:     [],
+  availability: [],
+  links:        [],
+  activePanel:  'dashboard',
+};
+
+/* ─────────────────────────────────────────────────────────────────────────
+   SESSION
+   ───────────────────────────────────────────────────────────────────────── */
+let _token     = sessionStorage.getItem(SESSION_KEY_TOKEN) || null;
+let _expiresAt = parseInt(sessionStorage.getItem(SESSION_KEY_EXP) || '0', 10) || null;
+
+function _saveSession(token, expiresAt) {
+  _token     = token;
+  _expiresAt = expiresAt;
+  sessionStorage.setItem(SESSION_KEY_TOKEN, token);
+  sessionStorage.setItem(SESSION_KEY_EXP,   String(expiresAt));
+}
+
+function _clearSession() {
+  _token     = null;
+  _expiresAt = null;
+  sessionStorage.removeItem(SESSION_KEY_TOKEN);
+  sessionStorage.removeItem(SESSION_KEY_EXP);
+}
+
+function _sessionValid() {
+  return _token && _expiresAt && Date.now() < _expiresAt;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   SECURITY HELPER — XSS-safe string
+   ───────────────────────────────────────────────────────────────────────── */
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = String(str ?? '');
+  return d.innerHTML;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   API CLIENT
+   ───────────────────────────────────────────────────────────────────────── */
+async function api(method, path, body) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (_token) headers['Authorization'] = 'Bearer ' + _token;
+
+  const opts = { method, headers };
+  if (body !== undefined) opts.body = JSON.stringify(body);
+
+  let res;
+  try {
+    res = await fetch(API_BASE + path, opts);
+  } catch (err) {
+    throw new Error('Network error — check your connection.');
+  }
+
+  if (res.status === 401) {
+    _clearSession();
+    showLockScreen();
+    throw new Error('Session expired — please log in again.');
+  }
+
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    if (!res.ok) throw new Error('Server error: ' + res.status);
+    return null;
+  }
+
+  if (!res.ok) {
+    throw new Error(data?.error || data?.message || 'Request failed: ' + res.status);
+  }
+
+  return data;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   TOAST NOTIFICATIONS
+   ───────────────────────────────────────────────────────────────────────── */
+const TOAST_ICONS = {
+  info:    '◆',
+  success: '✓',
+  warn:    '⚠',
+  error:   '✕',
+};
+
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast toast-' + type;
+
+  const iconEl = document.createElement('span');
+  iconEl.className = 'toast-icon';
+  iconEl.textContent = TOAST_ICONS[type] ?? TOAST_ICONS.info;
+
+  const msgEl = document.createElement('span');
+  msgEl.className = 'toast-msg';
+  msgEl.textContent = msg;   // textContent = XSS-safe
+
+  el.appendChild(iconEl);
+  el.appendChild(msgEl);
+  container.appendChild(el);
+
+  // Animate in
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => el.classList.add('show'));
+  });
+
+  // Auto-dismiss
+  const duration = type === 'error' ? 6000 : 3500;
+  setTimeout(() => {
+    el.classList.remove('show');
+    el.addEventListener('transitionend', () => el.remove(), { once: true });
+  }, duration);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   AUTH — LOCKOUT STATE
+   ───────────────────────────────────────────────────────────────────────── */
+let _attempts    = 0;
+let _lockedUntil = 0;
+let _lockoutTimer= null;
+
+function _isLockedOut() {
+  return Date.now() < _lockedUntil;
+}
+
+function _startLockout() {
+  _lockedUntil = Date.now() + LOCKOUT_DURATION;
+  _showLockoutBar();
+}
+
+function _showLockoutBar() {
+  const bar     = document.getElementById('lockout-bar');
+  const loginBtn= document.getElementById('login-btn');
+
+  function tick() {
+    const remaining = Math.max(0, _lockedUntil - Date.now());
+    if (remaining <= 0) {
+      bar.style.display  = 'none';
+      bar.textContent    = '';
+      loginBtn.disabled  = false;
+      clearInterval(_lockoutTimer);
+      _lockoutTimer = null;
+      return;
+    }
+    const mins = Math.floor(remaining / 60000);
+    const secs = Math.floor((remaining % 60000) / 1000);
+    bar.textContent  = `Too many attempts — try again in ${mins}:${String(secs).padStart(2,'0')}`;
+    bar.style.display= 'block';
+    loginBtn.disabled = true;
+  }
+  tick();
+  if (_lockoutTimer) clearInterval(_lockoutTimer);
+  _lockoutTimer = setInterval(tick, 1000);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   AUTH — LOGIN
+   ───────────────────────────────────────────────────────────────────────── */
+async function checkPw() {
+  if (_isLockedOut()) return;
+
+  const pwEl  = document.getElementById('pw');
+  const errEl = document.getElementById('lock-err');
+  const btn   = document.getElementById('login-btn');
+  const pw    = pwEl.value.trim();
+
+  if (!pw) {
+    errEl.textContent = 'Please enter the access code.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Checking…';
+  errEl.textContent = '\u00a0';
+
+  try {
+    const data = await api('POST', '/api/auth/login', { password: pw });
+    const token     = data?.token || data?.access_token || null;
+    const expiresAt = data?.expires_at
+      ? new Date(data.expires_at).getTime()
+      : Date.now() + SESSION_DURATION;
+
+    if (!token) throw new Error('No token returned from server.');
+
+    _attempts = 0;
+    _saveSession(token, expiresAt);
+    pwEl.value = '';
+    showAdminPanel();
+    await init();
+
+  } catch (err) {
+    _attempts++;
+    pwEl.value = '';
+    document.getElementById('lock-form').classList.add('shake');
+    setTimeout(() => document.getElementById('lock-form').classList.remove('shake'), 500);
+
+    if (_attempts >= MAX_LOGIN_ATTEMPTS) {
+      _startLockout();
+      errEl.textContent = 'Too many failed attempts. Locked temporarily.';
+    } else {
+      const left = MAX_LOGIN_ATTEMPTS - _attempts;
+      errEl.textContent = `Incorrect code. ${left} attempt${left !== 1 ? 's' : ''} remaining.`;
+    }
+
+    btn.disabled  = false;
+    btn.innerHTML = 'Enter';
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   AUTH — RECOVERY CODE
+   ───────────────────────────────────────────────────────────────────────── */
+function showRecovery() {
+  const wrap = document.getElementById('recovery-wrap');
+  wrap.style.display = wrap.style.display === 'none' ? 'flex' : 'none';
+  wrap.style.flexDirection = 'column';
+  if (wrap.style.display !== 'none') {
+    document.getElementById('recovery-input').focus();
+  }
+}
+
+async function useRecoveryCode() {
+  const input  = document.getElementById('recovery-input');
+  const errEl  = document.getElementById('lock-err');
+  const code   = input.value.trim();
+
+  if (!code) {
+    errEl.textContent = 'Please enter your recovery code.';
+    return;
+  }
+
+  input.disabled = true;
+  errEl.textContent = '\u00a0';
+
+  try {
+    const data = await api('POST', '/api/auth/recovery', { code });
+    const token     = data?.token || data?.access_token || null;
+    const expiresAt = data?.expires_at
+      ? new Date(data.expires_at).getTime()
+      : Date.now() + SESSION_DURATION;
+
+    if (!token) throw new Error('No token returned from server.');
+
+    _attempts = 0;
+    _saveSession(token, expiresAt);
+    input.value = '';
+    document.getElementById('recovery-wrap').style.display = 'none';
+    showAdminPanel();
+    await init();
+
+  } catch (err) {
+    document.getElementById('lock-form').classList.add('shake');
+    setTimeout(() => document.getElementById('lock-form').classList.remove('shake'), 500);
+    errEl.textContent = 'Invalid recovery code.';
+    input.disabled = false;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   AUTH — LOGOUT / LOCK
+   ───────────────────────────────────────────────────────────────────────── */
+async function lockScreen() {
+  try {
+    if (_token) await api('POST', '/api/auth/logout');
+  } catch {
+    // ignore network errors on logout
+  }
+  _clearSession();
+  showLockScreen();
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   SCREEN TRANSITIONS
+   ───────────────────────────────────────────────────────────────────────── */
+function showLockScreen() {
+  document.getElementById('admin-main').style.display = 'none';
+  document.getElementById('lock-screen').style.display = 'flex';
+  document.getElementById('pw').focus();
+  _stopSessionTicker();
+}
+
+function showAdminPanel() {
+  document.getElementById('lock-screen').style.display = 'none';
+  document.getElementById('admin-main').style.display  = 'block';
+  _startSessionTicker();
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   SESSION TICKER
+   ───────────────────────────────────────────────────────────────────────── */
+let _sessionTickerHandle = null;
+
+function _startSessionTicker() {
+  _stopSessionTicker();
+  _updateSessionBadge();
+  _sessionTickerHandle = setInterval(() => {
+    _updateSessionBadge();
+    if (_expiresAt && Date.now() >= _expiresAt) {
+      onSessionExpired();
+    }
+  }, 30_000);
+}
+
+function _stopSessionTicker() {
+  if (_sessionTickerHandle) {
+    clearInterval(_sessionTickerHandle);
+    _sessionTickerHandle = null;
+  }
+}
+
+function _updateSessionBadge() {
+  const badge = document.getElementById('session-badge');
+  if (!badge) return;
+
+  if (!_expiresAt) {
+    badge.textContent = '';
+    return;
+  }
+
+  const remaining = _expiresAt - Date.now();
+  if (remaining <= 0) {
+    badge.textContent = 'Session expired';
+    badge.className   = 'expiring';
+    return;
+  }
+
+  const totalMins = Math.ceil(remaining / 60_000);
+  const hrs  = Math.floor(totalMins / 60);
+  const mins = totalMins % 60;
+
+  let label;
+  if (hrs > 0) {
+    label = `${hrs}h ${mins}m remaining`;
+  } else {
+    label = `${mins}m remaining`;
+  }
+
+  badge.textContent = label;
+  badge.className   = remaining < 15 * 60_000 ? 'expiring' : '';
+}
+
+function onSessionExpired() {
+  _clearSession();
+  _stopSessionTicker();
+  showLockScreen();
+  document.getElementById('lock-err').textContent = 'Your session has expired. Please log in again.';
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   PANEL ROUTING
+   ───────────────────────────────────────────────────────────────────────── */
+const PANEL_RENDER_MAP = {
+  dashboard:    () => renderDashboard(),
+  bookings:     () => renderBookings(),
+  services:     () => renderServices(),
+  availability: () => renderAvailability(),
+  links:        () => renderLinks(),
+  settings:     () => renderSettings(),
+};
+
+function showPanel(id) {
+  // Update sidebar active state
+  document.querySelectorAll('#sidebar .nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.panel === id);
+  });
+
+  // Hide all panels, show target
+  document.querySelectorAll('#main-content .panel').forEach(panel => {
+    if (panel.id === 'panel-' + id) {
+      panel.hidden = false;
+    } else {
+      panel.hidden = true;
+    }
+  });
+
+  state.activePanel = id;
+
+  // Invoke render function — stubs are caught here
+  const panelEl = document.getElementById('panel-' + id);
+  const renderFn = PANEL_RENDER_MAP[id];
+
+  if (!renderFn) {
+    _showPanelPlaceholder(panelEl, id, 'No render function registered for this panel.');
+    return;
+  }
+
+  try {
+    renderFn();
+  } catch (err) {
+    _showPanelPlaceholder(panelEl, id, err.message);
+  }
+}
+
+function _showPanelPlaceholder(panelEl, id, reason) {
+  const labelMap = {
+    dashboard:    'Dashboard',
+    bookings:     'Bookings',
+    services:     'Services',
+    availability: 'Availability',
+    links:        'Links',
+    settings:     'Settings',
+  };
+  const label = labelMap[id] || id;
+
+  // Build placeholder safely — no raw user data here, but use textContent anyway
+  panelEl.innerHTML = '';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'panel-placeholder';
+
+  const icon = document.createElement('div');
+  icon.className = 'ph-icon';
+  icon.textContent = '◻';
+
+  const title = document.createElement('p');
+  title.className = 'ph-title';
+  title.textContent = label + ' — Coming Soon';
+
+  const msg = document.createElement('p');
+  msg.className = 'ph-msg';
+  msg.textContent = reason || 'This panel is not yet implemented.';
+
+  wrap.appendChild(icon);
+  wrap.appendChild(title);
+  wrap.appendChild(msg);
+  panelEl.appendChild(wrap);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   DATA LOADERS
+   ───────────────────────────────────────────────────────────────────────── */
+async function loadAll() {
+  const results = await Promise.allSettled([
+    api('GET', '/api/bookings'),
+    api('GET', '/api/services'),
+    api('GET', '/api/availability'),
+    api('GET', '/api/links'),
+  ]);
+
+  const [bookingsRes, servicesRes, availabilityRes, linksRes] = results;
+
+  if (bookingsRes.status === 'fulfilled' && Array.isArray(bookingsRes.value)) {
+    state.bookings = bookingsRes.value;
+  } else if (bookingsRes.status === 'rejected') {
+    console.warn('[admin] Failed to load bookings:', bookingsRes.reason);
+  }
+
+  if (servicesRes.status === 'fulfilled' && Array.isArray(servicesRes.value)) {
+    state.services = servicesRes.value;
+  } else if (servicesRes.status === 'rejected') {
+    console.warn('[admin] Failed to load services:', servicesRes.reason);
+  }
+
+  if (availabilityRes.status === 'fulfilled' && Array.isArray(availabilityRes.value)) {
+    state.availability = availabilityRes.value;
+  } else if (availabilityRes.status === 'rejected') {
+    console.warn('[admin] Failed to load availability:', availabilityRes.reason);
+  }
+
+  if (linksRes.status === 'fulfilled' && Array.isArray(linksRes.value)) {
+    state.links = linksRes.value;
+  } else if (linksRes.status === 'rejected') {
+    console.warn('[admin] Failed to load links:', linksRes.reason);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   INIT
+   ───────────────────────────────────────────────────────────────────────── */
+async function init() {
+  try {
+    await loadAll();
+  } catch (err) {
+    showToast('Failed to load some data — ' + err.message, 'warn');
+  }
+  showPanel(state.activePanel || 'dashboard');
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   BOOT
+   ───────────────────────────────────────────────────────────────────────── */
+(function boot() {
+  if (_sessionValid()) {
+    showAdminPanel();
+    init();
+  } else {
+    _clearSession();
+    showLockScreen();
+  }
+
+  // Allow Enter key on lock screen
+  document.getElementById('pw').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkPw();
+  });
+  document.getElementById('recovery-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') useRecoveryCode();
+  });
+})();
+
+/* ─────────────────────────────────────────────────────────────────────────
+   PANEL IMPLEMENTATIONS — Phase C merge (B2 + B3 + B4)
+   ───────────────────────────────────────────────────────────────────────── */
+
+// ══ B2: Dashboard + Bookings ══════════════════════════════════════════════════
+
+function _bkBadge(status) {
+  const map = {
+    confirmed:       'badge-confirmed',
+    pending:         'badge-pending',
+    pending_payment: 'badge-pending-payment',
+    cancelled:       'badge-cancelled',
+  };
+  const cls = map[status] || 'badge-pending';
+  return `<span class="badge ${cls}">${esc(status.replace(/_/g, ' '))}</span>`;
+}
+
+function _svcName(serviceId) {
+  return state.services.find(s => s.id === serviceId)?.name || '—';
+}
+
+function _openModal(html) {
+  const el = document.createElement('div');
+  el.innerHTML = html;
+  document.body.appendChild(el.firstElementChild);
+  const ov = document.body.lastElementChild;
+  requestAnimationFrame(() => ov.classList.add('open'));
+  return ov;
+}
+
+function _closeModal(ov) {
+  ov.classList.remove('open');
+  setTimeout(() => ov.remove(), 200);
+}
+
+function renderDashboard() {
+  const today = new Date().toISOString().slice(0, 10);
+  const bks   = state.bookings || [];
+
+  const total          = bks.length;
+  const confirmed      = bks.filter(b => b.status === 'confirmed').length;
+  const pendingPay     = bks.filter(b => b.status === 'pending_payment').length;
+  const revenue        = bks.filter(b => b.status === 'confirmed')
+                            .reduce((s, b) => s + (Number(b.price) || 0), 0);
+  const todayBks       = bks.filter(b => b.date === today);
+  const in7            = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
+  const upcoming       = bks.filter(b => b.date > today && b.date <= in7 && b.status !== 'cancelled').length;
+
+  const todayRows = todayBks
+    .filter(b => b.status !== 'cancelled')
+    .sort((a, b) => (a.start_time || a.time || '').localeCompare(b.start_time || b.time || ''))
+    .map(b => `
+      <tr>
+        <td>${esc(b.start_time || b.time || '—')}</td>
+        <td>${esc(b.name)}</td>
+        <td>${esc(_svcName(b.service_id))}</td>
+        <td>${_bkBadge(b.status)}</td>
+        <td><code style="font-size:.75rem;color:var(--gold)">${esc(b.confirmation_code || '—')}</code></td>
+      </tr>`).join('');
+
+  const dateLabel = new Date().toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+  });
+
+  document.getElementById('panel-dashboard').innerHTML = `
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Dashboard</h2>
+        <p class="section-sub">${esc(dateLabel)}</p>
+      </div>
+      <div class="section-actions">
+        <button class="btn-secondary" onclick="loadAll().then(renderDashboard)">↻ Refresh</button>
+      </div>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-val">${total}</div>
+        <div class="kpi-label">Total Bookings</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">${confirmed}</div>
+        <div class="kpi-label">Confirmed</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">${pendingPay}</div>
+        <div class="kpi-label">Pending Payment</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">$${revenue.toFixed(2)}</div>
+        <div class="kpi-label">Revenue</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">${todayBks.length}</div>
+        <div class="kpi-label">Today</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">${upcoming}</div>
+        <div class="kpi-label">Next 7 Days</div>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top:.5rem">
+      <h3 class="section-title" style="font-size:1.1rem">Today's Schedule</h3>
+    </div>
+    <div class="table-wrap">
+      <table class="admin-table">
+        <thead><tr>
+          <th>Time</th><th>Client</th><th>Service</th><th>Status</th><th>Conf. Code</th>
+        </tr></thead>
+        <tbody>
+          ${todayRows || '<tr class="empty-row"><td colspan="5">No bookings scheduled today</td></tr>'}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function renderBookings() {
+  document.getElementById('panel-bookings').innerHTML = `
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">All Bookings</h2>
+        <p class="section-sub">${state.bookings.length} total</p>
+      </div>
+      <div class="section-actions">
+        <button class="btn-primary" onclick="openNewBookingModal()">+ New Booking</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap">
+      <select id="bk-filter-status" class="form-select" style="width:auto;min-width:160px"
+              onchange="filterAndRenderBookingsTable()">
+        <option value="">All Statuses</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="pending_payment">Pending Payment</option>
+        <option value="pending">Pending</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      <input id="bk-search" class="form-input" style="width:auto;min-width:220px;flex:1"
+             placeholder="Search client name or email…"
+             oninput="filterAndRenderBookingsTable()">
+    </div>
+
+    <div class="table-wrap" style="overflow-x:auto">
+      <table class="admin-table" style="min-width:900px">
+        <thead><tr>
+          <th>Date</th><th>Time</th><th>Client</th><th>Email</th>
+          <th>Service</th><th>Status</th><th>Conf. Code</th><th>Payment</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="bookings-tbody"></tbody>
+      </table>
+    </div>`;
+
+  filterAndRenderBookingsTable();
+}
+
+function filterAndRenderBookingsTable() {
+  const filterStatus = (document.getElementById('bk-filter-status')?.value || '').toLowerCase();
+  const search       = (document.getElementById('bk-search')?.value || '').toLowerCase();
+
+  let bks = state.bookings || [];
+  if (filterStatus) bks = bks.filter(b => b.status === filterStatus);
+  if (search)       bks = bks.filter(b =>
+    (b.name  || '').toLowerCase().includes(search) ||
+    (b.email || '').toLowerCase().includes(search));
+
+  bks = [...bks].sort((a, b) => (b.date + (b.start_time || b.time || '')).localeCompare(
+    a.date + (a.start_time || a.time || '')));
+
+  function paymentLabel(b) {
+    if (b.square_payment_id) return 'Square';
+    if (b.paypal_order_id)   return 'PayPal';
+    if (!b.price || Number(b.price) === 0) return 'Free';
+    return '—';
+  }
+
+  const rows = bks.map(b => `
+    <tr>
+      <td>${esc(b.date)}</td>
+      <td>${esc(b.start_time || b.time || '—')}</td>
+      <td>${esc(b.name)}</td>
+      <td style="color:var(--text-muted);font-size:.75rem">${esc(b.email)}</td>
+      <td>${esc(_svcName(b.service_id))}</td>
+      <td>${_bkBadge(b.status)}</td>
+      <td><code style="font-size:.75rem;color:var(--gold)">${esc(b.confirmation_code || '—')}</code></td>
+      <td style="color:var(--text-muted)">${esc(paymentLabel(b))}</td>
+      <td>
+        <div style="display:flex;gap:.375rem;flex-wrap:wrap">
+          ${b.status === 'pending_payment'
+            ? `<button class="btn-secondary" style="padding:.3rem .6rem;font-size:.65rem"
+                       onclick="confirmPayment(${b.id})">Confirm</button>`
+            : ''}
+          ${b.status !== 'cancelled'
+            ? `<button class="btn-secondary" style="padding:.3rem .6rem;font-size:.65rem"
+                       onclick="openCancelModal(${b.id})">Cancel</button>`
+            : ''}
+          <button class="btn-danger" style="padding:.3rem .6rem;font-size:.65rem"
+                  onclick="deleteBooking(${b.id})">Delete</button>
+        </div>
+      </td>
+    </tr>`).join('');
+
+  const tbody = document.getElementById('bookings-tbody');
+  if (tbody) {
+    tbody.innerHTML = rows || '<tr class="empty-row"><td colspan="9">No bookings found</td></tr>';
+  }
+}
+
+async function confirmPayment(bookingId) {
+  try {
+    const data = await api('POST', `/api/bookings/${bookingId}/confirm-payment`, {});
+    if (data.ok || data.confirmation_code) {
+      showToast('Payment confirmed', 'success');
+    } else {
+      showToast(data.error || 'Confirm failed', 'error');
+    }
+    await loadAll();
+    renderBookings();
+  } catch (err) {
+    showToast(err.message || 'Error', 'error');
+  }
+}
+
+async function deleteBooking(bookingId) {
+  if (!confirm('Delete this booking? This cannot be undone.')) return;
+  try {
+    await api('DELETE', `/api/bookings/${bookingId}`);
+    showToast('Booking deleted', 'success');
+    await loadAll();
+    renderBookings();
+  } catch (err) {
+    showToast(err.message || 'Delete failed', 'error');
+  }
+}
+
+function openCancelModal(bookingId) {
+  const bk = state.bookings.find(b => b.id === bookingId);
+  if (!bk) return;
+
+  _openModal(`
+    <div class="modal-overlay">
+      <div class="modal-dialog" style="max-width:420px">
+        <div class="modal-header">
+          <h2 class="modal-title">Cancel Booking</h2>
+          <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button>
+        </div>
+        <p style="color:var(--text-muted);font-size:.875rem">
+          Cancelling booking for <strong style="color:var(--text)">${esc(bk.name)}</strong>
+          on <strong style="color:var(--text)">${esc(bk.date)}</strong>.
+        </p>
+        <div class="form-group">
+          <label class="form-label">Cancellation Type</label>
+          <div style="display:flex;flex-direction:column;gap:.625rem;margin-top:.25rem">
+            <label style="display:flex;align-items:center;gap:.625rem;cursor:pointer">
+              <input type="radio" name="cancel-choice" value="credit" checked
+                     style="accent-color:var(--gold)">
+              <span>Rebook Credit — issue a credit code for a future session</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:.625rem;cursor:pointer">
+              <input type="radio" name="cancel-choice" value="refund"
+                     style="accent-color:var(--gold)">
+              <span>Refund — refund to original payment method (minus processing fees if within 4h)</span>
+            </label>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-ghost" onclick="this.closest('.modal-overlay').remove()">Keep Booking</button>
+          <button class="btn-danger" id="cancel-confirm-btn"
+                  onclick="_submitCancelModal(${bookingId}, this)">
+            Confirm Cancellation
+          </button>
+        </div>
+      </div>
+    </div>`);
+}
+
+async function _submitCancelModal(bookingId, btn) {
+  const ov     = btn.closest('.modal-overlay');
+  const choice = ov.querySelector('input[name="cancel-choice"]:checked')?.value || 'credit';
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Cancelling…';
+  try {
+    const data = await api('POST', `/api/bookings/${bookingId}/cancel`, { choice });
+    if (data.ok) {
+      if (data.creditCode) {
+        showToast(`Cancelled — credit code: ${data.creditCode}`, 'success');
+      } else if (data.refundAmount > 0) {
+        showToast(`Cancelled — refund of $${Number(data.refundAmount).toFixed(2)} issued`, 'success');
+      } else {
+        showToast('Booking cancelled', 'success');
+      }
+    } else {
+      showToast(data.error || 'Cancel failed', 'error');
+    }
+    ov.remove();
+    await loadAll();
+    renderBookings();
+  } catch (err) {
+    showToast(err.message || 'Error', 'error');
+    btn.disabled = false;
+    btn.textContent = 'Confirm Cancellation';
+  }
+}
+
+function openNewBookingModal() {
+  const svcOptions = (state.services || [])
+    .map(s => `<option value="${s.id}">${esc(s.name)}${s.price > 0 ? ` — $${Number(s.price).toFixed(2)}` : ' (Free)'}</option>`)
+    .join('');
+
+  _openModal(`
+    <div class="modal-overlay">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h2 class="modal-title">New Booking</h2>
+          <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input type="date" id="nbk-date" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Start Time</label>
+            <input type="time" id="nbk-time" class="form-input" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Client Name</label>
+            <input type="text" id="nbk-name" class="form-input" placeholder="Full name" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Client Email</label>
+            <input type="email" id="nbk-email" class="form-input" placeholder="email@example.com" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input type="tel" id="nbk-phone" class="form-input" placeholder="+1 (555) 000-0000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Service</label>
+            <select id="nbk-service" class="form-select">
+              <option value="">— Select service —</option>
+              ${svcOptions}
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Meeting Type</label>
+            <select id="nbk-meeting-type" class="form-select"
+                    onchange="_nbkToggleMeetingFields(this)">
+              <option value="meet">Google Meet</option>
+              <option value="zoom">Zoom</option>
+              <option value="facetime">FaceTime</option>
+              <option value="phone">Phone Call</option>
+              <option value="inperson">In Person</option>
+            </select>
+          </div>
+          <div class="form-group" id="nbk-link-wrap">
+            <label class="form-label">Meeting Link</label>
+            <input type="text" id="nbk-link" class="form-input" placeholder="https://meet.google.com/…">
+          </div>
+        </div>
+        <div class="form-group" id="nbk-addr-wrap" style="display:none">
+          <label class="form-label">In-Person Address</label>
+          <input type="text" id="nbk-addr" class="form-input" placeholder="123 Main St, City, State">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes</label>
+          <textarea id="nbk-notes" class="form-textarea" placeholder="Optional notes…"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-ghost" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+          <button class="btn-primary" id="nbk-submit-btn" onclick="_submitNewBooking(this)">Create Booking</button>
+        </div>
+      </div>
+    </div>`);
+}
+
+function _nbkToggleMeetingFields(sel) {
+  const t    = sel.value;
+  const link = document.getElementById('nbk-link-wrap');
+  const addr = document.getElementById('nbk-addr-wrap');
+  if (link) link.style.display = (t === 'meet' || t === 'zoom') ? '' : 'none';
+  if (addr) addr.style.display = t === 'inperson' ? '' : 'none';
+}
+
+async function _submitNewBooking(btn) {
+  const ov       = btn.closest('.modal-overlay');
+  const date     = document.getElementById('nbk-date').value;
+  const time     = document.getElementById('nbk-time').value;
+  const name     = document.getElementById('nbk-name').value.trim();
+  const email    = document.getElementById('nbk-email').value.trim();
+  const phone    = document.getElementById('nbk-phone').value.trim();
+  const svcId    = document.getElementById('nbk-service').value;
+  const meetType = document.getElementById('nbk-meeting-type').value;
+  const link     = document.getElementById('nbk-link')?.value.trim() || '';
+  const addr     = document.getElementById('nbk-addr')?.value.trim() || '';
+  const notes    = document.getElementById('nbk-notes').value.trim();
+
+  if (!date || !time || !name || !email) {
+    showToast('Date, time, name, and email are required', 'warn');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Creating…';
+
+  try {
+    const data = await api('POST', '/api/bookings', {
+      date, time, start_time: time, name, email,
+      client_phone: phone,
+      service_id: svcId ? Number(svcId) : null,
+      meeting_type: meetType,
+      meeting_link: link,
+      meeting_address: addr,
+      notes,
+      status: 'confirmed',
+    });
+    if (data.id || data.ok) {
+      showToast('Booking created', 'success');
+      ov.remove();
+      await loadAll();
+      renderBookings();
+    } else {
+      showToast(data.error || 'Create failed', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Create Booking';
+    }
+  } catch (err) {
+    showToast(err.message || 'Error', 'error');
+    btn.disabled = false;
+    btn.textContent = 'Create Booking';
+  }
+}
+
+// ══ B3: Services + Availability ═══════════════════════════════════════════════
+
+function renderServices() {
+  const svcs = state.services || [];
+
+  const cards = svcs.map(s => `
+    <div class="card" style="display:flex;flex-direction:column;gap:.75rem">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem">
+        <div>
+          <h3 style="font-family:var(--font-display);font-size:1.05rem;font-weight:600;color:var(--text)">
+            ${esc(s.name)}
+          </h3>
+          <p style="font-size:.75rem;color:var(--text-muted);margin-top:.25rem">
+            ${esc(String(s.duration_min || s.duration || 60))} min
+            ${s.max_per_day ? ` &middot; Max ${esc(String(s.max_per_day))}/day` : ' &middot; Unlimited/day'}
+          </p>
+        </div>
+        <span class="badge ${s.price > 0 ? 'badge-confirmed' : 'badge-pending'}"
+              style="flex-shrink:0;margin-top:.2rem">
+          ${s.price > 0 ? `$${Number(s.price).toFixed(2)}` : 'Free'}
+        </span>
+      </div>
+      ${s.description ? `<p style="font-size:.8125rem;color:var(--text-muted);line-height:1.5">${esc(s.description)}</p>` : ''}
+      ${s.meeting_address ? `<p style="font-size:.75rem;color:var(--text-muted)">📍 ${esc(s.meeting_address)}</p>` : ''}
+      <div style="border-top:1px solid var(--gold-border);padding-top:.625rem;margin-top:auto">
+        <button class="btn-danger" style="padding:.3rem .75rem;font-size:.65rem"
+                onclick="deleteService(${s.id})">Delete</button>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('panel-services').innerHTML = `
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Services</h2>
+        <p class="section-sub">${svcs.length} service${svcs.length !== 1 ? 's' : ''}</p>
+      </div>
+      <div class="section-actions">
+        <button class="btn-secondary" id="square-sync-btn" onclick="syncFromSquare()">
+          ↻ Sync from Square
+        </button>
+        <button class="btn-primary" onclick="openAddServiceModal()">+ Add Service</button>
+      </div>
+    </div>
+
+    ${svcs.length ? `
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem">
+        ${cards}
+      </div>` : `
+      <div class="panel-placeholder">
+        <div class="ph-icon">🗂️</div>
+        <p class="ph-title">No services yet</p>
+        <p class="ph-msg">Add a service manually or sync from your Square Appointments services.</p>
+      </div>`}`;
+}
+
+async function syncFromSquare() {
+  const btn = document.getElementById('square-sync-btn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Syncing…'; }
+  try {
+    const data = await api('POST', '/api/services/sync-square');
+    if (data.error) {
+      showToast(data.error, 'error');
+    } else {
+      showToast(`Synced ${data.synced || 0} service(s) from Square`, 'success');
+      await loadAll();
+      renderServices();
+      return;
+    }
+  } catch (err) {
+    showToast(err.message || 'Sync failed', 'error');
+  }
+  if (btn) { btn.disabled = false; btn.textContent = '↻ Sync from Square'; }
+}
+
+function openAddServiceModal() {
+  _svcsOpenModal(`
+    <div class="modal-overlay">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h2 class="modal-title">Add Service</h2>
+          <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Service Name</label>
+          <input type="text" id="svc-name" class="form-input" placeholder="e.g. Brand Strategy Session" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Duration (minutes)</label>
+            <input type="number" id="svc-duration" class="form-input" value="60" min="15" step="15">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price ($)</label>
+            <input type="number" id="svc-price" class="form-input" value="0" min="0" step="0.01">
+            <span class="form-hint">Enter 0 for a free service</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Max Bookings Per Day (optional)</label>
+          <input type="number" id="svc-max" class="form-input" placeholder="Leave blank for unlimited" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description (optional)</label>
+          <textarea id="svc-desc" class="form-textarea" placeholder="What's included, who it's for…"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">In-Person Address (optional)</label>
+          <input type="text" id="svc-addr" class="form-input" placeholder="123 Main St, City, State">
+        </div>
+        <div class="modal-actions">
+          <button class="btn-ghost" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+          <button class="btn-primary" onclick="_submitAddService(this)">Add Service</button>
+        </div>
+      </div>
+    </div>`);
+}
+
+function _svcsOpenModal(html) {
+  const el = document.createElement('div');
+  el.innerHTML = html;
+  document.body.appendChild(el.firstElementChild);
+  requestAnimationFrame(() => document.body.lastElementChild.classList.add('open'));
+}
+
+async function _submitAddService(btn) {
+  const ov    = btn.closest('.modal-overlay');
+  const name  = document.getElementById('svc-name').value.trim();
+  const dur   = Number(document.getElementById('svc-duration').value) || 60;
+  const price = Number(document.getElementById('svc-price').value)    || 0;
+  const maxPd = document.getElementById('svc-max').value.trim();
+  const desc  = document.getElementById('svc-desc').value.trim();
+  const addr  = document.getElementById('svc-addr').value.trim();
+
+  if (!name) { showToast('Service name is required', 'warn'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Saving…';
+
+  try {
+    const data = await api('POST', '/api/services', {
+      name, duration_min: dur, duration: dur, price,
+      max_per_day: maxPd ? Number(maxPd) : null,
+      description: desc,
+      meeting_address: addr,
+    });
+    if (data.id || data.ok) {
+      showToast('Service added', 'success');
+      ov.remove();
+      await loadAll();
+      renderServices();
+    } else {
+      showToast(data.error || 'Failed to add service', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Add Service';
+    }
+  } catch (err) {
+    showToast(err.message || 'Error', 'error');
+    btn.disabled = false;
+    btn.textContent = 'Add Service';
+  }
+}
+
+async function deleteService(serviceId) {
+  if (!confirm('Delete this service? This cannot be undone.')) return;
+  try {
+    await api('DELETE', `/api/services/${serviceId}`);
+    showToast('Service deleted', 'success');
+    await loadAll();
+    renderServices();
+  } catch (err) {
+    showToast(err.message || 'Delete failed', 'error');
+  }
+}
+
+const _DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+function renderAvailability() {
+  const rows = _DAYS.map((dayName, d) => {
+    const rec   = getAvailDay(d);
+    const open  = rec.open;
+    const slots = _parseSlots(rec.slots);
+
+    const slotChips = slots.map(t => `
+      <span style="display:inline-flex;align-items:center;gap:.25rem;
+                   background:var(--gold-light);border:1px solid var(--gold-border);
+                   border-radius:9999px;padding:2px 10px;font-size:.75rem;white-space:nowrap">
+        ${esc(t)}
+        <button onclick="removeAvailSlot(${d}, '${esc(t)}')"
+                style="color:var(--text-muted);font-size:.9rem;line-height:1;margin-left:2px"
+                title="Remove slot">✕</button>
+      </span>`).join('');
+
+    return `
+      <div class="card" style="padding:1.25rem">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem;gap:1rem;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:.75rem">
+            <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer">
+              <input type="checkbox" id="avail-open-${d}" ${open ? 'checked' : ''}
+                     style="accent-color:var(--gold);width:16px;height:16px"
+                     onchange="toggleAvailDay(${d}, this.checked)">
+              <span style="font-family:var(--font-display);font-size:1rem;font-weight:600;color:var(--text)">
+                ${esc(dayName)}
+              </span>
+            </label>
+            <span class="badge ${open ? 'badge-confirmed' : 'badge-cancelled'}">${open ? 'Open' : 'Closed'}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:.5rem">
+            <input type="time" id="avail-time-${d}" class="form-input"
+                   style="width:130px;padding:.375rem .625rem">
+            <button class="btn-secondary" style="padding:.375rem .75rem;font-size:.7rem;white-space:nowrap"
+                    onclick="addAvailSlot(${d})">+ Add</button>
+          </div>
+        </div>
+        ${slots.length ? `
+          <div style="display:flex;flex-wrap:wrap;gap:.375rem">
+            ${slotChips}
+          </div>` : `
+          <p style="font-size:.75rem;color:var(--text-muted);font-style:italic">No time slots — add one above</p>`}
+      </div>`;
+  }).join('');
+
+  document.getElementById('panel-availability').innerHTML = `
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Availability</h2>
+        <p class="section-sub">Set open days and available time slots per day</p>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.75rem">
+      ${rows}
+    </div>`;
+}
+
+function _parseSlots(raw) {
+  try { return JSON.parse(raw || '[]'); } catch { return []; }
+}
+
+function getAvailDay(day) {
+  return (state.availability || []).find(a => a.day === day)
+    || { day, open: 0, slots: '[]' };
+}
+
+async function saveAvailabilityDay(day, open, slots) {
+  try {
+    await api('PUT', `/api/availability/${day}`, {
+      open: open ? 1 : 0,
+      slots: JSON.stringify(slots),
+    });
+    const idx   = (state.availability || []).findIndex(a => a.day === day);
+    const entry = { day, open: open ? 1 : 0, slots: JSON.stringify(slots) };
+    if (idx >= 0) {
+      state.availability[idx] = entry;
+    } else {
+      state.availability = [...(state.availability || []), entry];
+    }
+    showToast('Saved', 'success');
+  } catch (err) {
+    showToast(err.message || 'Save failed', 'error');
+  }
+}
+
+async function addAvailSlot(day) {
+  const input = document.getElementById(`avail-time-${day}`);
+  const time  = input?.value;
+  if (!time) { showToast('Pick a time first', 'warn'); return; }
+
+  const rec      = getAvailDay(day);
+  const slots    = _parseSlots(rec.slots);
+  if (slots.includes(time)) { showToast('Slot already exists', 'warn'); input.value = ''; return; }
+
+  const newSlots = [...slots, time].sort();
+  await saveAvailabilityDay(day, rec.open, newSlots);
+  if (input) input.value = '';
+  renderAvailability();
+}
+
+async function removeAvailSlot(day, slotTime) {
+  const rec      = getAvailDay(day);
+  const newSlots = _parseSlots(rec.slots).filter(t => t !== slotTime);
+  await saveAvailabilityDay(day, rec.open, newSlots);
+  renderAvailability();
+}
+
+async function toggleAvailDay(day, open) {
+  const rec = getAvailDay(day);
+  await saveAvailabilityDay(day, open, _parseSlots(rec.slots));
+  const badge = document.querySelector(`#avail-open-${day}`)
+    ?.closest('.card')
+    ?.querySelector('.badge');
+  if (badge) {
+    badge.className = `badge ${open ? 'badge-confirmed' : 'badge-cancelled'}`;
+    badge.textContent = open ? 'Open' : 'Closed';
+  }
+}
+
+// ══ B4: Links + Settings ══════════════════════════════════════════════════════
+
+function renderLinks() {
+  const links = state.links || [];
+
+  const groups = {};
+  links.forEach(l => {
+    const g = l.group_name || 'Uncategorized';
+    if (!groups[g]) groups[g] = [];
+    groups[g].push(l);
+  });
+  Object.values(groups).forEach(arr =>
+    arr.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)));
+  const sortedGroups = Object.keys(groups).sort();
+
+  const groupHtml = sortedGroups.map(g => {
+    const cards = groups[g].map(l => {
+      const truncUrl = l.url && l.url.length > 42
+        ? l.url.slice(0, 42) + '…' : (l.url || '');
+      return `
+        <div class="card" style="${l.featured ? 'border-color:var(--gold)' : ''}">
+          <div style="display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.625rem">
+            <span style="font-size:1.4rem;line-height:1;flex-shrink:0">${esc(l.icon || '🔗')}</span>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">
+                <h3 style="font-family:var(--font-display);font-size:.95rem;font-weight:600;color:var(--text)">
+                  ${esc(l.label)}
+                </h3>
+                ${l.featured ? '<span class="badge badge-confirmed" style="font-size:.55rem">Featured</span>' : ''}
+              </div>
+              <a href="${esc(l.url || '#')}" target="_blank" rel="noopener"
+                 style="font-size:.7rem;color:var(--gold);word-break:break-all;opacity:.8">
+                ${esc(truncUrl)}
+              </a>
+            </div>
+          </div>
+          ${l.description ? `<p style="font-size:.8125rem;color:var(--text-muted);line-height:1.45;margin-bottom:.625rem">${esc(l.description)}</p>` : ''}
+          <div style="display:flex;gap:.375rem;border-top:1px solid var(--gold-border);padding-top:.625rem">
+            <button class="btn-secondary" style="padding:.3rem .625rem;font-size:.65rem"
+                    onclick="openEditLinkModal(${l.id})">Edit</button>
+            <button class="btn-danger" style="padding:.3rem .625rem;font-size:.65rem"
+                    onclick="deleteLink(${l.id})">Delete</button>
+          </div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div style="margin-bottom:2rem">
+        <h3 style="font-size:.65rem;font-weight:700;letter-spacing:.35em;text-transform:uppercase;
+                   color:var(--gold);opacity:.7;margin-bottom:.75rem">${esc(g)}</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.75rem">
+          ${cards}
+        </div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('panel-links').innerHTML = `
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Links</h2>
+        <p class="section-sub">${links.length} link${links.length !== 1 ? 's' : ''} across ${sortedGroups.length} group${sortedGroups.length !== 1 ? 's' : ''}</p>
+      </div>
+      <div class="section-actions">
+        <button class="btn-primary" onclick="openAddLinkModal()">+ Add Link</button>
+      </div>
+    </div>
+
+    ${links.length ? groupHtml : `
+      <div class="panel-placeholder">
+        <div class="ph-icon">🔗</div>
+        <p class="ph-title">No links yet</p>
+        <p class="ph-msg">Add quick-access links to the tools and services you use most.</p>
+      </div>`}`;
+}
+
+function _linkModalHtml(title, l) {
+  l = l || {};
+  return `
+    <div class="modal-overlay">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h2 class="modal-title">${esc(title)}</h2>
+          <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Icon (emoji)</label>
+            <input type="text" id="lnk-icon" class="form-input" value="${esc(l.icon || '🔗')}"
+                   placeholder="🔗" maxlength="4">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Label</label>
+            <input type="text" id="lnk-label" class="form-input" value="${esc(l.label || '')}"
+                   placeholder="e.g. Square Dashboard" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">URL</label>
+          <input type="url" id="lnk-url" class="form-input" value="${esc(l.url || '')}"
+                 placeholder="https://…" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description (optional)</label>
+          <input type="text" id="lnk-desc" class="form-input" value="${esc(l.description || '')}"
+                 placeholder="What is this link for?">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Group / Category</label>
+            <input type="text" id="lnk-group" class="form-input" value="${esc(l.group_name || '')}"
+                   placeholder="e.g. Booking &amp; Clients" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sort Order</label>
+            <input type="number" id="lnk-sort" class="form-input" value="${l.sort_order || 0}" min="0">
+          </div>
+        </div>
+        <div class="form-group">
+          <label style="display:flex;align-items:center;gap:.625rem;cursor:pointer">
+            <input type="checkbox" id="lnk-featured" ${l.featured ? 'checked' : ''}
+                   style="accent-color:var(--gold);width:16px;height:16px">
+            <span class="form-label" style="margin:0">Featured (highlighted with gold border)</span>
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-ghost" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+          <button class="btn-primary" id="lnk-submit-btn"
+                  onclick="_submitLinkModal(this, ${l.id || 'null'})">
+            ${l.id ? 'Save Changes' : 'Add Link'}
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function _linksOpenModal(html) {
+  const el = document.createElement('div');
+  el.innerHTML = html;
+  document.body.appendChild(el.firstElementChild);
+  requestAnimationFrame(() => document.body.lastElementChild.classList.add('open'));
+}
+
+function openAddLinkModal()        { _linksOpenModal(_linkModalHtml('Add Link')); }
+function openEditLinkModal(linkId) {
+  const l = (state.links || []).find(x => x.id === linkId);
+  if (!l) return;
+  _linksOpenModal(_linkModalHtml('Edit Link', l));
+}
+
+async function _submitLinkModal(btn, linkId) {
+  const ov       = btn.closest('.modal-overlay');
+  const icon     = document.getElementById('lnk-icon').value.trim()  || '🔗';
+  const label    = document.getElementById('lnk-label').value.trim();
+  const url      = document.getElementById('lnk-url').value.trim();
+  const desc     = document.getElementById('lnk-desc').value.trim();
+  const group    = document.getElementById('lnk-group').value.trim();
+  const sort     = Number(document.getElementById('lnk-sort').value)  || 0;
+  const featured = document.getElementById('lnk-featured').checked ? 1 : 0;
+
+  if (!label || !url || !group) {
+    showToast('Label, URL, and group are required', 'warn');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Saving…';
+
+  const body = { icon, label, url, description: desc, group_name: group, sort_order: sort, featured };
+
+  try {
+    const data = linkId
+      ? await api('PUT',  `/api/links/${linkId}`, body)
+      : await api('POST', '/api/links',           body);
+
+    if (data.id || data.ok) {
+      showToast(linkId ? 'Link updated' : 'Link added', 'success');
+      ov.remove();
+      await loadAll();
+      renderLinks();
+    } else {
+      showToast(data.error || 'Save failed', 'error');
+      btn.disabled = false;
+      btn.textContent = linkId ? 'Save Changes' : 'Add Link';
+    }
+  } catch (err) {
+    showToast(err.message || 'Error', 'error');
+    btn.disabled = false;
+    btn.textContent = linkId ? 'Save Changes' : 'Add Link';
+  }
+}
+
+async function deleteLink(linkId) {
+  if (!confirm('Delete this link?')) return;
+  try {
+    await api('DELETE', `/api/links/${linkId}`);
+    showToast('Link deleted', 'success');
+    await loadAll();
+    renderLinks();
+  } catch (err) {
+    showToast(err.message || 'Delete failed', 'error');
+  }
+}
+
+function renderSettings() {
+  function fmtTimeRemaining() {
+    const ms = (_expiresAt || 0) - Date.now();
+    if (ms <= 0) return 'Expired';
+    const h = Math.floor(ms / 3600000);
+    const m = Math.floor((ms % 3600000) / 60000);
+    return h > 0 ? `${h}h ${m}m remaining` : `${m}m remaining`;
+  }
+
+  document.getElementById('panel-settings').innerHTML = `
+    <div class="section-header">
+      <h2 class="section-title">Settings</h2>
+    </div>
+
+    <div class="card" style="margin-bottom:1.25rem;max-width:520px">
+      <div class="card-header">
+        <h3 class="card-title">Change Password</h3>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.875rem">
+        <div class="form-group">
+          <label class="form-label">Current Password</label>
+          <input type="password" id="pw-current" class="form-input" autocomplete="current-password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Password</label>
+          <input type="password" id="pw-new" class="form-input" autocomplete="new-password"
+                 placeholder="Minimum 8 characters">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm New Password</label>
+          <input type="password" id="pw-confirm" class="form-input" autocomplete="new-password">
+        </div>
+        <div style="display:flex;align-items:center;gap:.75rem">
+          <button class="btn-primary" id="pw-save-btn" onclick="changePassword(this)">
+            Update Password
+          </button>
+          <span id="pw-msg" style="font-size:.75rem;color:var(--text-muted)"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1.25rem;max-width:520px">
+      <div class="card-header">
+        <h3 class="card-title">Session</h3>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.625rem">
+        <div style="display:flex;justify-content:space-between;font-size:.8125rem">
+          <span style="color:var(--text-muted)">Status</span>
+          <span class="badge badge-confirmed">Active</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:.8125rem">
+          <span style="color:var(--text-muted)">Expires</span>
+          <span style="color:var(--text)">${esc(fmtTimeRemaining())}</span>
+        </div>
+        <div style="border-top:1px solid var(--gold-border);padding-top:.75rem;margin-top:.25rem">
+          <button class="btn-danger" style="padding:.4rem 1rem;font-size:.7rem"
+                  onclick="lockScreen()">Lock Now</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1.25rem;max-width:520px;
+                              background:rgba(184,150,46,.04);border-color:var(--gold)">
+      <div class="card-header">
+        <h3 class="card-title" style="color:var(--gold)">⚠ Recovery Code</h3>
+      </div>
+      <p style="font-size:.8125rem;color:var(--text-muted);line-height:1.6">
+        Your recovery code allows access if you forget your password.
+        Keep it stored <strong style="color:var(--text)">offline only</strong> — never in email or cloud storage.
+        If you've lost it, contact support to generate a new one.
+      </p>
+    </div>
+
+    <div class="card" style="max-width:520px">
+      <div class="card-header">
+        <h3 class="card-title">About</h3>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.5rem;font-size:.8125rem">
+        <div style="display:flex;justify-content:space-between">
+          <span style="color:var(--text-muted)">Worker</span>
+          <span style="color:var(--text)">admin.myluckyblackmedia.com</span>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span style="color:var(--text-muted)">Version</span>
+          <span style="color:var(--text)">Phase 4</span>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <span style="color:var(--text-muted)">Database</span>
+          <span style="color:var(--text)">lbmd-portal-db (D1)</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function changePassword(btn) {
+  const current = document.getElementById('pw-current').value;
+  const next    = document.getElementById('pw-new').value;
+  const confirm = document.getElementById('pw-confirm').value;
+  const msg     = document.getElementById('pw-msg');
+
+  if (!current || !next || !confirm) {
+    if (msg) { msg.style.color = '#f87171'; msg.textContent = 'All fields are required.'; }
+    return;
+  }
+  if (next.length < 8) {
+    if (msg) { msg.style.color = '#f87171'; msg.textContent = 'New password must be at least 8 characters.'; }
+    return;
+  }
+  if (next !== confirm) {
+    if (msg) { msg.style.color = '#f87171'; msg.textContent = 'New passwords do not match.'; }
+    return;
+  }
+
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Saving…'; }
+
+  try {
+    const data = await api('POST', '/api/auth/change-password', {
+      currentPassword: current,
+      newPassword: next,
+    });
+    if (data.ok) {
+      showToast('Password updated successfully', 'success');
+      document.getElementById('pw-current').value = '';
+      document.getElementById('pw-new').value     = '';
+      document.getElementById('pw-confirm').value = '';
+      if (msg) { msg.style.color = ''; msg.textContent = ''; }
+    } else {
+      if (msg) { msg.style.color = '#f87171'; msg.textContent = data.error || 'Update failed.'; }
+    }
+  } catch (err) {
+    if (msg) { msg.style.color = '#f87171'; msg.textContent = err.message || 'Error.'; }
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Update Password'; }
+  }
+}
+
+// Phase C Complete — all stubs replaced, part files can be deleted
+</script>
+
+<footer style="text-align:center;padding:16px 24px;font-size:10px;color:#4b5563;border-top:1px solid rgba(255,255,255,0.05);">
+  &copy; 2026 Lucky Black Media & Design
+  <span style="display:block;margin-top:4px;font-size:9px;opacity:0.35;letter-spacing:0.12em;">Powered by The BlackSuite</span>
+</footer>
+</body>
+</html>

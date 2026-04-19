@@ -1,0 +1,2094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book a Session — Lucky Black Media & Design</title>
+  <meta name="description" content="Book a session with Lucky Black Media & Design — brand strategy, content creation, and creative direction.">
+  <meta name="theme-color" content="#0a1628">
+
+  <!-- Cormorant Garamond — headings only -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── Design Tokens ─────────────────────────────────────────────────────── */
+    :root {
+      --navy:        #0a1628;
+      --charcoal:    #1a1a1a;
+      --surface:     #111827;
+      --surface2:    #1f2937;
+      --gold:        #B8962E;
+      --gold-light:  rgba(184,150,46,0.12);
+      --gold-border: rgba(184,150,46,0.2);
+      --text:        #f9fafb;
+      --text-muted:  #9ca3af;
+      --border:      rgba(184,150,46,0.2);
+      --radius:      12px;
+      --transition:  0.2s ease;
+      --red:         #f87171;
+    }
+
+    /* ── Reset ─────────────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--navy);
+      color: var(--text);
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    a { color: var(--gold); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    button { cursor: pointer; font-family: inherit; }
+    img { display: block; max-width: 100%; }
+
+    /* ── Nav ───────────────────────────────────────────────────────────────── */
+    .nav {
+      background: var(--charcoal);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-brand {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-brand img { height: 36px; width: auto; }
+    .nav-brand-text { display: flex; flex-direction: column; }
+    .nav-eyebrow {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+      line-height: 1;
+    }
+    .nav-name {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .nav-home {
+      font-size: 13px;
+      color: var(--text-muted);
+      transition: color var(--transition);
+    }
+    .nav-home:hover { color: var(--gold); text-decoration: none; }
+
+    /* ── Main ──────────────────────────────────────────────────────────────── */
+    main { flex: 1; padding: 32px 24px 64px; }
+
+    #booking-app {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    /* ── Step Indicator ────────────────────────────────────────────────────── */
+    .step-bar {
+      display: flex;
+      gap: 0;
+      margin-bottom: 40px;
+      position: relative;
+    }
+    .step-bar::before {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      right: 18px;
+      height: 1px;
+      background: var(--border);
+      z-index: 0;
+    }
+    .step-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      position: relative;
+      z-index: 1;
+    }
+    .step-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      border: 2px solid var(--border);
+      background: var(--navy);
+      color: var(--text-muted);
+      transition: all var(--transition);
+    }
+    .step-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: color var(--transition);
+    }
+    .step-item.active .step-num {
+      border-color: var(--gold);
+      background: var(--gold);
+      color: var(--charcoal);
+    }
+    .step-item.active .step-label { color: var(--gold); }
+    .step-item.completed .step-num {
+      border-color: var(--gold);
+      background: var(--gold-light);
+      color: var(--gold);
+    }
+    .step-item.completed .step-label { color: var(--gold); }
+    .step-item.clickable { cursor: pointer; }
+    .step-item.clickable:hover .step-num { border-color: var(--gold); }
+
+    /* ── Step Content ──────────────────────────────────────────────────────── */
+    .step-content { animation: fadeUp 0.3s ease; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      font-size: 13px;
+      cursor: pointer;
+      margin-bottom: 24px;
+      transition: color var(--transition);
+    }
+    .step-back:hover { color: var(--gold); }
+
+    .step-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .step-sub {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+
+    /* ── Service Cards ─────────────────────────────────────────────────────── */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .service-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      cursor: pointer;
+      transition: border-color var(--transition), transform var(--transition);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .service-card:hover { border-color: rgba(184,150,46,0.5); transform: translateY(-2px); }
+    .service-card.selected {
+      border-color: var(--gold);
+      background: rgba(184,150,46,0.06);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .card-name {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .card-check {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--gold);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 11px;
+      color: var(--charcoal);
+    }
+    .service-card.selected .card-check { display: flex; }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .badge-free {
+      background: var(--gold-light);
+      color: var(--gold);
+      border: 1px solid var(--border);
+    }
+    .badge-price {
+      background: rgba(249,250,251,0.1);
+      color: var(--text);
+      border: 1px solid rgba(249,250,251,0.15);
+    }
+    .badge-duration {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.5;
+      flex: 1;
+    }
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+    .card-meeting-type {
+      font-size: 18px;
+    }
+    .btn-select {
+      padding: 8px 20px;
+      border: 1px solid var(--gold);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--gold);
+      font-size: 13px;
+      font-weight: 600;
+      transition: all var(--transition);
+    }
+    .btn-select:hover, .service-card.selected .btn-select {
+      background: var(--gold);
+      color: var(--charcoal);
+    }
+
+    /* ── Skeleton ──────────────────────────────────────────────────────────── */
+    .skeleton-line {
+      border-radius: 6px;
+      background: linear-gradient(90deg, var(--surface2) 25%, #374151 50%, var(--surface2) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ── Calendar + Slots ──────────────────────────────────────────────────── */
+    .date-time-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 1023px) {
+      .date-time-layout { grid-template-columns: 1fr; }
+    }
+
+    .panel {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .cal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .cal-month-label {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .cal-nav-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition);
+    }
+    .cal-nav-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .cal-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .cal-dow {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+      margin-bottom: 4px;
+    }
+    .cal-dow-cell {
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 4px 0;
+    }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+    }
+    .cal-day {
+      aspect-ratio: 1;
+      min-height: 44px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      position: relative;
+      transition: all var(--transition);
+      background: transparent;
+      border: none;
+      color: var(--text);
+    }
+    .cal-day:hover:not(:disabled) { background: var(--gold-light); }
+    .cal-day.today { box-shadow: 0 0 0 1px rgba(184,150,46,0.4); }
+    .cal-day.selected { background: var(--gold) !important; color: var(--charcoal) !important; font-weight: 700; }
+    .cal-day.selected .slot-dot { background: var(--charcoal); }
+    .cal-day.no-slots, .cal-day:disabled {
+      color: var(--text-muted);
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .cal-day.no-slots:hover { background: transparent; }
+    .slot-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--gold);
+      position: absolute;
+      bottom: 5px;
+    }
+    .cal-empty { /* padding cell */ }
+
+    /* ── Slots panel ───────────────────────────────────────────────────────── */
+    .slots-header {
+      margin-bottom: 16px;
+    }
+    .slots-date-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .slots-tz {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .slots-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .slot-btn {
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text);
+      font-size: 14px;
+      text-align: center;
+      transition: all var(--transition);
+      min-height: 44px;
+    }
+    .slot-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .slot-btn.selected { background: var(--gold); border-color: var(--gold); color: var(--charcoal); font-weight: 700; }
+
+    .slots-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      font-size: 14px;
+      padding: 24px 0;
+      text-align: center;
+    }
+
+    .hold-timer {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 12px;
+      text-align: center;
+    }
+    .hold-timer span { color: var(--gold); font-weight: 600; }
+
+    /* ── Form + Summary layout ─────────────────────────────────────────────── */
+    .form-summary-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 1023px) {
+      .form-summary-layout {
+        grid-template-columns: 1fr;
+      }
+      .form-summary-layout .summary-col { order: -1; }
+    }
+
+    /* ── Booking Summary Card ──────────────────────────────────────────────── */
+    .summary-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      position: sticky;
+      top: 80px;
+    }
+    .summary-title {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .summary-service-name {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .summary-rows { display: flex; flex-direction: column; gap: 10px; }
+    .summary-row { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
+    .summary-label { color: var(--text-muted); }
+    .summary-value { color: var(--text); text-align: right; }
+    .summary-divider { height: 1px; background: var(--border); margin: 12px 0; }
+    .summary-price {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gold);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+    }
+    .summary-change {
+      font-size: 12px;
+      color: var(--gold);
+      cursor: pointer;
+      text-decoration: underline;
+      margin-top: 16px;
+      display: block;
+    }
+
+    /* ── Form ──────────────────────────────────────────────────────────────── */
+    .form-col { display: flex; flex-direction: column; gap: 20px; }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .form-label .req { color: var(--gold); margin-left: 2px; }
+    .form-input, .form-select, .form-textarea {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 15px;
+      font-family: inherit;
+      padding: 10px 14px;
+      width: 100%;
+      transition: border-color var(--transition);
+      outline: none;
+      min-height: 44px;
+    }
+    .form-textarea { resize: vertical; min-height: 100px; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--gold);
+    }
+    .form-input.error, .form-select.error, .form-textarea.error {
+      border-color: var(--red);
+    }
+    .form-error { font-size: 12px; color: var(--red); margin-top: 2px; }
+    .form-select option { background: var(--surface2); }
+
+    /* ── Payment sections ──────────────────────────────────────────────────── */
+    .payment-section { margin-top: 28px; }
+    .payment-heading {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+    .policy-callout {
+      border-left: 3px solid var(--gold);
+      padding: 12px 16px;
+      background: var(--gold-light);
+      border-radius: 0 8px 8px 0;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+    .policy-callout strong { color: var(--text); }
+    .free-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(52,211,153,0.1);
+      border: 1px solid rgba(52,211,153,0.3);
+      color: #34d399;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+    .or-divider::before, .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    #square-card-container { min-height: 56px; margin-bottom: 16px; }
+    #paypal-button-container { min-height: 48px; }
+
+    /* ── Buttons ───────────────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all var(--transition);
+      min-height: 50px;
+    }
+    .btn-primary {
+      background: var(--gold);
+      color: var(--charcoal);
+      width: 100%;
+    }
+    .btn-primary:hover { filter: brightness(1.1); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; filter: none; }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+    }
+    .btn-outline:hover { background: var(--gold-light); }
+
+    /* ── Spinner ───────────────────────────────────────────────────────────── */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+    .spinner-lg {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--gold-light);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      padding: 48px 0;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* ── Error states ──────────────────────────────────────────────────────── */
+    .error-state {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .error-state-icon { font-size: 36px; margin-bottom: 12px; }
+    .error-state-msg { color: var(--text-muted); margin-bottom: 20px; font-size: 14px; }
+
+    /* ── Modal ─────────────────────────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10,22,40,0.85);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay[hidden] { display: none; }
+    .modal-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+    .modal-icon { font-size: 40px; margin-bottom: 12px; }
+    .modal-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .modal-body { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
+
+    /* ── Confirmation (Step 4) ─────────────────────────────────────────────── */
+    .confirm-wrap {
+      max-width: 580px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .check-circle {
+      width: 80px;
+      height: 80px;
+      border: 3px solid var(--gold);
+      border-radius: 50%;
+      margin: 0 auto 24px;
+      position: relative;
+    }
+    .check-circle::after {
+      content: '';
+      position: absolute;
+      top: 16px;
+      left: 24px;
+      width: 16px;
+      height: 30px;
+      border-right: 3px solid var(--gold);
+      border-bottom: 3px solid var(--gold);
+      transform: rotate(45deg);
+    }
+    .confirm-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 40px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .confirm-sub { color: var(--text-muted); font-size: 15px; margin-bottom: 32px; }
+    .confirm-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      text-align: left;
+      margin-bottom: 24px;
+    }
+    .confirm-code-wrap {
+      background: var(--gold-light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .confirm-code-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 600;
+    }
+    .confirm-code-value {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--text);
+      font-family: monospace;
+    }
+    .confirm-rows { display: flex; flex-direction: column; gap: 12px; }
+    .confirm-row { display: flex; gap: 12px; font-size: 14px; }
+    .confirm-row-label { color: var(--text-muted); min-width: 120px; flex-shrink: 0; }
+    .confirm-row-value { color: var(--text); }
+    .confirm-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .confirm-email-note {
+      color: var(--text-muted);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* ── Footer ────────────────────────────────────────────────────────────── */
+    footer {
+      background: var(--charcoal);
+      border-top: 1px solid var(--border);
+      padding: 20px 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    footer a { color: var(--gold); }
+
+    /* ── Responsive ────────────────────────────────────────────────────────── */
+    @media (max-width: 639px) {
+      main { padding: 20px 16px 48px; }
+      .step-label { display: none; }
+      .step-bar::before { top: 17px; }
+      .step-title { font-size: 26px; }
+      .services-grid { grid-template-columns: 1fr; }
+      .confirm-row { flex-direction: column; gap: 2px; }
+      .confirm-row-label { min-width: unset; }
+    }
+    @media (max-width: 1023px) {
+      .date-time-layout { gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Nav ───────────────────────────────────────────────────────────────── -->
+  <nav class="nav">
+    <div class="nav-brand">
+      <img src="/images/logo-mark.png" alt="LBM">
+      <div class="nav-brand-text">
+        <span class="nav-eyebrow">Lucky Black Media & Design</span>
+        <span class="nav-name">Book a Session</span>
+      </div>
+    </div>
+    <a href="https://www.myluckyblackmedia.com" class="nav-home">← Back to site</a>
+  </nav>
+
+  <!-- ── App ───────────────────────────────────────────────────────────────── -->
+  <main>
+    <div id="booking-app">
+      <div id="step-indicator"></div>
+      <div id="step-content"></div>
+    </div>
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────────────────────────────── -->
+  <footer>
+    &copy; 2026 Lucky Black Media & Design &nbsp;·&nbsp;
+    <a href="https://www.myluckyblackmedia.com/privacy">Privacy</a> &nbsp;·&nbsp;
+    <a href="https://www.myluckyblackmedia.com">myluckyblackmedia.com</a>
+    <span style="display:block;margin-top:6px;font-size:10px;opacity:0.35;letter-spacing:0.12em;">Powered by The BlackSuite</span>
+  </footer>
+
+  <!-- ── Hold Expired Modal ─────────────────────────────────────────────────── -->
+  <div id="hold-expired-modal" class="modal-overlay" hidden>
+    <div class="modal-box">
+      <div class="modal-icon">⏰</div>
+      <div class="modal-title">Hold Expired</div>
+      <div class="modal-body">Your 5-minute slot hold has expired. Please pick a new time.</div>
+      <button class="btn btn-primary" onclick="handleHoldExpiredOk()">Pick Another Time</button>
+    </div>
+  </div>
+
+  <script>
+    /* ═══════════════════════════════════════════════════════════════════════
+     * CONFIG — Replace these before deploying
+     * ═══════════════════════════════════════════════════════════════════════ */
+
+    const API_BASE = 'https://admin.myluckyblackmedia.com';
+
+    // Square Web Payments SDK credentials
+    // REPLACE with your actual Square App ID
+    const SQUARE_APP_ID = 'sq0idp-fDh2ZD6AxJPgczOdIi21EQ';
+    // REPLACE with your actual Square Location ID
+    const SQUARE_LOCATION_ID = 'LM37VZ030R65R';
+
+    // PayPal client ID
+    // REPLACE with your actual PayPal Client ID from developer.paypal.com
+    const PAYPAL_CLIENT_ID = 'Ae-E0UOgr8oGluzwhO_DUOhqI3hlGgFnTMI1droNKBf9QlTpF07f0zl2jSJoovuAB6ieFwMTxrPOd6A-';
+
+    /* ═══════════════════════════════════════════════════════════════════════
+     * STATE
+     * ═══════════════════════════════════════════════════════════════════════ */
+
+    const state = {
+      step: 1,
+      services: [],
+      selectedService: null,
+      currentMonth: new Date(),        // Date object for calendar nav
+      availability: {},                // { "YYYY-MM-DD": ["HH:MM", ...] UTC
+      fetchedMonths: new Set(),        // avoid re-fetching same month
+      calendarLoading: false,
+      calendarError: null,
+      selectedDate: null,              // "YYYY-MM-DD"
+      selectedTime: null,              // "HH:MM" UTC
+      holdId: null,
+      sessionToken: null,
+      holdExpiry: null,                // Date object
+      holdTimerInterval: null,
+      clientTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      form: {
+        name: '', email: '', phone: '',
+        notes: '', how_heard: '',
+      },
+      formErrors: {},
+      confirmationCode: null,
+      booking: null,
+      // payment UI handles (not in initial state, added dynamically)
+    };
+
+    // Module-level refs for payment SDKs (avoid re-init on re-render)
+    let squareCard    = null;
+    let paypalInited  = false;
+
+    function setState(updates) {
+      Object.assign(state, updates);
+      render();
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+     * UTILITIES
+     * ═══════════════════════════════════════════════════════════════════════ */
+
+    // Format a UTC slot time for display in client timezone
+    function displaySlotTime(dateStr, utcHHMM, tz) {
+      const dt = new Date(`${dateStr}T${utcHHMM}:00Z`);
+      return new Intl.DateTimeFormat('en-US', {
+        timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true,
+      }).format(dt);
+    }
+
+    // Format full date + time for summary/confirmation
+    function displayDateTime(dateStr, utcHHMM, tz) {
+      const dt = new Date(`${dateStr}T${utcHHMM}:00Z`);
+      return {
+        date: new Intl.DateTimeFormat('en-US', {
+          timeZone: tz, weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        }).format(dt),
+        time: new Intl.DateTimeFormat('en-US', {
+          timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true,
+        }).format(dt),
+      };
+    }
+
+    // Format hold timer remaining as "M:SS"
+    function fmtCountdown(ms) {
+      const total = Math.max(0, Math.ceil(ms / 1000));
+      const m = Math.floor(total / 60);
+      const s = total % 60;
+      return `${m}:${String(s).padStart(2, '0')}`;
+    }
+
+    // Dollars from cents
+    function fmt$(cents) {
+      return '$' + (cents / 100).toFixed(2);
+    }
+
+    // Normalize price: API stores dollars, convert to cents for fmt$
+    function normPrice(p) {
+      if (p === null || p === undefined) return 0;
+      return Math.round(p * 100);
+    }
+
+    // Meeting type icon + label
+    const MEETING_META = {
+      meet:     { icon: '🎥', label: 'Google Meet' },
+      zoom:     { icon: '🎥', label: 'Zoom' },
+      facetime: { icon: '📱', label: 'FaceTime' },
+      phone:    { icon: '📞', label: 'Phone Call' },
+      inperson: { icon: '📍', label: 'In Person' },
+    };
+    function meetMeta(type) {
+      return MEETING_META[type] || MEETING_META.meet;
+    }
+
+    // Days of week for calendar
+    const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const MONTHS = [
+      'January','February','March','April','May','June',
+      'July','August','September','October','November','December'
+    ];
+
+    /* ═══════════════════════════════════════════════════════════════════════
+     * ICS GENERATOR (client-side for "Add to Calendar" button)
+     * ═══════════════════════════════════════════════════════════════════════ */
+
+    function generateICS(booking, service) {
+      function toUTC(dateStr, hhmm) {
+        const [y,mo,d] = dateStr.split('-').map(Number);
+        const [h,m]    = hhmm.split(':').map(Number);
+        return new Date(Date.UTC(y, mo-1, d, h, m))
+          .toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+      }
+      function addMins(dateStr, hhmm, mins) {
+        const [y,mo,d] = dateStr.split('-').map(Number);
+        const [h,m]    = hhmm.split(':').map(Number);
+        return new Date(Date.UTC(y, mo-1, d, h, m+mins))
+          .toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+      }
+      function esc(s) {
+        return String(s||'').replace(/\\/g,'\\\\')
+          .replace(/,/g,'\\,').replace(/;/g,'\\;').replace(/\n/g,'\\n');
+      }
+      const st  = booking.start_time || booking.time || '09:00';
+      const dur = service.duration_min || service.duration || 60;
+      const now = new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+      const code = booking.confirmation_code || booking.id || 'LBM';
+
+      const lines = [
+        'BEGIN:VCALENDAR','VERSION:2.0',
+        'PRODID:-//Lucky Black Media//Booking//EN',
+        'CALSCALE:GREGORIAN','METHOD:REQUEST',
+        'BEGIN:VEVENT',
+        `UID:${code}@myluckyblackmedia.com`,
+        `DTSTAMP:${now}`,
+        `DTSTART:${toUTC(booking.date, st)}`,
+        `DTEND:${addMins(booking.date, st, dur)}`,
+        `SUMMARY:${esc(service.name)} with Lucky Black Media`,
+        `DESCRIPTION:Confirmed!\\nRef: ${esc(code)}\\nQuestions: bookings@myluckyblackmedia.com`,
+        'STATUS:CONFIRMED','TRANSP:OPAQUE',
+        'BEGIN:VALARM','TRIGGER:-PT24H','ACTION:DISPLAY',
+        `DESCRIPTION:Tomorrow: ${esc(service.name)} with Lucky Black Media`,'END:VALARM',
+        'BEGIN:VALARM','TRIGGER:-PT1H','ACTION:DISPLAY',
+        `DESCRIPTION:1 hour: ${esc(service.name)} with Lucky Black Media`,'END:VALARM',
+        'END:VEVENT','END:VCALENDAR',
+      ];
+      return lines.join('\r\n') + '\r\n';
+    }
+
+    function downloadICS() {
+      const { booking, selectedService } = state;
+      if (!booking || !selectedService) return;
+      const content = generateICS(booking, selectedService);
+      const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href     = url;
+      a.download = `booking-${booking.confirmation_code || 'lbm'}.ics`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+     * API
+     * ═══════════════════════════════════════════════════════════════════════ */
+
+    async function apiFetch(path, options = {}) {
+      const res = await fetch(API_BASE + path, {
+        headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+        ...options,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+      return data;
+    }
+
+    async function fetchServices() {
+      return apiFetch('/api/services');
+    }
+
+    // Expected response: { "YYYY-MM-DD": ["HH:MM", ...], ... }
+    // NOTE: This endpoint needs to be added to the worker (returns per-date slots
+    // derived from weekly availability + iCloud busy slot subtraction).
+    async function fetchAvailability(dateFrom, dateTo, serviceId) {
+      return apiFetch(
+        `/api/availability?date_from=${dateFrom}&date_to=${dateTo}&service_id=${serviceId}`
+      );
+    }
+
+    // NOTE: POST /api/booking/hold needs to be added to the worker
+    // Returns: { hold_id, session_token, expires_at }
+    async function holdSlot(serviceId, date, startTime) {
+      return apiFetch('/api/booking/hold', {
+        method: 'POST',
+        body: JSON.stringify({ service_id: serviceId, date, start_time: startTime }),
+      });
+    }
+
+    // NOTE: POST /api/booking/create needs to be added to the worker (public, no auth)
+    // Calls the Phase 2 free booking path
+    async function createBooking(payload) {
+      return apiFetch('/api/booking/create', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    }
+
+    // NOTE: POST /api/payment/square needs to be added to the worker
+    async function payWithSquare(payload) {
+      return apiFetch('/api/payment/square', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    }
+
+    // NOTE: POST /api/payment/paypal needs to be added to the worker
+    async function initiatePayPalOrder(payload) {
+      return apiFetch('/api/payment/paypal', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+    }
+
+    // NOTE: GET /api/booking/confirm?code= needs to be added to the worker
+    async function fetchConfirmation(code) {
+      return apiFetch(`/api/booking/confirm?code=${encodeURIComponent(code)}`);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+     * HOLD TIMER
+     * ═══════════════════════════════════════════════════════════════════════ */
+
+    function startHoldTimer(expiresAt) {
+      stopHoldTimer();
+      state.holdExpiry = new Date(expiresAt);
+      state.holdTimerInterval = setInterval(() => {
+        const remaining = state.holdExpiry - Date.now();
+        if (remaining <= 0) {
+          stopHoldTimer();
+          showHoldExpiredModal();
+          return;
+        }
+        // Update timer text in place without full re-render
+        document.querySelectorAll('.hold-timer-countdown').forEach(el => {
+          el.textContent = fmtCountdown(remaining);
+        });
+      }, 1000);
+    }
+
+    function stopHoldTimer() {
+      if (state.holdTimerInterval) {
+        clearInterval(state.holdTimerInterval);
+        state.holdTimerInterval = null;
+      }
+    }
+
+    function showHoldExpiredModal() {
+      document.getElementById('hold-expired-modal').removeAttribute('hidden');
+    }
+
+    function handleHoldExpiredOk() {
+      document.getElementById('hold-expired-modal').setAttribute('hidden', '');
+      stopHoldTimer();
+      setState({
+        holdId: null, sessionToken: null, holdExpiry: null,
+        selectedTime: null, step: 2,
+      });
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+     * RENDER ENGINE
+     * ═══════════════════════════════════════════════════════════════════════ */
+
+    let _lastStep = 0;
+
+    function render() {
+      renderStepIndicator();
+      if (state.step !== _lastStep) {
+        _lastStep = state.step;
+        squareCard   = null;
+        paypalInited = false;
+        document.getElementById('booking-app').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        renderCurrentStep();
+      }
+    }
+
+    function renderCurrentStep() {
+      const content = document.getElementById('step-content');
+      switch (state.step) {
+        case 1: renderStep1(content); break;
+        case 2: renderStep2(content); break;
+        case 3: renderStep3(content); break;
+        case 4: renderStep4(content); break;
+      }
+    }
+
+    /* ── Step Indicator ───────────────────────────────────────────────────── */
+    function renderStepIndicator() {
+      const steps = [
+        { n: 1, label: 'Service' },
+        { n: 2, label: 'Date & Time' },
+        { n: 3, label: 'Details' },
+        { n: 4, label: 'Confirmed' },
+      ];
+      document.getElementById('step-indicator').innerHTML = `
+        <div class="step-bar">
+          ${steps.map(s => {
+            const isActive    = s.n === state.step;
+            const isCompleted = s.n < state.step;
+            const isClickable = s.n < state.step && s.n < 4;
+            const cls = [
+              'step-item',
+              isActive    ? 'active'    : '',
+              isCompleted ? 'completed' : '',
+              isClickable ? 'clickable' : '',
+            ].filter(Boolean).join(' ');
+            const numContent = isCompleted ? '✓' : s.n;
+            return `
+              <div class="${cls}"
+                   ${isClickable ? `onclick="goToStep(${s.n})"` : ''}>
+                <div class="step-num">${numContent}</div>
+                <div class="step-label">${s.label}</div>
+              </div>`;
+          }).join('')}
+        </div>`;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+     * STEP 1 — SERVICE SELECTION
+     * ═══════════════════════════════════════════════════════════════════════ */
+
+    function renderStep1(container) {
+      container.innerHTML = `
+        <div class="step-content">
+          <h2 class="step-title">Choose a Service</h2>
+          <p class="step-sub">Select the session type that's right for you.</p>
+          <div id="services-grid"></div>
+        </div>`;
+      loadServices();
+    }
+
+    async function loadServices() {
+      const grid = document.getElementById('services-grid');
+      if (!grid) return;
+
+      // If already loaded, render from state
+      if (state.services.length) {
+        renderServiceCards(grid, state.services);
+        return;
+      }
+
+      // Skeleton
+      grid.innerHTML = `
+        <div class="services-grid">
+          ${[1,2,3].map(() => `
+            <div class="service-card" style="gap:14px;pointer-events:none;">
+              <div class="skeleton-line" style="height:28px;width:65%;"></div>
+              <div class="skeleton-line" style="height:20px;width:35%;"></div>
+              <div style="display:flex;flex-direction:column;gap:6px;flex:1;">
+                <div class="skeleton-line" style="height:14px;width:100%;"></div>
+                <div class="skeleton-line" style="height:14px;width:80%;"></div>
+              </div>
+              <div class="skeleton-line" style="height:38px;width:100%;border-radius:8px;"></div>
+            </div>`).join('')}
+        </div>`;
+
+      try {
+        const data = await fetchServices();
+        const services = (data.results || data).map(s => ({
+          ...s,
+          price_cents:  normPrice(s.price),
+          duration_min: s.duration_min || s.duration || 60,
+        }));
+        setState({ services });
+        const g = document.getElementById('services-grid');
+        if (g) renderServiceCards(g, services);
+      } catch (err) {
+        if (!grid) return;
+        grid.innerHTML = `
+          <div class="error-state">
+            <div class="error-state-icon">⚠️</div>
+            <p class="error-state-msg">Couldn't load services.<br>${err.message || 'Connection issue — please try again.'}</p>
+            <button class="btn btn-outline" onclick="loadServices()">Retry</button>
+          </div>`;
+      }
+    }
+
+    function renderServiceCards(grid, services) {
+      if (!services.length) {
+        grid.innerHTML = `<p style="color:var(--text-muted);">No services available right now.</p>`;
+        return;
+      }
+      grid.innerHTML = `
+        <div class="services-grid">
+          ${services.map(s => {
+            const isFree    = s.price_cents === 0;
+            const priceBadge = isFree
+              ? `<span class="badge badge-free">FREE</span>`
+              : `<span class="badge badge-price">${fmt$(s.price_cents)}</span>`;
+            const mt = meetMeta(s.meeting_type || 'meet');
+            const isSelected = state.selectedService?.id === s.id;
+            return `
+              <div class="service-card ${isSelected ? 'selected' : ''}"
+                   data-action="select-service" data-id="${s.id}">
+                <div class="card-top">
+                  <div class="card-name">${escHTML(s.name)}</div>
+                  <div class="card-check">✓</div>
+                </div>
+                <div class="card-meta">
+                  ${priceBadge}
+                  <span class="badge-duration">${s.duration_min} min</span>
+                </div>
+                <p class="card-desc">${escHTML(s.description || '')}</p>
+                <div class="card-footer">
+                  <span class="card-meeting-type" title="${mt.label}">${mt.icon}</span>
+                  <button class="btn-select" tabindex="-1">
+                    ${isSelected ? '✓ Selected' : 'Select'}
+                  </button>
+                </div>
+              </div>`;
+          }).join('')}
+        </div>`;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+     * STEP 2 — DATE & TIME PICKER
+     * ═══════════════════════════════════════════════════════════════════════ */
+
+    function renderStep2(container) {
+      container.innerHTML = `
+        <div class="step-content">
+          <div class="step-back" onclick="goToStep(1)">← Back</div>
+          <h2 class="step-title">Pick a Date & Time</h2>
+          <p class="step-sub">Times shown in <strong style="color:var(--text);">${state.clientTimezone}</strong></p>
+          <div class="date-time-layout">
+            <div id="calendar-panel" class="panel"></div>
+            <div id="slots-panel" class="panel"></div>
+          </div>
+        </div>`;
+      renderCalendar();
+      renderSlotsPanel();
+      loadMonthAvailability(state.currentMonth.getFullYear(), state.currentMonth.getMonth());
+    }
+
+    function renderCalendar() {
+      const panel = document.getElementById('calendar-panel');
+      if (!panel) return;
+
+      const year  = state.currentMonth.getFullYear();
+      const month = state.currentMonth.getMonth();
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
+      // Build day grid
+      const firstDow   = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      let cells = '';
+
+      for (let i = 0; i < firstDow; i++) {
+        cells += `<div class="cal-empty"></div>`;
+      }
+      for (let d = 1; d <= daysInMonth; d++) {
+        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const dt = new Date(year, month, d);
+        const isPast    = dt < today;
+        const hasSlots  = !!(state.availability[dateStr]?.length);
+        const isToday   = dt.getTime() === today.getTime();
+        const isSel     = state.selectedDate === dateStr;
+        const disabled  = isPast || !hasSlots;
+        const cls = [
+          'cal-day',
+          isSel    ? 'selected'  : '',
+          isToday  ? 'today'     : '',
+          disabled ? 'no-slots'  : '',
+        ].filter(Boolean).join(' ');
+        cells += `
+          <button class="${cls}"
+            ${disabled ? 'disabled' : `data-action="select-date" data-date="${dateStr}"`}>
+            ${d}
+            ${hasSlots && !isSel ? '<span class="slot-dot"></span>' : ''}
+          </button>`;
+      }
+
+      // Can we go back?
+      const firstOfMonth = new Date(year, month, 1);
+      const firstOfToday = new Date(today.getFullYear(), today.getMonth(), 1);
+      const canBack = firstOfMonth > firstOfToday;
+
+      panel.innerHTML = `
+        <div class="cal-header">
+          <button class="cal-nav-btn" data-action="prev-month" ${!canBack ? 'disabled' : ''}>◀</button>
+          <div class="cal-month-label">${MONTHS[month]} ${year}</div>
+          <button class="cal-nav-btn" data-action="next-month">▶</button>
+        </div>
+        <div class="cal-dow">
+          ${DOW.map(d => `<div class="cal-dow-cell">${d}</div>`).join('')}
+        </div>
+        <div class="cal-grid">${cells}</div>
+        ${state.calendarLoading ? `<div style="text-align:center;padding-top:12px;"><div class="spinner-lg"></div></div>` : ''}
+        ${state.calendarError   ? `<p style="color:var(--red);font-size:13px;margin-top:10px;text-align:center;">${escHTML(state.calendarError)}</p>` : ''}
+      `;
+    }
+
+    function renderSlotsPanel() {
+      const panel = document.getElementById('slots-panel');
+      if (!panel) return;
+
+      if (!state.selectedDate) {
+        panel.innerHTML = `
+          <div class="slots-empty">← Select a date<br>to see available times</div>`;
+        return;
+      }
+
+      const slots = state.availability[state.selectedDate] || [];
+      const dt = new Date(state.selectedDate + 'T12:00:00Z');
+      const headerDate = new Intl.DateTimeFormat('en-US', {
+        weekday: 'long', month: 'long', day: 'numeric',
+      }).format(dt);
+
+      if (!slots.length) {
+        panel.innerHTML = `
+          <div class="slots-header">
+            <div class="slots-date-title">${headerDate}</div>
+          </div>
+          <div class="slots-empty">No available times on this date.</div>`;
+        return;
+      }
+
+      const slotBtns = slots.map(utcTime => {
+        const localTime = displaySlotTime(state.selectedDate, utcTime, state.clientTimezone);
+        const isSel = state.selectedTime === utcTime;
+        return `<button class="slot-btn ${isSel ? 'selected' : ''}"
+                  data-action="select-slot" data-time="${utcTime}">${localTime}</button>`;
+      }).join('');
+
+      panel.innerHTML = `
+        <div class="slots-header">
+          <div class="slots-date-title">${headerDate}</div>
+          <div class="slots-tz">Times in ${state.clientTimezone}</div>
+        </div>
+        <div class="slots-grid">${slotBtns}</div>
+        ${state.holdId ? `
+          <div class="hold-timer">
+            Slot held for <span class="hold-timer-countdown">${fmtCountdown(state.holdExpiry - Date.now())}</span>
+          </div>` : ''}
+      `;
+    }
+
+    async function loadMonthAvailability(year, month) {
+      const key = `${year}-${String(month+1).padStart(2,'0')}`;
+      if (state.fetchedMonths.has(key)) {
+        renderCalendar();
+        return;
+      }
+      const dateFrom = `${year}-${String(month+1).padStart(2,'0')}-01`;
+      const lastDay  = new Date(year, month + 1, 0).getDate();
+      const dateTo   = `${year}-${String(month+1).padStart(2,'0')}-${lastDay}`;
+
+      setState({ calendarLoading: true, calendarError: null });
+
+      try {
+        const data = await fetchAvailability(dateFrom, dateTo, state.selectedService?.id);
+        const newFetched = new Set(state.fetchedMonths);
+        newFetched.add(key);
+        setState({
+          availability: { ...state.availability, ...data },
+          fetchedMonths: newFetched,
+          calendarLoading: false,
+        });
+        // Also pre-fetch next month silently
+        prefetchNextMonth(year, month);
+      } catch (err) {
+        setState({ calendarLoading: false, calendarError: 'Could not load availability. Tap to retry.' });
+      }
+      renderCalendar();
+    }
+
+    function prefetchNextMonth(year, month) {
+      const next = new Date(year, month + 1, 1);
+      const y2 = next.getFullYear(), m2 = next.getMonth();
+      const key = `${y2}-${String(m2+1).padStart(2,'0')}`;
+      if (!state.fetchedMonths.has(key) && state.selectedService) {
+        loadMonthAvailability(y2, m2);
+      }
+    }
+
+    async function handleSelectSlot(utcTime) {
+      const wasSelected = state.selectedTime === utcTime;
+      if (wasSelected) return;
+
+      setState({ selectedTime: utcTime });
+      renderSlotsPanel();
+
+      // Hold the slot
+      try {
+        const hold = await holdSlot(
+          state.selectedService.id,
+          state.selectedDate,
+          utcTime
+        );
+        setState({
+          holdId:       hold.hold_id,
+          sessionToken: hold.session_token,
+        });
+        startHoldTimer(hold.expires_at);
+        // Advance to step 3 after brief pause
+        setTimeout(() => setState({ step: 3 }), 300);
+      } catch (err) {
+        // Hold failed — show inline error but stay on step 2
+        setState({ selectedTime: null });
+        renderSlotsPanel();
+        showInlineMsg('slots-panel',
+          `Could not hold slot: ${err.message || 'Please try again.'}`, 'error');
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+     * STEP 3 — CLIENT FORM + PAYMENT
+     * ═══════════════════════════════════════════════════════════════════════ */
+
+    function renderStep3(container) {
+      const svc      = state.selectedService;
+      const isPaid   = svc.price_cents > 0;
+      const { date, time } = displayDateTime(
+        state.selectedDate, state.selectedTime, state.clientTimezone
+      );
+      const mt = meetMeta(svc.meeting_type || 'meet');
+
+      const remainingMs = state.holdExpiry ? state.holdExpiry - Date.now() : 0;
+      const timerHtml = state.holdId ? `
+        <div class="hold-timer" style="margin-top:12px;text-align:left;">
+          ⏳ Slot held for <span class="hold-timer-countdown">${fmtCountdown(remainingMs)}</span>
+        </div>` : '';
+
+      const paymentHtml = isPaid
+        ? renderPaidPaymentSection(svc)
+        : renderFreePaymentSection();
+
+      container.innerHTML = `
+        <div class="step-content">
+          <div class="step-back" onclick="goToStep(2)">← Back</div>
+          <h2 class="step-title">Your Details</h2>
+          <p class="step-sub">Almost done — just a few details.</p>
+
+          <div class="form-summary-layout">
+
+            <!-- Form -->
+            <div class="form-col">
+              <div class="form-group">
+                <label class="form-label">Full Name <span class="req">*</span></label>
+                <input id="f-name" class="form-input" type="text" autocomplete="name"
+                       placeholder="Jane Smith" value="${escAttr(state.form.name)}"
+                       oninput="updateField('name', this.value)">
+                <div class="form-error" id="err-name"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email Address <span class="req">*</span></label>
+                <input id="f-email" class="form-input" type="email" autocomplete="email"
+                       placeholder="jane@example.com" value="${escAttr(state.form.email)}"
+                       oninput="updateField('email', this.value)">
+                <div class="form-error" id="err-email"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone Number <span class="req">*</span></label>
+                <input id="f-phone" class="form-input" type="tel" autocomplete="tel"
+                       placeholder="+1 (555) 000-0000" value="${escAttr(state.form.phone)}"
+                       oninput="updateField('phone', this.value)">
+                <div class="form-error" id="err-phone"></div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">About Your Project <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+                <textarea id="f-notes" class="form-textarea" rows="4"
+                          placeholder="Tell us a little about your project or goals…"
+                          oninput="updateField('notes', this.value)">${escHTML(state.form.notes)}</textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">How did you hear about us? <span class="req">*</span></label>
+                <select id="f-how" class="form-select" onchange="updateField('how_heard', this.value)">
+                  <option value="" ${!state.form.how_heard ? 'selected' : ''}>Select one…</option>
+                  ${[
+                    'Google Search','Instagram','Facebook','LinkedIn',
+                    'Referral from a Friend','Existing Client','Other',
+                  ].map(o => `<option value="${o}" ${state.form.how_heard===o?'selected':''}>${o}</option>`).join('')}
+                </select>
+                <div class="form-error" id="err-how"></div>
+              </div>
+
+              ${paymentHtml}
+            </div>
+
+            <!-- Summary -->
+            <div class="summary-col">
+              <div class="summary-card">
+                <div class="summary-title">Booking Summary</div>
+                <div class="summary-service-name">${escHTML(svc.name)}</div>
+                <div class="summary-rows">
+                  <div class="summary-row">
+                    <span class="summary-label">Date</span>
+                    <span class="summary-value">${date}</span>
+                  </div>
+                  <div class="summary-row">
+                    <span class="summary-label">Time</span>
+                    <span class="summary-value">${time}</span>
+                  </div>
+                  <div class="summary-row">
+                    <span class="summary-label">Duration</span>
+                    <span class="summary-value">${svc.duration_min} min</span>
+                  </div>
+                  <div class="summary-row">
+                    <span class="summary-label">How We Meet</span>
+                    <span class="summary-value">${mt.icon} ${mt.label}</span>
+                  </div>
+                  <div class="summary-divider"></div>
+                  <div class="summary-row">
+                    <span class="summary-label">Total</span>
+                    <span class="summary-price">${isPaid ? fmt$(svc.price_cents) : 'FREE'}</span>
+                  </div>
+                </div>
+                ${timerHtml}
+                <a class="summary-change" onclick="goToStep(2)">Change date/time</a>
+              </div>
+            </div>
+
+          </div>
+        </div>`;
+
+      if (isPaid) initPayments();
+    }
+
+    function renderFreePaymentSection() {
+      return `
+        <div class="payment-section">
+          <div class="free-badge">✅ Free — No Payment Required</div>
+          <div id="booking-error" class="form-error" style="margin-bottom:12px;font-size:14px;"></div>
+          <button class="btn btn-primary" id="btn-confirm" onclick="handleFreeBooking()">
+            Confirm Booking
+          </button>
+        </div>`;
+    }
+
+    function renderPaidPaymentSection(svc) {
+      return `
+        <div class="payment-section">
+          <div class="policy-callout">
+            <strong>Cancellation policy:</strong> Full refund minus processing fees if cancelled
+            4+ hours before your session. Full rebook credit is always available.
+          </div>
+
+          <p class="payment-heading">Pay with Card</p>
+          <div id="square-card-container"></div>
+          <div id="square-error" class="form-error" style="margin-bottom:12px;font-size:14px;"></div>
+          <button class="btn btn-primary" id="btn-square" onclick="handleSquarePayment()">
+            Pay ${fmt$(svc.price_cents)} &amp; Confirm
+          </button>
+
+          <div class="or-divider">or</div>
+
+          <p class="payment-heading">Pay with PayPal</p>
+          <div id="paypal-button-container"></div>
+          <div id="booking-error" class="form-error" style="margin-top:12px;font-size:14px;"></div>
+        </div>`;
+    }
+
+    async function initPayments() {
+      await loadSquareSDK();
+      await initSquare();
+      await loadPayPalSDK();
+      initPayPalButton();
+    }
+
+    async function loadSquareSDK() {
+      if (window.Square) return;
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src     = 'https://web.squarecdn.com/v1/square.js';
+        s.onload  = resolve;
+        s.onerror = () => reject(new Error('Could not load Square SDK'));
+        document.head.appendChild(s);
+      });
+    }
+
+    async function initSquare() {
+      if (squareCard) return;
+      const container = document.getElementById('square-card-container');
+      if (!container || !window.Square) return;
+      try {
+        const payments = Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
+        const card = await payments.card({
+          style: {
+            '.input-container': {
+              borderColor:  'rgba(184,150,46,0.2)',
+              borderRadius: '8px',
+            },
+            '.input-container.is-focus': { borderColor: '#B8962E' },
+            '.input-container.is-error': { borderColor: '#f87171' },
+            input: {
+              backgroundColor: '#1f2937',
+              color:           '#f9fafb',
+              fontSize:        '15px',
+            },
+            'input::placeholder': { color: '#9ca3af' },
+          },
+        });
+        await card.attach('#square-card-container');
+        squareCard = card; // only set AFTER successful attach
+      } catch (err) {
+        squareCard = null;
+        console.error('Square init error:', err);
+        const el = document.getElementById('square-error');
+        if (el) el.textContent = 'Card field could not load — ' + (err.message || err) + '. Refresh and try again.';
+      }
+    }
+
+    async function loadPayPalSDK() {
+      if (window.paypal) return;
+      return new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        // REPLACE YOUR_PAYPAL_CLIENT_ID with your actual PayPal client ID
+        s.src     = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD`;
+        s.onload  = resolve;
+        s.onerror = () => reject(new Error('Could not load PayPal SDK'));
+        document.head.appendChild(s);
+      });
+    }
+
+    function initPayPalButton() {
+      if (paypalInited || !window.paypal) return;
+      const container = document.getElementById('paypal-button-container');
+      if (!container) return;
+      paypalInited = true;
+
+      paypal.Buttons({
+        style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay' },
+        createOrder: async () => {
+          if (!validateForm()) throw new Error('Please complete the form above first.');
+          const svc = state.selectedService;
+          const data = await initiatePayPalOrder({
+            hold_id:       state.holdId,
+            session_token: state.sessionToken,
+            service_id:    svc.id,
+            amount_cents:  svc.price_cents,
+            client_name:   state.form.name,
+            client_email:  state.form.email,
+            client_phone:  state.form.phone,
+            notes:         state.form.notes,
+            how_heard:     state.form.how_heard,
+            timezone_client: state.clientTimezone,
+          });
+          return data.paypal_order_id;
+        },
+        onApprove: async (ppData) => {
+          // Worker captures the PayPal order and creates the booking
+          const result = await apiFetch('/api/payment/paypal/capture', {
+            method: 'POST',
+            body: JSON.stringify({ order_id: ppData.orderID }),
+          });
+          setState({
+            confirmationCode: result.confirmation_code,
+            booking: result.booking || {
+              confirmation_code: result.confirmation_code,
+              date:         state.selectedDate,
+              start_time:   state.selectedTime,
+              client_name:  state.form.name,
+              client_email: state.form.email,
+            },
+            step: 4,
+          });
+        },
+        onError: (err) => {
+          const el = document.getElementById('booking-error');
+          if (el) el.textContent = 'PayPal error: ' + (err.message || 'Please try again.');
+        },
+      }).render('#paypal-button-container');
+    }
+
+    function updateField(field, value) {
+      state.form[field] = value;
+      // Clear inline error on input
+      const errEl = document.getElementById(`err-${field === 'how_heard' ? 'how' : field}`);
+      if (errEl) errEl.textContent = '';
+      const inputEl = document.getElementById(`f-${field === 'how_heard' ? 'how' : field}`);
+      if (inputEl) inputEl.classList.remove('error');
+    }
+
+    function validateForm() {
+      let valid = true;
+
+      function setErr(id, inputId, msg) {
+        const e = document.getElementById(id);
+        const i = document.getElementById(inputId);
+        if (e) e.textContent = msg;
+        if (i) { if (msg) i.classList.add('error'); else i.classList.remove('error'); }
+        if (msg) valid = false;
+      }
+
+      const { name, email, phone, how_heard } = state.form;
+      setErr('err-name',  'f-name',  name.trim()  ? '' : 'Full name is required.');
+      setErr('err-email', 'f-email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
+        ? '' : 'Please enter a valid email address.');
+      setErr('err-phone', 'f-phone', /^[\d\s\-+().]{7,20}$/.test(phone.trim())
+        ? '' : 'Please enter a valid phone number.');
+      setErr('err-how',   'f-how',   how_heard ? '' : 'Please let us know how you found us.');
+
+      return valid;
+    }
+
+    async function handleFreeBooking() {
+      if (!validateForm()) return;
+      const btn = document.getElementById('btn-confirm');
+      const errEl = document.getElementById('booking-error');
+      setButtonLoading(btn, true);
+      if (errEl) errEl.textContent = '';
+
+      try {
+        const result = await createBooking({
+          hold_id:        state.holdId,
+          session_token:  state.sessionToken,
+          service_id:     state.selectedService.id,
+          date:           state.selectedDate,
+          start_time:     state.selectedTime,
+          client_name:    state.form.name,
+          client_email:   state.form.email,
+          client_phone:   state.form.phone,
+          notes:          state.form.notes,
+          how_heard:      state.form.how_heard,
+          timezone_client: state.clientTimezone,
+        });
+        stopHoldTimer();
+        setState({
+          confirmationCode: result.confirmation_code,
+          booking: result.booking || {
+            confirmation_code: result.confirmation_code,
+            date:         state.selectedDate,
+            start_time:   state.selectedTime,
+            client_name:  state.form.name,
+            client_email: state.form.email,
+          },
+          step: 4,
+        });
+      } catch (err) {
+        if (errEl) errEl.textContent = err.message || 'Something went wrong. Please try again.';
+        setButtonLoading(btn, false);
+      }
+    }
+
+    async function handleSquarePayment() {
+      if (!validateForm()) return;
+      if (!squareCard) {
+        const errEl = document.getElementById('square-error');
+        if (errEl) errEl.textContent = 'Card field is not ready yet — please wait a moment and try again.';
+        return;
+      }
+
+      const btn   = document.getElementById('btn-square');
+      const errEl = document.getElementById('square-error');
+      setButtonLoading(btn, true);
+      if (errEl) errEl.textContent = '';
+
+      try {
+        const result = await squareCard.tokenize();
+        if (result.status !== 'OK') {
+          const msg = result.errors?.map(e => e.message).join(', ') || 'Card error.';
+          if (errEl) errEl.textContent = msg;
+          setButtonLoading(btn, false);
+          return;
+        }
+        const svc = state.selectedService;
+        const bk  = await payWithSquare({
+          hold_id:        state.holdId,
+          session_token:  state.sessionToken,
+          service_id:     svc.id,
+          source_id:      result.token,
+          amount_cents:   svc.price_cents,
+          client_name:    state.form.name,
+          client_email:   state.form.email,
+          client_phone:   state.form.phone,
+          notes:          state.form.notes,
+          how_heard:      state.form.how_heard,
+          timezone_client: state.clientTimezone,
+        });
+        stopHoldTimer();
+        setState({
+          confirmationCode: bk.confirmation_code,
+          booking: bk.booking || {
+            confirmation_code: bk.confirmation_code,
+            date:         state.selectedDate,
+            start_time:   state.selectedTime,
+            client_name:  state.form.name,
+            client_email: state.form.email,
+          },
+          step: 4,
+        });
+      } catch (err) {
+        if (errEl) errEl.textContent = err.message || 'Payment failed. Please try again.';
+        setButtonLoading(btn, false);
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+     * STEP 4 — CONFIRMATION
+     * ═══════════════════════════════════════════════════════════════════════ */
+
+    function renderStep4(container) {
+      const svc  = state.selectedService;
+      const bk   = state.booking || {};
+      const code = state.confirmationCode || bk.confirmation_code || '—';
+      const { date, time } = displayDateTime(
+        bk.date || state.selectedDate,
+        bk.start_time || bk.time || state.selectedTime,
+        state.clientTimezone
+      );
+      const mt     = meetMeta(svc.meeting_type || 'meet');
+      const isPaid = svc.price_cents > 0;
+
+      // Meeting detail line
+      let meetDetail = mt.label;
+      if ((svc.meeting_type === 'meet' || svc.meeting_type === 'zoom') && bk.meeting_link) {
+        meetDetail = `${mt.label} — <a href="${escAttr(bk.meeting_link)}">${escHTML(bk.meeting_link)}</a>`;
+      } else if (svc.meeting_type === 'phone' || svc.meeting_type === 'facetime') {
+        meetDetail = `${mt.label} — ${escHTML(bk.client_phone || state.form.phone || '')}`;
+      } else if (svc.meeting_type === 'inperson' && svc.meeting_address) {
+        meetDetail = `${mt.label} — ${escHTML(svc.meeting_address)}`;
+      }
+
+      container.innerHTML = `
+        <div class="step-content">
+          <div class="confirm-wrap">
+            <div class="check-circle"></div>
+            <h2 class="confirm-title">Booking Confirmed!</h2>
+            <p class="confirm-sub">We can't wait to work with you.</p>
+
+            <div class="confirm-card">
+              <div class="confirm-code-wrap">
+                <div class="confirm-code-label">Confirmation Code</div>
+                <div class="confirm-code-value">${escHTML(code)}</div>
+              </div>
+              <div class="confirm-rows">
+                <div class="confirm-row">
+                  <span class="confirm-row-label">Service</span>
+                  <span class="confirm-row-value">${escHTML(svc.name)}</span>
+                </div>
+                <div class="confirm-row">
+                  <span class="confirm-row-label">Date &amp; Time</span>
+                  <span class="confirm-row-value">${date}<br><span style="color:var(--text-muted);font-size:13px;">${time}</span></span>
+                </div>
+                <div class="confirm-row">
+                  <span class="confirm-row-label">Duration</span>
+                  <span class="confirm-row-value">${svc.duration_min} minutes</span>
+                </div>
+                <div class="confirm-row">
+                  <span class="confirm-row-label">How We Meet</span>
+                  <span class="confirm-row-value">${meetDetail}</span>
+                </div>
+                <div class="confirm-row">
+                  <span class="confirm-row-label">Name</span>
+                  <span class="confirm-row-value">${escHTML(bk.client_name || state.form.name)}</span>
+                </div>
+                <div class="confirm-row">
+                  <span class="confirm-row-label">Email</span>
+                  <span class="confirm-row-value">${escHTML(bk.client_email || state.form.email)}</span>
+                </div>
+                ${isPaid ? `
+                <div class="confirm-row">
+                  <span class="confirm-row-label">Paid</span>
+                  <span class="confirm-row-value" style="color:#34d399;">${fmt$(svc.price_cents)} ✓</span>
+                </div>` : ''}
+              </div>
+            </div>
+
+            <div class="confirm-actions">
+              <button class="btn btn-outline" onclick="downloadICS()" style="gap:10px;">
+                📅 Add to Calendar (.ics)
+              </button>
+              <a class="btn btn-primary" href="/book.html"
+                 style="text-decoration:none;color:var(--charcoal);">
+                Book Another Session
+              </a>
+            </div>
+
+            <div class="confirm-email-note">
+              ✉️ A confirmation email with calendar invite has been sent to
+              <strong style="color:var(--text);margin-left:4px;">${escHTML(bk.client_email || state.form.email)}</strong>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+     * NAVIGATION
+     * ═══════════════════════════════════════════════════════════════════════ */
+
+    function goToStep(n) {
+      if (n >= state.step) return; // can only go back
+      if (n === 1) {
+        stopHoldTimer();
+        setState({
+          step: 1, selectedDate: null, selectedTime: null,
+          holdId: null, sessionToken: null, holdExpiry: null,
+        });
+      } else if (n === 2) {
+        // Don't release hold — it'll expire on its own
+        setState({ step: 2 });
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+     * EVENT DELEGATION
+     * ═══════════════════════════════════════════════════════════════════════ */
+
+    document.getElementById('step-content').addEventListener('click', async e => {
+      const el = e.target.closest('[data-action]');
+      if (!el) return;
+      const action = el.dataset.action;
+
+      if (action === 'select-service') {
+        const id  = Number(el.dataset.id);
+        const svc = state.services.find(s => s.id === id);
+        if (!svc) return;
+
+        setState({ selectedService: svc });
+        // Re-render cards with selected state
+        const grid = document.getElementById('services-grid');
+        if (grid) renderServiceCards(grid, state.services);
+
+        // Auto-advance after 300ms
+        setTimeout(() => {
+          setState({
+            step: 2,
+            currentMonth: new Date(),
+            availability: {},
+            fetchedMonths: new Set(),
+            selectedDate: null,
+            selectedTime: null,
+          });
+        }, 300);
+        return;
+      }
+
+      if (action === 'select-date') {
+        const date = el.dataset.date;
+        setState({ selectedDate: date, selectedTime: null });
+        renderCalendar();
+        renderSlotsPanel();
+        return;
+      }
+
+      if (action === 'select-slot') {
+        await handleSelectSlot(el.dataset.time);
+        return;
+      }
+
+      if (action === 'prev-month') {
+        const d = new Date(state.currentMonth);
+        d.setMonth(d.getMonth() - 1);
+        setState({ currentMonth: d });
+        const cal = document.getElementById('calendar-panel');
+        if (cal) { renderCalendar(); }
+        loadMonthAvailability(d.getFullYear(), d.getMonth());
+        return;
+      }
+
+      if (action === 'next-month') {
+        const d = new Date(state.currentMonth);
+        d.setMonth(d.getMonth() + 1);
+        setState({ currentMonth: d });
+        const cal = document.getElementById('calendar-panel');
+        if (cal) { renderCalendar(); }
+        loadMonthAvailability(d.getFullYear(), d.getMonth());
+        return;
+      }
+    });
+
+    /* ═══════════════════════════════════════════════════════════════════════
+     * HELPERS
+     * ═══════════════════════════════════════════════════════════════════════ */
+
+    function escHTML(str) {
+      return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function escAttr(str) { return escHTML(str); }
+
+    function setButtonLoading(btn, loading) {
+      if (!btn) return;
+      if (loading) {
+        btn._origText = btn.innerHTML;
+        btn.innerHTML = `<div class="spinner"></div> Processing…`;
+        btn.disabled  = true;
+      } else {
+        btn.innerHTML = btn._origText || btn.innerHTML;
+        btn.disabled  = false;
+      }
+    }
+
+    function showInlineMsg(containerId, msg, type) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      const div = document.createElement('div');
+      div.style.cssText = `
+        margin-top:12px;padding:10px 14px;border-radius:8px;font-size:13px;
+        background:${type==='error'?'rgba(248,113,113,0.1)':'var(--gold-light)'};
+        color:${type==='error'?'var(--red)':'var(--gold)'};
+        border:1px solid ${type==='error'?'rgba(248,113,113,0.3)':'var(--border)'};
+      `;
+      div.textContent = msg;
+      el.appendChild(div);
+      setTimeout(() => div.remove(), 5000);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════════════
+     * INIT
+     * ═══════════════════════════════════════════════════════════════════════ */
+
+    function init() {
+      render();
+    }
+
+    init();
+  </script>
+</body>
+</html>

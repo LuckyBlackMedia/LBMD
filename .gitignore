@@ -1,0 +1,25 @@
+# Vault (local-only pre-edit snapshots)
+_vault/
+
+# Node / build
+node_modules/
+dist/
+.wrangler/
+.vite/
+
+# Env + secrets
+.env
+.env.*
+.dev.vars
+wrangler.secrets.toml
+
+# OS / editor
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+*.log
+
+# Portfolio app is symlinked, not tracked in this repo
+portfolio-app
