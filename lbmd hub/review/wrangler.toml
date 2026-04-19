@@ -1,0 +1,59 @@
+name            = "lbm-admin-api"
+main            = "worker/index.js"
+compatibility_date = "2025-01-01"
+
+# Serve static HTML files from the project root as assets
+assets = { directory = "." }
+
+# ── D1 — Shared portal database (adds admin_* tables) ────────────────────────
+[[d1_databases]]
+binding      = "DB"
+database_name = "lbmd-portal-db"
+database_id  = "3f49abe8-644f-4df0-a79a-ba4acf7402ea"
+
+# ── KV — Session store (shared, keys prefixed lbm_admin:) ────────────────────
+[[kv_namespaces]]
+binding = "SESSIONS"
+id      = "006815380b47486c8c47928265161ae2"
+
+# ── Custom Domains ────────────────────────────────────────────────────────────
+[[routes]]
+pattern       = "admin.myluckyblackmedia.com"
+custom_domain = true
+
+[[routes]]
+pattern       = "services.myluckyblackmedia.com"
+custom_domain = true
+
+# ── Vars — Phase 2 + 3 ───────────────────────────────────────────────────────
+[vars]
+ICLOUD_CALENDAR_URL = "https://caldav.icloud.com"
+ICLOUD_CALENDAR_ID  = ""   # fill after running: POST /api/discover-calendar
+TIMEZONE_ADMIN      = "America/Los_Angeles"
+
+# Square — set SQUARE_ENVIRONMENT to "production" after testing
+SQUARE_ENVIRONMENT  = "production"
+SQUARE_LOCATION_ID  = "LM37VZ030R65R"   # from Square Developer dashboard → Locations
+
+# PayPal — "live" uses production API, "sandbox" uses test API
+PAYPAL_MODE         = "live"
+
+# ── Cron — Phase 2 (daily reminder emails, 9 AM UTC = 1 AM or 2 AM PT) ───────
+[triggers]
+crons = ["0 9 * * *"]
+
+# ── Secrets (set once via CLI, never in source) ───────────────────────────────
+# Phase 1:
+# wrangler secret put ADMIN_PASSWORD
+# wrangler secret put RECOVERY_CODE
+#
+# Phase 2:
+# wrangler secret put ICLOUD_APPLE_ID
+# wrangler secret put ICLOUD_APP_PASSWORD
+# wrangler secret put RESEND_API_KEY
+# wrangler secret put ADMIN_EMAIL
+#
+# Phase 3:
+# wrangler secret put SQUARE_ACCESS_TOKEN    # server-side token from Square Dev dashboard
+# wrangler secret put PAYPAL_CLIENT_ID       # same client ID as in book.html
+# wrangler secret put PAYPAL_CLIENT_SECRET   # from PayPal Developer dashboard

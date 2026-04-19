@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cancel or Reschedule — Lucky Black Media & Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+button{cursor:pointer;background:none;border:none;color:inherit;font:inherit}
+a{text-decoration:none;color:inherit}
+input,select,textarea{font:inherit}
+
+:root{
+  --navy:       #0a1628;
+  --charcoal:   #1a1a1a;
+  --surface:    #111827;
+  --surface2:   #1f2937;
+  --gold:       #B8962E;
+  --gold-light: rgba(184,150,46,0.12);
+  --gold-border:rgba(184,150,46,0.2);
+  --gold-hover: #d4af5a;
+  --text:       #f9fafb;
+  --text-muted: #9ca3af;
+  --red:        #ef4444;
+  --green:      #22c55e;
+  --radius:     12px;
+  --radius-md:  8px;
+  --transition: 160ms cubic-bezier(.16,1,.3,1);
+  --font-display:'Cormorant Garamond',Georgia,serif;
+  --font-body:   system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+
+body{
+  min-height:100dvh;
+  background:var(--navy);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:.9375rem;
+  line-height:1.6;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ── NAVBAR ── */
+.navbar{
+  border-bottom:1px solid var(--gold-border);
+  background:rgba(10,22,40,.95);
+  backdrop-filter:blur(16px);
+  padding:.875rem 1.5rem;
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+}
+.navbar-brand{
+  font-family:var(--font-display);
+  font-size:1.1rem;
+  font-weight:700;
+  color:var(--gold);
+  letter-spacing:.06em;
+}
+.navbar-sub{
+  font-family:var(--font-body);
+  font-size:.65rem;
+  font-weight:600;
+  letter-spacing:.35em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  margin-left:.5rem;
+}
+
+/* ── MAIN LAYOUT ── */
+.page{
+  flex:1;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding:3rem 1rem 4rem;
+}
+.container{
+  width:min(520px,100%);
+}
+
+/* ── STEPS ── */
+.step{display:none}
+.step.active{display:block}
+
+/* ── STEP INDICATOR ── */
+.step-indicator{
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+  margin-bottom:2.5rem;
+}
+.step-dot{
+  width:28px;height:28px;
+  border-radius:50%;
+  border:1px solid var(--gold-border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;
+  font-weight:700;
+  color:var(--text-muted);
+  flex-shrink:0;
+  transition:all var(--transition);
+}
+.step-dot.done{
+  background:var(--gold);
+  border-color:var(--gold);
+  color:#0a0a0a;
+}
+.step-dot.active{
+  background:var(--gold-light);
+  border-color:var(--gold);
+  color:var(--gold);
+}
+.step-line{
+  flex:1;
+  height:1px;
+  background:var(--gold-border);
+}
+.step-label{
+  font-size:.625rem;
+  font-weight:700;
+  letter-spacing:.3em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  margin-top:.375rem;
+}
+
+/* ── CARD ── */
+.card{
+  background:var(--charcoal);
+  border:1px solid var(--gold-border);
+  border-radius:var(--radius);
+  padding:2rem;
+}
+.card-title{
+  font-family:var(--font-display);
+  font-size:1.5rem;
+  font-weight:700;
+  color:var(--text);
+  margin-bottom:.375rem;
+  line-height:1.2;
+}
+.card-sub{
+  font-size:.875rem;
+  color:var(--text-muted);
+  margin-bottom:1.75rem;
+}
+
+/* ── FORM ── */
+.form-group{display:flex;flex-direction:column;gap:.375rem;margin-bottom:1.25rem}
+.form-label{
+  font-size:.65rem;
+  font-weight:700;
+  letter-spacing:.3em;
+  text-transform:uppercase;
+  color:var(--gold);
+}
+.form-input{
+  width:100%;
+  padding:.625rem .875rem;
+  background:var(--surface);
+  border:1px solid var(--gold-border);
+  border-radius:var(--radius-md);
+  color:var(--text);
+  font-size:.9375rem;
+  outline:none;
+  transition:border-color var(--transition);
+}
+.form-input:focus{border-color:var(--gold)}
+.form-input::placeholder{color:var(--text-muted)}
+
+.form-err{
+  font-size:.75rem;
+  color:#f87171;
+  min-height:1.1em;
+}
+
+/* ── BUTTONS ── */
+.btn-primary{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  width:100%;
+  padding:.75rem 1.5rem;
+  background:var(--gold);
+  color:#0a0a0a;
+  font-size:.75rem;
+  font-weight:700;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  border:1px solid var(--gold);
+  border-radius:var(--radius-md);
+  transition:background var(--transition);
+  margin-top:.5rem;
+}
+.btn-primary:hover{background:var(--gold-hover)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+
+.btn-secondary{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  width:100%;
+  padding:.75rem 1.5rem;
+  background:none;
+  color:var(--text-muted);
+  font-size:.75rem;
+  font-weight:700;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  border:1px solid var(--gold-border);
+  border-radius:var(--radius-md);
+  transition:color var(--transition),border-color var(--transition);
+  margin-top:.5rem;
+}
+.btn-secondary:hover{color:var(--gold);border-color:var(--gold)}
+
+/* ── BOOKING SUMMARY ── */
+.summary-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:1rem;
+  padding:.5rem 0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.summary-row:last-child{border-bottom:none}
+.summary-key{font-size:.75rem;color:var(--text-muted);flex-shrink:0;padding-top:.1rem}
+.summary-val{font-size:.875rem;color:var(--text);text-align:right}
+
+/* ── CHOICE CARDS ── */
+.choice-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.875rem;
+  margin-bottom:1.5rem;
+}
+.choice-card{
+  background:var(--surface);
+  border:2px solid var(--gold-border);
+  border-radius:var(--radius-md);
+  padding:1.25rem 1rem;
+  cursor:pointer;
+  text-align:center;
+  transition:border-color var(--transition),background var(--transition);
+  user-select:none;
+}
+.choice-card:hover{border-color:var(--gold);background:var(--gold-light)}
+.choice-card.selected{border-color:var(--gold);background:var(--gold-light)}
+.choice-card .choice-icon{font-size:1.5rem;margin-bottom:.5rem}
+.choice-card .choice-title{
+  font-family:var(--font-display);
+  font-size:.95rem;
+  font-weight:700;
+  color:var(--text);
+  margin-bottom:.25rem;
+}
+.choice-card .choice-desc{font-size:.75rem;color:var(--text-muted);line-height:1.4}
+.choice-card.selected .choice-title{color:var(--gold)}
+
+/* ── RESULT ── */
+.result-icon{
+  font-size:2.5rem;
+  text-align:center;
+  margin-bottom:1rem;
+}
+.result-code{
+  background:var(--gold-light);
+  border:1px solid var(--gold-border);
+  border-radius:var(--radius-md);
+  padding:1.25rem;
+  text-align:center;
+  margin:1rem 0 1.5rem;
+}
+.result-code-label{
+  font-size:.65rem;
+  font-weight:700;
+  letter-spacing:.35em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:.375rem;
+}
+.result-code-value{
+  font-family:var(--font-display);
+  font-size:1.75rem;
+  font-weight:700;
+  color:var(--text);
+  letter-spacing:.1em;
+}
+
+/* ── SPINNER ── */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{
+  display:inline-block;
+  width:16px;height:16px;
+  border:2px solid rgba(10,10,10,.3);
+  border-top-color:currentColor;
+  border-radius:50%;
+  animation:spin .65s linear infinite;
+  vertical-align:middle;
+}
+
+@media(max-width:480px){
+  .card{padding:1.5rem 1.25rem}
+  .choice-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <span class="navbar-brand" style="display:flex;align-items:center;gap:10px;">
+    <img src="/images/logo-mark.png" alt="LBM" style="height:32px;width:auto;">
+    Lucky Black Media & Design<span class="navbar-sub">Cancel / Reschedule</span>
+  </span>
+</nav>
+
+<main class="page">
+  <div class="container">
+
+    <!-- Step indicator -->
+    <div class="step-indicator">
+      <div>
+        <div class="step-dot active" id="dot-1">1</div>
+        <div class="step-label">Look Up</div>
+      </div>
+      <div class="step-line"></div>
+      <div>
+        <div class="step-dot" id="dot-2">2</div>
+        <div class="step-label">Choose</div>
+      </div>
+      <div class="step-line"></div>
+      <div>
+        <div class="step-dot" id="dot-3">3</div>
+        <div class="step-label">Done</div>
+      </div>
+    </div>
+
+    <!-- Step 1: Look up booking by confirmation code -->
+    <div class="step active" id="step-1">
+      <div class="card">
+        <h1 class="card-title">Cancel or Reschedule</h1>
+        <p class="card-sub">Enter the confirmation code from your booking email to get started.</p>
+        <div class="form-group">
+          <label class="form-label" for="conf-code">Confirmation Code</label>
+          <input type="text" id="conf-code" class="form-input"
+                 placeholder="LBM-XXXX-XXXX"
+                 autocomplete="off"
+                 style="text-transform:uppercase;letter-spacing:.1em">
+          <div class="form-err" id="err-1">&nbsp;</div>
+        </div>
+        <button class="btn-primary" id="lookup-btn" onclick="lookupBooking()">
+          Look Up Booking
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: Show booking + choose refund or credit -->
+    <div class="step" id="step-2">
+      <div class="card">
+        <h2 class="card-title" style="font-size:1.25rem;margin-bottom:.25rem">Your Booking</h2>
+        <p class="card-sub" id="s2-sub">Confirm the details below before cancelling.</p>
+
+        <!-- Booking summary -->
+        <div style="margin-bottom:1.75rem;background:var(--surface);border:1px solid var(--gold-border);
+                    border-radius:var(--radius-md);padding:1rem 1.25rem">
+          <div class="summary-row">
+            <span class="summary-key">Service</span>
+            <span class="summary-val" id="s2-svc"></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">Date</span>
+            <span class="summary-val" id="s2-date"></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">Time</span>
+            <span class="summary-val" id="s2-time"></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">Duration</span>
+            <span class="summary-val" id="s2-dur"></span>
+          </div>
+          <div class="summary-row" id="s2-status-row">
+            <span class="summary-key">Status</span>
+            <span class="summary-val" id="s2-status"></span>
+          </div>
+        </div>
+
+        <!-- Cancellation type -->
+        <p style="font-size:.65rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;
+                  color:var(--gold);margin-bottom:.875rem">How would you like to cancel?</p>
+        <div class="choice-grid">
+          <div class="choice-card selected" id="choice-credit" onclick="selectChoice('credit')">
+            <div class="choice-icon">🔁</div>
+            <div class="choice-title">Rebook Credit</div>
+            <div class="choice-desc">Get a credit code for a future session. Valid 12 months.</div>
+          </div>
+          <div class="choice-card" id="choice-refund" onclick="selectChoice('refund')">
+            <div class="choice-icon">💳</div>
+            <div class="choice-title">Refund</div>
+            <div class="choice-desc" id="refund-desc">97% refund if cancelled 4+ hours before your session.</div>
+          </div>
+        </div>
+
+        <p style="font-size:.75rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.5" id="policy-note">
+          Full rebook credit is always available. Refunds are 97% of your payment (minus processing fees)
+          if cancelled at least 4 hours before your session.
+        </p>
+
+        <div style="display:flex;flex-direction:column;gap:.5rem">
+          <button class="btn-primary" id="cancel-btn" onclick="submitCancellation()"
+                  style="background:var(--red);border-color:var(--red);color:#fff">
+            Confirm Cancellation
+          </button>
+          <button class="btn-secondary" onclick="goBack()">← Go Back</button>
+        </div>
+        <div class="form-err" id="err-2" style="margin-top:.625rem">&nbsp;</div>
+      </div>
+    </div>
+
+    <!-- Step 3: Result -->
+    <div class="step" id="step-3">
+      <div class="card" style="text-align:center">
+        <div class="result-icon" id="result-icon">✅</div>
+        <h2 class="card-title" style="text-align:center;margin-bottom:.5rem" id="result-title">
+          Booking Cancelled
+        </h2>
+        <p class="card-sub" style="text-align:center;margin-bottom:1.25rem" id="result-sub"></p>
+
+        <div id="result-detail"></div>
+
+        <a href="/book.html"
+           class="btn-primary" style="text-decoration:none;margin-top:1rem">
+          Book a New Session →
+        </a>
+        <a href="/admin.html"
+           class="btn-secondary" style="text-decoration:none">
+          Admin Dashboard
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /.container -->
+</main>
+
+<script>
+'use strict';
+
+const API_BASE = '';
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let _booking  = null;   // full booking object from confirm endpoint
+let _choice   = 'credit';
+
+// ── Utilities ────────────────────────────────────────────────────────────────
+
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str || '';
+  return d.innerHTML;
+}
+
+function setStep(n) {
+  document.querySelectorAll('.step').forEach((el, i) => {
+    el.classList.toggle('active', i + 1 === n);
+  });
+  for (let i = 1; i <= 3; i++) {
+    const dot = document.getElementById(`dot-${i}`);
+    dot.className = 'step-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+    dot.textContent = i < n ? '✓' : String(i);
+  }
+}
+
+function formatDate(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString('en-US', {
+    timeZone: 'UTC', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+  });
+}
+
+function formatTime(timeStr, tz) {
+  if (!timeStr) return '—';
+  const [h, m] = timeStr.split(':').map(Number);
+  const dt = new Date(Date.UTC(2000, 0, 1, h, m));
+  const formatted = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz || 'America/Los_Angeles',
+    hour: 'numeric', minute: '2-digit', hour12: true,
+  }).format(dt);
+  const tzLabel = new Intl.DateTimeFormat('en-US', {
+    timeZone: tz || 'America/Los_Angeles', timeZoneName: 'short',
+  }).formatToParts(dt).find(p => p.type === 'timeZoneName')?.value || '';
+  return `${formatted} ${tzLabel}`.trim();
+}
+
+// ── Step 1: Look up booking ───────────────────────────────────────────────────
+
+document.getElementById('conf-code').addEventListener('keydown', e => {
+  if (e.key === 'Enter') lookupBooking();
+});
+
+async function lookupBooking() {
+  const code = document.getElementById('conf-code').value.trim().toUpperCase();
+  const err  = document.getElementById('err-1');
+  const btn  = document.getElementById('lookup-btn');
+
+  if (!code) {
+    err.textContent = 'Please enter your confirmation code.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Looking up…';
+  err.textContent = '';
+
+  try {
+    const res  = await fetch(`${API_BASE}/api/booking/confirm?code=${encodeURIComponent(code)}`);
+    const data = await res.json();
+
+    if (!res.ok || data.error) {
+      err.textContent = data.error || 'Booking not found. Please check your confirmation code.';
+      btn.disabled = false;
+      btn.textContent = 'Look Up Booking';
+      return;
+    }
+
+    if (data.status === 'cancelled') {
+      err.textContent = 'This booking has already been cancelled.';
+      btn.disabled = false;
+      btn.textContent = 'Look Up Booking';
+      return;
+    }
+
+    _booking = data;
+    populateStep2();
+    setStep(2);
+
+  } catch (e) {
+    err.textContent = 'Network error — please check your connection and try again.';
+    btn.disabled = false;
+    btn.textContent = 'Look Up Booking';
+  }
+}
+
+// ── Step 2: Populate booking details + choose ─────────────────────────────────
+
+function populateStep2() {
+  const b   = _booking;
+  const svc = b.service || {};
+  const tz  = b.timezone_client || 'America/Los_Angeles';
+
+  document.getElementById('s2-svc').textContent    = svc.name || 'Session';
+  document.getElementById('s2-date').textContent   = formatDate(b.date);
+  document.getElementById('s2-time').textContent   = formatTime(b.start_time, tz);
+  document.getElementById('s2-dur').textContent    = (svc.duration_min || 60) + ' minutes';
+  document.getElementById('s2-status').textContent = b.status || '—';
+
+  // Check refund eligibility
+  const startTime = b.start_time || '09:00';
+  const [h, m] = startTime.split(':').map(Number);
+  const [y, mo, d] = b.date.split('-').map(Number);
+  const sessionMs  = new Date(Date.UTC(y, mo - 1, d, h, m)).getTime();
+  const hoursUntil = (sessionMs - Date.now()) / 3600000;
+
+  const refundNote = document.getElementById('refund-desc');
+  const policyNote = document.getElementById('policy-note');
+
+  if (hoursUntil < 4) {
+    refundNote.textContent = 'Less than 4 hours until your session — no cash refund available.';
+    policyNote.innerHTML = `Your session is in <strong style="color:var(--text)">${Math.max(0, Math.round(hoursUntil * 10) / 10)} hours</strong>.
+      Cancelling within 4 hours does not qualify for a refund, but you can still get a full rebook credit.`;
+    // Auto-select credit if refund unavailable
+    selectChoice('credit');
+    document.getElementById('choice-refund').style.opacity = '.5';
+    document.getElementById('choice-refund').style.cursor  = 'not-allowed';
+    document.getElementById('choice-refund').onclick       = null;
+  } else {
+    const refundPct = Math.round(97);
+    refundNote.textContent = `~$${((_booking.price || 0) * 0.97).toFixed(2)} refund (97% of payment) — qualifies for refund.`;
+  }
+}
+
+function selectChoice(c) {
+  _choice = c;
+  document.getElementById('choice-credit').classList.toggle('selected', c === 'credit');
+  document.getElementById('choice-refund').classList.toggle('selected',  c === 'refund');
+}
+
+function goBack() {
+  setStep(1);
+  document.getElementById('lookup-btn').disabled = false;
+  document.getElementById('lookup-btn').textContent = 'Look Up Booking';
+  document.getElementById('err-1').textContent = '';
+}
+
+// ── Step 3: Submit cancellation ───────────────────────────────────────────────
+
+async function submitCancellation() {
+  const btn = document.getElementById('cancel-btn');
+  const err = document.getElementById('err-2');
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Cancelling…';
+  err.textContent = '';
+
+  try {
+    const res  = await fetch(`${API_BASE}/api/booking/cancel`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({
+        code:   _booking.confirmation_code,
+        choice: _choice,
+      }),
+    });
+    const data = await res.json();
+
+    if (!res.ok || !data.ok) {
+      err.textContent = data.error || 'Cancellation failed — please contact support.';
+      btn.disabled = false;
+      btn.innerHTML = 'Confirm Cancellation';
+      return;
+    }
+
+    showResult(data);
+    setStep(3);
+
+  } catch (e) {
+    err.textContent = 'Network error — please try again or contact support.';
+    btn.disabled = false;
+    btn.innerHTML = 'Confirm Cancellation';
+  }
+}
+
+function showResult(data) {
+  const svcName = (_booking.service || {}).name || 'your session';
+
+  document.getElementById('result-title').textContent = 'Booking Cancelled';
+  document.getElementById('result-sub').textContent =
+    `Your booking for ${svcName} has been cancelled.`;
+
+  let detailHtml = '';
+
+  if (data.choice === 'credit' && data.creditCode) {
+    document.getElementById('result-icon').textContent = '🔁';
+    detailHtml = `
+      <p style="font-size:.875rem;color:var(--text-muted);margin-bottom:.5rem">
+        We've generated a rebook credit for you:
+      </p>
+      <div class="result-code">
+        <div class="result-code-label">Rebook Credit Code</div>
+        <div class="result-code-value">${esc(data.creditCode)}</div>
+      </div>
+      <p style="font-size:.8125rem;color:var(--text-muted);line-height:1.5;margin-bottom:.5rem">
+        Use this code when booking your next session. Valid for 12 months.<br>
+        Save it — it won't be shown again.
+      </p>`;
+  } else if (data.choice === 'refund' && data.refundAmount > 0) {
+    document.getElementById('result-icon').textContent = '💳';
+    detailHtml = `
+      <div class="result-code">
+        <div class="result-code-label">Refund Amount</div>
+        <div class="result-code-value">$${Number(data.refundAmount).toFixed(2)}</div>
+      </div>
+      <p style="font-size:.8125rem;color:var(--text-muted);line-height:1.5;margin-bottom:.5rem">
+        Your refund has been initiated. Allow 5–10 business days to appear on your statement.<br>
+        A confirmation email has been sent to <strong style="color:var(--text)">${esc(_booking.client_email || '')}</strong>.
+      </p>`;
+  } else {
+    document.getElementById('result-icon').textContent = '✅';
+    detailHtml = `
+      <p style="font-size:.875rem;color:var(--text-muted);margin-bottom:1.25rem">
+        A confirmation of your cancellation has been sent to your email.
+      </p>`;
+  }
+
+  document.getElementById('result-detail').innerHTML = detailHtml;
+}
+</script>
+
+<footer style="text-align:center;padding:20px 24px;font-size:11px;color:#6b7280;border-top:1px solid rgba(255,255,255,0.06);">
+  &copy; 2026 Lucky Black Media & Design &nbsp;·&nbsp;
+  <a href="https://www.myluckyblackmedia.com" style="color:#B8962E;text-decoration:none;">myluckyblackmedia.com</a>
+  <span style="display:block;margin-top:5px;font-size:10px;opacity:0.35;letter-spacing:0.12em;">Powered by The BlackSuite</span>
+</footer>
+</body>
+</html>

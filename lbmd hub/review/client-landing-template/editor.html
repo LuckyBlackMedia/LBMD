@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Config Editor — LBM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#080808;--charcoal:#111111;--dark:#1C1C1C;--darker:#0D0D0D;
+  --gold:#B8962E;--gold-light:#D4AF5A;--gold-pale:#E8D49A;--gold-dark:#8C6D1F;
+  --silver:#999;--mid:#555;--off-white:#F7F4EE;--text:#CDCCCA;
+  --border:rgba(184,150,46,.14);--surface:rgba(255,255,255,.03);
+  --radius-sm:.375rem;--radius-md:.5rem;--radius-lg:.75rem;--radius-xl:1rem;
+  --font-display:'Cormorant Garamond',Georgia,serif;
+  --font-body:'Satoshi','Helvetica Neue',sans-serif;
+  --t:180ms cubic-bezier(.16,1,.3,1);
+}
+html{-webkit-font-smoothing:antialiased;height:100%;overflow:hidden}
+body{height:100dvh;display:flex;flex-direction:column;font-family:var(--font-body);font-size:.9rem;color:var(--text);background:var(--black);overflow:hidden}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;background:none;border:none;color:inherit;font:inherit}
+input,textarea,select{font:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(184,150,46,.25);border-radius:4px}
+
+/* ── HEADER ── */
+.editor-header{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 1.25rem;height:56px;
+  background:rgba(8,8,8,.97);
+  border-bottom:1px solid var(--border);
+  gap:1rem;
+  z-index:10;
+}
+.editor-title{font-family:var(--font-display);font-size:1.1rem;font-weight:600;color:var(--off-white);letter-spacing:.04em;white-space:nowrap}
+.editor-title span{font-size:.65rem;font-weight:700;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);display:block;margin-top:1px}
+.header-actions{display:flex;align-items:center;gap:.5rem;flex-shrink:0}
+.btn-sm{display:inline-flex;align-items:center;gap:.375rem;padding:.375rem .875rem;font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;border-radius:999px;transition:all var(--t);white-space:nowrap;min-height:32px}
+.btn-ghost-sm{border:1px solid var(--border);color:var(--silver)}
+.btn-ghost-sm:hover{border-color:var(--gold);color:var(--gold)}
+.btn-gold-sm{background:var(--gold);color:var(--black);border:1px solid var(--gold)}
+.btn-gold-sm:hover{background:var(--gold-light)}
+.header-back{font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--mid);display:flex;align-items:center;gap:.375rem;transition:color var(--t);white-space:nowrap}
+.header-back:hover{color:var(--gold)}
+.header-sep{width:1px;height:20px;background:var(--border);flex-shrink:0}
+.toast-inline{font-size:.7rem;letter-spacing:.1em;color:var(--gold);opacity:0;transition:opacity .3s;pointer-events:none}
+.toast-inline.show{opacity:1}
+
+/* ── LAYOUT ── */
+.editor-layout{flex:1;display:grid;grid-template-columns:400px 1fr;overflow:hidden;min-height:0}
+
+/* ── FORM PANEL ── */
+.form-panel{display:flex;flex-direction:column;background:var(--charcoal);border-right:1px solid var(--border);overflow:hidden;min-height:0}
+
+/* Tab nav */
+.tab-nav{flex-shrink:0;display:flex;overflow-x:auto;border-bottom:1px solid var(--border);background:var(--black);padding:.25rem .5rem 0;gap:.125rem;scrollbar-width:none}
+.tab-nav::-webkit-scrollbar{display:none}
+.tab-btn{padding:.5rem .75rem;font-size:.65rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--mid);border-radius:var(--radius-sm) var(--radius-sm) 0 0;border:1px solid transparent;border-bottom:none;white-space:nowrap;transition:all var(--t);background:none}
+.tab-btn:hover{color:var(--silver)}
+.tab-btn.active{color:var(--gold);background:var(--charcoal);border-color:var(--border)}
+
+/* Tab content */
+.tab-content{flex:1;overflow-y:auto;min-height:0;padding:1.25rem;display:none;flex-direction:column;gap:1rem}
+.tab-content.active{display:flex}
+
+/* Form elements */
+.field-group{display:flex;flex-direction:column;gap:.375rem}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.field-label{font-size:.65rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:var(--gold)}
+.field-hint{font-size:.65rem;color:var(--mid);letter-spacing:.04em;margin-top:.2rem;line-height:1.5}
+.field-input,.field-textarea,.field-select{
+  width:100%;padding:.5rem .75rem;
+  background:var(--dark);border:1px solid rgba(184,150,46,.12);border-radius:var(--radius-md);
+  color:var(--off-white);font-size:.85rem;outline:none;
+  transition:border-color var(--t);
+}
+.field-input:focus,.field-textarea:focus,.field-select:focus{border-color:var(--gold)}
+.field-input::placeholder,.field-textarea::placeholder{color:var(--mid)}
+.field-textarea{min-height:80px;resize:vertical;line-height:1.6}
+.field-select option{background:var(--dark)}
+
+/* Toggle */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:.5rem .75rem;background:var(--dark);border:1px solid rgba(184,150,46,.12);border-radius:var(--radius-md)}
+.toggle-label{font-size:.8rem;color:var(--text)}
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-track{position:absolute;inset:0;background:var(--mid);border-radius:11px;cursor:pointer;transition:background var(--t)}
+.toggle input:checked + .toggle-track{background:var(--gold)}
+.toggle-track::after{content:'';position:absolute;left:3px;top:3px;width:16px;height:16px;background:#fff;border-radius:50%;transition:transform var(--t)}
+.toggle input:checked + .toggle-track::after{transform:translateX(18px)}
+
+/* Color picker */
+.color-pick-row{display:flex;align-items:center;gap:.75rem}
+.color-pick-row input[type="color"]{width:48px;height:48px;padding:3px;border-radius:var(--radius-md);border:1px solid rgba(255,255,255,.12);background:var(--dark);cursor:pointer;flex-shrink:0}
+.color-hex-input{flex:1;font-family:monospace;letter-spacing:.08em;text-transform:uppercase}
+.color-presets{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem}
+.color-preset{width:28px;height:28px;border-radius:var(--radius-sm);border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s;flex-shrink:0}
+.color-preset:hover{transform:scale(1.18);border-color:rgba(255,255,255,.35)}
+
+/* Color override rows */
+.color-override-row{border:1px solid rgba(184,150,46,.12);border-radius:var(--radius-lg);overflow:hidden}
+.color-override-header{display:flex;align-items:center;justify-content:space-between;padding:.625rem .875rem;background:var(--dark);cursor:pointer;gap:.75rem}
+.color-override-swatch{width:20px;height:20px;border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,.1);flex-shrink:0}
+.color-override-label{flex:1;font-size:.78rem;color:var(--text)}
+.color-override-body{padding:.875rem;background:var(--darker);border-top:1px solid rgba(184,150,46,.1);display:none;flex-direction:column;gap:.5rem}
+.color-override-body.open{display:flex}
+
+/* Font picker */
+.font-picker-wrap{display:flex;flex-direction:column;gap:.5rem}
+.font-preview-card{
+  background:var(--dark);border:1px solid rgba(184,150,46,.12);border-radius:var(--radius-lg);
+  padding:.75rem;cursor:pointer;transition:border-color var(--t),background var(--t);
+  display:flex;align-items:center;justify-content:space-between;gap:.75rem;
+}
+.font-preview-card:hover,.font-preview-card.selected{border-color:var(--gold);background:rgba(184,150,46,.06)}
+.font-preview-card.selected::after{content:'✓';color:var(--gold);font-size:.8rem;font-weight:700;flex-shrink:0}
+.font-preview-text{line-height:1.2}
+.font-preview-name{font-size:.65rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--mid);margin-bottom:3px}
+.font-preview-sample{font-size:1.2rem;color:var(--off-white)}
+.font-preview-meta{font-size:.6rem;color:var(--mid);letter-spacing:.08em}
+.font-category-label{font-size:.6rem;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:var(--mid);padding:.5rem 0 .25rem;border-top:1px solid var(--border);margin-top:.25rem}
+.font-category-label:first-child{border-top:none;margin-top:0;padding-top:0}
+.pairing-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.pairing-btn{
+  background:var(--dark);border:1px solid rgba(184,150,46,.12);border-radius:var(--radius-md);
+  padding:.625rem .75rem;cursor:pointer;text-align:left;transition:border-color var(--t),background var(--t);
+}
+.pairing-btn:hover,.pairing-btn.active{border-color:var(--gold);background:rgba(184,150,46,.06)}
+.pairing-name{font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:3px}
+.pairing-fonts{font-size:.68rem;color:var(--mid);line-height:1.5}
+
+/* Layout controls */
+.option-grid{display:grid;gap:.5rem}
+.option-grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.option-grid.cols-4{grid-template-columns:repeat(4,1fr)}
+.option-btn{
+  background:var(--dark);border:1px solid rgba(184,150,46,.12);border-radius:var(--radius-md);
+  padding:.625rem .5rem;cursor:pointer;text-align:center;transition:border-color var(--t),background var(--t);
+}
+.option-btn:hover,.option-btn.active{border-color:var(--gold);background:rgba(184,150,46,.06)}
+.option-btn-label{font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:2px}
+.option-btn-desc{font-size:.6rem;color:var(--mid);line-height:1.4}
+.radius-preview{width:100%;height:28px;background:rgba(184,150,46,.18);border:1px solid var(--gold-dark);margin-bottom:4px}
+.r-sharp{border-radius:0}
+.r-soft{border-radius:8px}
+.r-rounded{border-radius:20px}
+.r-pill{border-radius:999px}
+
+/* Section header */
+.section-title{font-family:var(--font-display);font-size:1.05rem;font-weight:600;color:var(--off-white);padding-bottom:.75rem;border-bottom:1px solid var(--border)}
+
+/* Repeatable items */
+.items-list{display:flex;flex-direction:column;gap:.5rem}
+.item-card{background:var(--dark);border:1px solid rgba(184,150,46,.1);border-radius:var(--radius-lg);padding:.875rem;display:flex;flex-direction:column;gap:.625rem;position:relative}
+.item-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.125rem}
+.item-num{font-size:.65rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--mid)}
+.item-remove{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(180,60,60,.7);font-weight:700;padding:.25rem .5rem;border:1px solid rgba(180,60,60,.2);border-radius:var(--radius-sm);transition:all var(--t)}
+.item-remove:hover{color:#e05555;border-color:rgba(180,60,60,.5)}
+.add-item-btn{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.625rem;border:1px dashed rgba(184,150,46,.25);border-radius:var(--radius-lg);color:var(--mid);font-size:.75rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;transition:all var(--t);width:100%}
+.add-item-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(184,150,46,.04)}
+
+/* ── PREVIEW PANEL ── */
+.preview-panel{display:flex;flex-direction:column;background:var(--black);min-height:0}
+.preview-bar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:.5rem 1rem;border-bottom:1px solid var(--border);background:rgba(8,8,8,.95);gap:.75rem}
+.preview-label{font-size:.65rem;font-weight:700;letter-spacing:.32em;text-transform:uppercase;color:var(--mid);display:flex;align-items:center;gap:.5rem}
+.preview-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.preview-actions{display:flex;align-items:center;gap:.5rem}
+.preview-frame-wrap{flex:1;position:relative;min-height:0}
+#preview-frame{width:100%;height:100%;border:none;background:#090909}
+.preview-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,8,8,.7);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mid);pointer-events:none;opacity:0;transition:opacity .2s}
+.preview-loading.show{opacity:1}
+
+/* Mobile stacked */
+@media(max-width:900px){
+  html,body{height:auto;overflow:auto}
+  .editor-layout{grid-template-columns:1fr;grid-template-rows:auto 480px;overflow:visible}
+  .form-panel{overflow:visible;min-height:0;height:auto}
+  .tab-content{overflow-y:visible;height:auto;flex:none}
+  .preview-panel{height:480px}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="editor-header">
+  <div style="display:flex;align-items:center;gap:1rem">
+    <a href="/lbm-admin-hub.html" class="header-back">← Hub</a>
+    <div class="header-sep"></div>
+    <div class="editor-title">Config Editor<span>Client Landing Page</span></div>
+  </div>
+  <div class="header-actions">
+    <span class="toast-inline" id="copy-toast">Copied!</span>
+    <button class="btn-sm btn-ghost-sm" onclick="copyConfig()">Copy config.js</button>
+    <button class="btn-sm btn-gold-sm" onclick="downloadConfig()">⬇ Download config.js</button>
+  </div>
+</header>
+
+<!-- LAYOUT -->
+<div class="editor-layout">
+
+  <!-- FORM PANEL -->
+  <div class="form-panel">
+
+    <!-- Tab nav -->
+    <nav class="tab-nav" role="tablist">
+      <button class="tab-btn active" data-tab="brand"        role="tab">Brand</button>
+      <button class="tab-btn"        data-tab="colors"       role="tab">Colors</button>
+      <button class="tab-btn"        data-tab="nav"          role="tab">Nav</button>
+      <button class="tab-btn"        data-tab="hero"         role="tab">Hero</button>
+      <button class="tab-btn"        data-tab="services"     role="tab">Services</button>
+      <button class="tab-btn"        data-tab="about"        role="tab">About</button>
+      <button class="tab-btn"        data-tab="work"         role="tab">Work</button>
+      <button class="tab-btn"        data-tab="testimonials" role="tab">Quotes</button>
+      <button class="tab-btn"        data-tab="contact"      role="tab">Contact</button>
+      <button class="tab-btn"        data-tab="social"       role="tab">Social</button>
+      <button class="tab-btn"        data-tab="footer"       role="tab">Footer</button>
+      <button class="tab-btn"        data-tab="typography"   role="tab">Fonts</button>
+      <button class="tab-btn"        data-tab="layout"       role="tab">Layout</button>
+    </nav>
+
+    <!-- ── BRAND ── -->
+    <div class="tab-content active" id="tab-brand">
+      <div class="section-title">Brand Identity</div>
+
+      <div class="field-group">
+        <label class="field-label">Client / Business Name</label>
+        <input class="field-input" id="brand-name" placeholder="e.g. Meridian Studio" oninput="schedulePreview()">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Tagline</label>
+        <input class="field-input" id="brand-tagline" placeholder="e.g. Architecture & Interior Design" oninput="schedulePreview()">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Logo URL <span style="font-weight:400;letter-spacing:0;text-transform:none;color:var(--mid)">(optional)</span></label>
+        <input class="field-input" id="brand-logo" placeholder="assets/logo.svg or leave blank for text" oninput="schedulePreview()">
+        <div class="field-hint">Leave blank to use the business name as text logo.</div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Accent Color</label>
+        <div class="color-pick-row">
+          <input type="color" id="brand-color-picker" value="#B8962E" oninput="onColorPickerChange()">
+          <input class="field-input color-hex-input" id="brand-color-hex" value="#B8962E" placeholder="#B8962E" maxlength="7" oninput="onHexInputChange()">
+        </div>
+        <div class="color-presets" id="color-presets"></div>
+        <div class="field-hint">Pick any color or type a hex value. Affects buttons, headings, links, and highlights throughout the page.</div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Default Theme</label>
+        <div class="toggle-row">
+          <span class="toggle-label">Dark mode on by default</span>
+          <label class="toggle">
+            <input type="checkbox" id="brand-darkmode" checked onchange="schedulePreview()">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── COLORS ── -->
+    <div class="tab-content" id="tab-colors">
+      <div class="section-title">Color Overrides</div>
+      <div class="field-hint">Toggle any color to override the default theme value. Accent color is set on the Brand tab.</div>
+      <div class="items-list" id="colors-list"></div>
+    </div>
+
+    <!-- ── NAV ── -->
+    <div class="tab-content" id="tab-nav">
+      <div class="section-title">Navigation</div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">CTA Button Label</label>
+          <input class="field-input" id="nav-cta-label" placeholder="Start a Project" oninput="schedulePreview()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">CTA Button Link</label>
+          <input class="field-input" id="nav-cta-href" placeholder="#contact" oninput="schedulePreview()">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Nav Links</label>
+        <div class="items-list" id="nav-links-list"></div>
+        <button class="add-item-btn" onclick="addNavLink()">+ Add Link</button>
+      </div>
+    </div>
+
+    <!-- ── HERO ── -->
+    <div class="tab-content" id="tab-hero">
+      <div class="section-title">Hero Section</div>
+      <div class="field-group">
+        <label class="field-label">Eyebrow Text</label>
+        <input class="field-input" id="hero-eyebrow" placeholder="Architecture & Interior Design" oninput="schedulePreview()">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Headline</label>
+        <textarea class="field-textarea" id="hero-headline" placeholder="Spaces Built Around&#10;How You Live" oninput="schedulePreview()"></textarea>
+        <div class="field-hint">Use a line break (Enter) to split the headline across two lines.</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Subheadline</label>
+        <textarea class="field-textarea" id="hero-sub" oninput="schedulePreview()"></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Primary CTA Label</label>
+          <input class="field-input" id="hero-cta1-label" placeholder="View Our Work" oninput="schedulePreview()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Primary CTA Link</label>
+          <input class="field-input" id="hero-cta1-href" placeholder="#work" oninput="schedulePreview()">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Secondary CTA Label</label>
+          <input class="field-input" id="hero-cta2-label" placeholder="Get in Touch" oninput="schedulePreview()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Secondary CTA Link</label>
+          <input class="field-input" id="hero-cta2-href" placeholder="#contact" oninput="schedulePreview()">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Hero Image URL <span style="font-weight:400;letter-spacing:0;text-transform:none;color:var(--mid)">(optional)</span></label>
+        <input class="field-input" id="hero-image" placeholder="assets/hero.jpg or leave blank for gradient" oninput="schedulePreview()">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Image Alt Text</label>
+        <input class="field-input" id="hero-image-alt" oninput="schedulePreview()">
+      </div>
+    </div>
+
+    <!-- ── SERVICES ── -->
+    <div class="tab-content" id="tab-services">
+      <div class="section-title">Services</div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Eyebrow</label>
+          <input class="field-input" id="services-eyebrow" placeholder="What We Do" oninput="schedulePreview()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Headline</label>
+          <input class="field-input" id="services-headline" placeholder="Full-Spectrum Design" oninput="schedulePreview()">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Service Cards</label>
+        <div class="items-list" id="services-list"></div>
+        <button class="add-item-btn" onclick="addService()">+ Add Service</button>
+        <div class="field-hint">Icon names from <a href="https://lucide.dev/icons" target="_blank" style="color:var(--gold)">lucide.dev/icons</a> — e.g. building-2, sofa, lightbulb</div>
+      </div>
+    </div>
+
+    <!-- ── ABOUT ── -->
+    <div class="tab-content" id="tab-about">
+      <div class="section-title">About</div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Eyebrow</label>
+          <input class="field-input" id="about-eyebrow" oninput="schedulePreview()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Headline</label>
+          <input class="field-input" id="about-headline" oninput="schedulePreview()">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Body Text</label>
+        <textarea class="field-textarea" id="about-body" style="min-height:100px" oninput="schedulePreview()"></textarea>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Photo URL <span style="font-weight:400;letter-spacing:0;text-transform:none;color:var(--mid)">(optional)</span></label>
+        <input class="field-input" id="about-image" placeholder="assets/about.jpg or leave blank" oninput="schedulePreview()">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Stats</label>
+        <div class="items-list" id="about-stats-list"></div>
+        <button class="add-item-btn" onclick="addAboutStat()">+ Add Stat</button>
+      </div>
+    </div>
+
+    <!-- ── WORK ── -->
+    <div class="tab-content" id="tab-work">
+      <div class="section-title">Portfolio / Work</div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Eyebrow</label>
+          <input class="field-input" id="work-eyebrow" oninput="schedulePreview()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Headline</label>
+          <input class="field-input" id="work-headline" oninput="schedulePreview()">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Projects</label>
+        <div class="items-list" id="work-list"></div>
+        <button class="add-item-btn" onclick="addWorkItem()">+ Add Project</button>
+      </div>
+    </div>
+
+    <!-- ── TESTIMONIALS ── -->
+    <div class="tab-content" id="tab-testimonials">
+      <div class="section-title">Testimonials</div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Eyebrow</label>
+          <input class="field-input" id="testi-eyebrow" oninput="schedulePreview()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Headline</label>
+          <input class="field-input" id="testi-headline" oninput="schedulePreview()">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Quotes</label>
+        <div class="items-list" id="testi-list"></div>
+        <button class="add-item-btn" onclick="addTestimonial()">+ Add Testimonial</button>
+      </div>
+    </div>
+
+    <!-- ── CONTACT ── -->
+    <div class="tab-content" id="tab-contact">
+      <div class="section-title">Contact</div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Eyebrow</label>
+          <input class="field-input" id="contact-eyebrow" oninput="schedulePreview()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Headline</label>
+          <input class="field-input" id="contact-headline" oninput="schedulePreview()">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Intro Text</label>
+        <textarea class="field-textarea" id="contact-subtext" oninput="schedulePreview()"></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Email</label>
+          <input class="field-input" id="contact-email" type="email" oninput="schedulePreview()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Phone</label>
+          <input class="field-input" id="contact-phone" type="tel" oninput="schedulePreview()">
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Location / Address</label>
+        <input class="field-input" id="contact-address" oninput="schedulePreview()">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Formspree ID <span style="font-weight:400;letter-spacing:0;text-transform:none;color:var(--mid)">(optional)</span></label>
+        <input class="field-input" id="contact-formspree" placeholder="xabc1234 — leave blank for mailto fallback" oninput="schedulePreview()">
+        <div class="field-hint">Get a free ID at formspree.io. Without it, the form opens the visitor's email app.</div>
+      </div>
+    </div>
+
+    <!-- ── SOCIAL ── -->
+    <div class="tab-content" id="tab-social">
+      <div class="section-title">Social Links</div>
+      <div class="field-group">
+        <div class="items-list" id="social-list"></div>
+        <button class="add-item-btn" onclick="addSocial()">+ Add Social Link</button>
+        <div class="field-hint">Icon names: instagram, linkedin, twitter, facebook, youtube, pin, github</div>
+      </div>
+    </div>
+
+    <!-- ── FOOTER ── -->
+    <div class="tab-content" id="tab-footer">
+      <div class="section-title">Footer</div>
+      <div class="field-group">
+        <label class="field-label">Tagline</label>
+        <input class="field-input" id="footer-tagline" oninput="schedulePreview()">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Copyright Year</label>
+        <input class="field-input" id="footer-year" type="number" oninput="schedulePreview()">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Footer Nav Links</label>
+        <div class="items-list" id="footer-links-list"></div>
+        <button class="add-item-btn" onclick="addFooterLink()">+ Add Link</button>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label">Credit Text</label>
+          <input class="field-input" id="footer-credit" oninput="schedulePreview()">
+        </div>
+        <div class="field-group">
+          <label class="field-label">Credit URL</label>
+          <input class="field-input" id="footer-credit-href" oninput="schedulePreview()">
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TYPOGRAPHY ── -->
+    <div class="tab-content" id="tab-typography">
+      <div class="section-title">Typography</div>
+
+      <div class="field-group">
+        <label class="field-label">Preset Pairings</label>
+        <div class="field-hint" style="margin-bottom:.5rem">One click to set both heading and body fonts together.</div>
+        <div class="pairing-grid" id="pairing-grid"></div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Display / Heading Font</label>
+        <div class="font-picker-wrap" id="display-font-picker"></div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Body / UI Font</label>
+        <div class="font-picker-wrap" id="body-font-picker"></div>
+      </div>
+    </div>
+
+    <!-- ── LAYOUT ── -->
+    <div class="tab-content" id="tab-layout">
+      <div class="section-title">Layout &amp; Spacing</div>
+
+      <div class="field-group">
+        <label class="field-label">Section Spacing</label>
+        <div class="option-grid cols-3" id="spacing-options"></div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Border Radius</label>
+        <div class="option-grid cols-4" id="radius-options"></div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Content Width</label>
+        <div class="option-grid cols-3" id="width-options"></div>
+      </div>
+    </div>
+
+  </div><!-- /form-panel -->
+
+  <!-- PREVIEW PANEL -->
+  <div class="preview-panel">
+    <div class="preview-bar">
+      <div class="preview-label">
+        <span class="preview-dot"></span>
+        Live Preview
+      </div>
+      <div class="preview-actions">
+        <button class="btn-sm btn-ghost-sm" onclick="openPreviewTab()">Open full page ↗</button>
+      </div>
+    </div>
+    <div class="preview-frame-wrap">
+      <iframe id="preview-frame" title="Landing page preview"></iframe>
+      <div class="preview-loading" id="preview-loading">Updating…</div>
+    </div>
+  </div>
+
+</div><!-- /editor-layout -->
+
+<script>
+(function() {
+'use strict';
+
+// ── DEFAULTS (Meridian Studio) ───────────────────────────────────────────────
+var DEFAULTS = {
+  brand:  { name:'Meridian Studio', tagline:'Architecture & Interior Design', logo:'', accentColor:'#B8962E', darkMode:true },
+  nav:    { ctaLabel:'Start a Project', ctaHref:'#contact',
+            links:[{label:'Services',href:'#services'},{label:'About',href:'#about'},{label:'Work',href:'#work'},{label:'Contact',href:'#contact'}] },
+  hero:   { eyebrow:'Architecture & Interior Design', headline:'Spaces Built Around\nHow You Live',
+            subheadline:'Meridian Studio creates thoughtful, enduring spaces for discerning clients — from concept through construction.',
+            cta1:{label:'View Our Work',href:'#work'}, cta2:{label:'Get in Touch',href:'#contact'},
+            imageSrc:'', imageAlt:'Meridian Studio — open-plan living room with warm finishes' },
+  services:{ eyebrow:'What We Do', headline:'Full-Spectrum Design',
+             items:[
+               {icon:'layout-panel-left',title:'Interior Design',desc:'Full-service residential and commercial interior design, from schematic concepts to final installation.'},
+               {icon:'building-2',title:'Architecture',desc:'Custom new construction and renovations, seamlessly integrated with the surrounding landscape.'},
+               {icon:'pencil-ruler',title:'Space Planning',desc:'Functional analysis and layout optimisation for every room, floor, or building footprint.'},
+               {icon:'palette',title:'Materials & Finishes',desc:'Curated selections from our global supplier network — stone, wood, textile, and metal.'},
+               {icon:'sofa',title:'Furnishings',desc:'Custom furniture design and procurement from leading artisan studios worldwide.'},
+               {icon:'lightbulb',title:'Lighting Design',desc:'Layered lighting strategies that shape mood, highlight architecture, and improve daily wellbeing.'},
+             ]},
+  about:  { eyebrow:'Studio Story', headline:'Fifteen Years of\nPurposeful Design',
+            body:'Founded in 2009 by principal designer Calla Rhodes, Meridian Studio has grown from a boutique residential practice into a full-service design and architecture firm. We work in close collaboration with clients, craftspeople, and contractors to build spaces that feel inevitable — as though they could never have been any other way.',
+            imageSrc:'', imageAlt:'Principal designer Calla Rhodes in the Meridian Studio workspace',
+            stats:[{value:'150+',label:'Projects Completed'},{value:'12',label:'Design Awards'},{value:'15',label:'Years in Practice'},{value:'3',label:'Countries Served'}] },
+  work:   { eyebrow:'Selected Projects', headline:'Recent Work',
+            items:[
+              {title:'Marin Residence',category:'Residential',year:'2024',imageSrc:'',imageAlt:'Marin hillside residence',hex:'#8C7E5C'},
+              {title:'Covington Loft',category:'Interior Design',year:'2024',imageSrc:'',imageAlt:'Industrial loft conversion',hex:'#5C6E8C'},
+              {title:'Pacific Heights Townhouse',category:'Architecture',year:'2023',imageSrc:'',imageAlt:'Victorian townhouse renovation',hex:'#6E8C5C'},
+              {title:'Fillmore Gallery',category:'Commercial',year:'2023',imageSrc:'',imageAlt:'Contemporary art gallery',hex:'#7C5C8C'},
+              {title:'Noe Valley Kitchen',category:'Interior Design',year:'2022',imageSrc:'',imageAlt:'Minimalist kitchen remodel',hex:'#8C5C5C'},
+              {title:'Mill Valley Studio',category:'Architecture',year:'2022',imageSrc:'',imageAlt:'Light-filled artist studio',hex:'#5C8C7E'},
+            ]},
+  testimonials:{ eyebrow:'Client Words', headline:'What People Say',
+                 items:[
+                   {quote:'Calla and her team transformed our chaotic house into a home that finally reflects who we are. Every detail was considered, every decision intentional.',name:'James & Priya Ellison',title:'Marin Residence, 2024'},
+                   {quote:'Working with Meridian was the easiest part of our renovation. They managed everything, delivered on time, and the result is stunning.',name:'David Thornton',title:'Covington Loft, 2024'},
+                   {quote:'The studio brought a level of craft and calm to a complex project that exceeded every expectation we had. We will work with no one else.',name:'Serena Nakamura',title:'Pacific Heights Townhouse, 2023'},
+                 ]},
+  contact:{ eyebrow:'Start a Conversation', headline:"Let's Build\nSomething",
+            subtext:'We take on a limited number of projects each year to ensure every client receives our full attention. Reach out to discuss your project.',
+            email:'hello@meridianstudio.co', phone:'+1 (415) 555-0192', address:'San Francisco, CA', formspreeId:'' },
+  social: [{platform:'Instagram',href:'https://instagram.com/meridianstudio',icon:'instagram'},
+           {platform:'Pinterest',href:'https://pinterest.com/meridianstudio',icon:'pin'},
+           {platform:'LinkedIn',href:'https://linkedin.com/company/meridianstudio',icon:'linkedin'}],
+  footer: { tagline:'Architecture & Interior Design — San Francisco', year:2024,
+            links:[{label:'Services',href:'#services'},{label:'About',href:'#about'},{label:'Work',href:'#work'},{label:'Contact',href:'#contact'}],
+            credit:'Site by Lucky Black Media', creditHref:'https://myluckyblackmedia.com' },
+  typography: {
+    displayFontId: 'cormorant',
+    bodyFontId:    'satoshi',
+  },
+  layout: {
+    spacing:      'normal',
+    radius:       'soft',
+    contentWidth: 'standard',
+  },
+};
+
+// ── TAB SWITCHING ─────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+// ── COLOR PICKER ─────────────────────────────────────────────────────────────
+var COLOR_PRESETS = [
+  '#B8962E','#C0392B','#8E44AD','#2980B9','#27AE60',
+  '#E67E22','#1ABC9C','#2C3E50','#E91E63','#00BCD4',
+  '#795548','#607D8B','#F06292','#4CAF50','#FF5722',
+  '#9C27B0','#3F51B5','#009688','#FF9800','#212121',
+];
+
+(function buildPresets() {
+  var container = document.getElementById('color-presets');
+  COLOR_PRESETS.forEach(function(hex) {
+    var btn = document.createElement('button');
+    btn.className = 'color-preset';
+    btn.style.background = hex;
+    btn.title = hex;
+    btn.setAttribute('aria-label', hex);
+    btn.addEventListener('click', function() { setColor(hex); schedulePreview(); });
+    container.appendChild(btn);
+  });
+}());
+
+function setColor(hex) {
+  document.getElementById('brand-color-picker').value = hex;
+  document.getElementById('brand-color-hex').value    = hex.toUpperCase();
+}
+
+function onColorPickerChange() {
+  var hex = document.getElementById('brand-color-picker').value;
+  document.getElementById('brand-color-hex').value = hex.toUpperCase();
+  schedulePreview();
+}
+
+function onHexInputChange() {
+  var raw = document.getElementById('brand-color-hex').value.trim();
+  if (!/^#/.test(raw)) raw = '#' + raw;
+  if (/^#[0-9a-fA-F]{6}$/.test(raw)) {
+    document.getElementById('brand-color-picker').value = raw;
+    schedulePreview();
+  }
+}
+
+window.onColorPickerChange = onColorPickerChange;
+window.onHexInputChange    = onHexInputChange;
+
+// ── COLOR OVERRIDES ───────────────────────────────────────────────────────────
+var COLOR_DEFS = [
+  { id:'bg',          cssVar:'--bg',            label:'Page Background',    hint:'Main page background',                  dark:'#090909', light:'#FAFAF8' },
+  { id:'bgAlt',       cssVar:'--bg-alt',         label:'Section Background', hint:'Alternating sections (Services, etc.)', dark:'#111111', light:'#F2F0EB' },
+  { id:'surface',     cssVar:'--surface-solid',  label:'Card / Surface',     hint:'Cards, panels, form fields',            dark:'#161616', light:'#ECEAE4' },
+  { id:'textPrimary', cssVar:'--text-primary',   label:'Heading Text',       hint:'Headings, nav links, emphasis',         dark:'#EFECE7', light:'#1A1916' },
+  { id:'textSecond',  cssVar:'--text-secondary', label:'Body Text',          hint:'Paragraphs, descriptions, body copy',   dark:'#9A9794', light:'#706D6A' },
+  { id:'textMuted',   cssVar:'--text-muted',     label:'Muted / Hint Text',  hint:'Labels, metadata, fine print',          dark:'#575451', light:'#A09D9A' },
+];
+
+var colorOverrides = {}; // { id: hexString } — only includes toggled-on overrides
+
+function buildColorRows() {
+  var c = document.getElementById('colors-list');
+  if (!c || c.children.length) return;
+  COLOR_DEFS.forEach(function(def) {
+    var row = document.createElement('div');
+    row.className = 'color-override-row';
+
+    var swatchId  = 'col-swatch-'  + def.id;
+    var pickerId  = 'col-picker-'  + def.id;
+    var hexId     = 'col-hex-'     + def.id;
+    var bodyId    = 'col-body-'    + def.id;
+    var toggleId  = 'col-toggle-'  + def.id;
+
+    row.innerHTML = [
+      '<div class="color-override-header" onclick="toggleColorRow(\'' + def.id + '\')">',
+        '<div class="color-override-swatch" id="' + swatchId + '" style="background:' + def.dark + '"></div>',
+        '<span class="color-override-label">' + esc(def.label) + '</span>',
+        '<label class="toggle" onclick="event.stopPropagation()">',
+          '<input type="checkbox" id="' + toggleId + '">',
+          '<span class="toggle-track"></span>',
+        '</label>',
+      '</div>',
+      '<div class="color-override-body" id="' + bodyId + '">',
+        '<div class="color-pick-row">',
+          '<input type="color" id="' + pickerId + '" value="' + def.dark + '" oninput="onColPickerChange(\'' + def.id + '\')">',
+          '<input class="field-input color-hex-input" id="' + hexId + '" value="' + def.dark.toUpperCase() + '" maxlength="7" oninput="onColHexChange(\'' + def.id + '\')">',
+        '</div>',
+        '<div class="field-hint">Dark default: <code>' + def.dark + '</code> &nbsp;·&nbsp; Light default: <code>' + def.light + '</code></div>',
+      '</div>',
+    ].join('');
+
+    c.appendChild(row);
+
+    // Wire toggle change
+    document.getElementById(toggleId).addEventListener('change', function() {
+      var body = document.getElementById(bodyId);
+      body.classList.toggle('open', this.checked);
+      if (this.checked) {
+        colorOverrides[def.id] = document.getElementById(hexId).value;
+      } else {
+        delete colorOverrides[def.id];
+      }
+      schedulePreview();
+    });
+  });
+}
+
+function toggleColorRow(id) {
+  var toggle = document.getElementById('col-toggle-' + id);
+  toggle.checked = !toggle.checked;
+  toggle.dispatchEvent(new Event('change'));
+}
+
+function onColPickerChange(id) {
+  var hex = document.getElementById('col-picker-' + id).value;
+  document.getElementById('col-hex-' + id).value = hex.toUpperCase();
+  document.getElementById('col-swatch-' + id).style.background = hex;
+  colorOverrides[id] = hex;
+  schedulePreview();
+}
+
+function onColHexChange(id) {
+  var raw = document.getElementById('col-hex-' + id).value.trim();
+  if (!/^#/.test(raw)) raw = '#' + raw;
+  if (/^#[0-9a-fA-F]{6}$/.test(raw)) {
+    document.getElementById('col-picker-' + id).value = raw;
+    document.getElementById('col-swatch-' + id).style.background = raw;
+    colorOverrides[id] = raw;
+    schedulePreview();
+  }
+}
+
+function getColorsConfig() {
+  var out = {};
+  COLOR_DEFS.forEach(function(def) { out[def.id] = colorOverrides[def.id] || null; });
+  return out;
+}
+
+window.toggleColorRow  = toggleColorRow;
+window.onColPickerChange = onColPickerChange;
+window.onColHexChange  = onColHexChange;
+
+// Build color rows on Colors tab click
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  if (btn.dataset.tab === 'colors') {
+    btn.addEventListener('click', buildColorRows, { once: true });
+  }
+});
+
+// ── FONT CONSTANTS ────────────────────────────────────────────────────────────
+var DISPLAY_FONTS = [
+  { id:'cormorant',    label:'Cormorant Garamond', css:"'Cormorant Garamond',Georgia,serif",         sample:'Elegant & Refined',    meta:'Luxury · Editorial',       type:'google',     param:'Cormorant+Garamond:wght@400;600;700' },
+  { id:'playfair',     label:'Playfair Display',   css:"'Playfair Display',Georgia,serif",            sample:'Classic & Timeless',   meta:'Editorial · Timeless',     type:'google',     param:'Playfair+Display:wght@400;600;700' },
+  { id:'dm-serif',     label:'DM Serif Display',   css:"'DM Serif Display',Georgia,serif",            sample:'Modern Serif',         meta:'Contemporary · Sharp',     type:'google',     param:'DM+Serif+Display' },
+  { id:'fraunces',     label:'Fraunces',            css:"'Fraunces',Georgia,serif",                    sample:'Expressive Voice',     meta:'Artistic · Distinctive',   type:'google',     param:'Fraunces:wght@400;600;700' },
+  { id:'lora-display', label:'Lora',                css:"'Lora',Georgia,serif",                        sample:'Warm & Literary',      meta:'Readable · Classic',       type:'google',     param:'Lora:wght@400;600;700' },
+  { id:'outfit',       label:'Outfit',              css:"'Outfit','Helvetica Neue',sans-serif",        sample:'Geometric Modern',     meta:'Clean · Minimal',          type:'google',     param:'Outfit:wght@400;600;700' },
+  { id:'montserrat',   label:'Montserrat',          css:"'Montserrat','Helvetica Neue',sans-serif",    sample:'Bold & Professional',  meta:'Strong · Corporate',       type:'google',     param:'Montserrat:wght@400;600;700' },
+  { id:'space-grotesk',label:'Space Grotesk',       css:"'Space Grotesk','Helvetica Neue',sans-serif", sample:'Contemporary Tech',    meta:'Technical · Modern',       type:'google',     param:'Space+Grotesk:wght@400;600;700' },
+  { id:'plus-jakarta', label:'Plus Jakarta Sans',   css:"'Plus Jakarta Sans','Helvetica Neue',sans-serif", sample:'Modern Professional', meta:'Versatile · Friendly', type:'google',     param:'Plus+Jakarta+Sans:wght@400;600;700' },
+];
+
+var BODY_FONTS = [
+  { id:'satoshi',      label:'Satoshi',             css:"'Satoshi','Helvetica Neue',sans-serif",       sample:'Clean and highly readable',  meta:'Premium · Geometric',      type:'fontshare', param:'satoshi@400,500,700' },
+  { id:'inter',        label:'Inter',               css:"'Inter','Helvetica Neue',sans-serif",         sample:'Clear and neutral, great for interfaces', meta:'Neutral · Modern', type:'google', param:'Inter:wght@400;500;700' },
+  { id:'work-sans',    label:'Work Sans',           css:"'Work Sans','Helvetica Neue',sans-serif",     sample:'Balanced and approachable',  meta:'Balanced · Geometric',     type:'google',    param:'Work+Sans:wght@400;500;700' },
+  { id:'dm-sans',      label:'DM Sans',             css:"'DM Sans','Helvetica Neue',sans-serif",       sample:'Friendly and contemporary',  meta:'Friendly · Approachable',  type:'google',    param:'DM+Sans:wght@400;500;700' },
+  { id:'nunito',       label:'Nunito',              css:"'Nunito','Helvetica Neue',sans-serif",        sample:'Rounded and warm in tone',   meta:'Rounded · Warm',           type:'google',    param:'Nunito:wght@400;500;700' },
+  { id:'lora-body',    label:'Lora',                css:"'Lora',Georgia,serif",                        sample:'Elegant serif for long reads', meta:'Literary · Sophisticated', type:'google',  param:'Lora:wght@400;500;700' },
+  { id:'source-serif', label:'Source Serif 4',      css:"'Source Serif 4',Georgia,serif",              sample:'Refined serif, editorial feel', meta:'Editorial · Classic',    type:'google',    param:'Source+Serif+4:wght@400;500;700' },
+];
+
+var FONT_PAIRINGS = [
+  { name:'Studio Classic',   desc:'Cormorant + Satoshi',    display:'cormorant',    body:'satoshi' },
+  { name:'Geometric Modern', desc:'Outfit + Work Sans',     display:'outfit',       body:'work-sans' },
+  { name:'Editorial',        desc:'Playfair + Lora',        display:'playfair',     body:'lora-body' },
+  { name:'Contemporary',     desc:'Space Grotesk + Inter',  display:'space-grotesk',body:'inter' },
+  { name:'Expressive',       desc:'Fraunces + DM Sans',     display:'fraunces',     body:'dm-sans' },
+  { name:'Luxe',             desc:'DM Serif + Satoshi',     display:'dm-serif',     body:'satoshi' },
+];
+
+var SPACING_OPTIONS = [
+  { id:'compact',   label:'Compact',   desc:'Dense, tight sections' },
+  { id:'normal',    label:'Normal',    desc:'Balanced breathing room' },
+  { id:'generous',  label:'Generous',  desc:'Airy, open feel' },
+];
+
+var RADIUS_OPTIONS = [
+  { id:'sharp',   label:'Sharp',   desc:'0px — Architectural',  rClass:'r-sharp' },
+  { id:'soft',    label:'Soft',    desc:'6px — Understated',    rClass:'r-soft' },
+  { id:'rounded', label:'Rounded', desc:'14px — Friendly',      rClass:'r-rounded' },
+  { id:'pill',    label:'Pill',    desc:'999px — Playful',      rClass:'r-pill' },
+];
+
+var WIDTH_OPTIONS = [
+  { id:'narrow',   label:'Narrow',   desc:'960px — Focused' },
+  { id:'standard', label:'Standard', desc:'1200px — Balanced' },
+  { id:'wide',     label:'Wide',     desc:'1440px — Expansive' },
+];
+
+var selectedDisplay = DEFAULTS.typography.displayFontId;
+var selectedBody    = DEFAULTS.typography.bodyFontId;
+var selectedSpacing = DEFAULTS.layout.spacing;
+var selectedRadius  = DEFAULTS.layout.radius;
+var selectedWidth   = DEFAULTS.layout.contentWidth;
+
+function findFont(id, list) {
+  for (var i = 0; i < list.length; i++) { if (list[i].id === id) return list[i]; }
+  return null;
+}
+
+function getFontLink(font) {
+  if (!font) return '';
+  return font.type === 'google'
+    ? 'https://fonts.googleapis.com/css2?family=' + font.param + '&display=swap'
+    : 'https://api.fontshare.com/v2/css?f[]=' + font.param + '&display=swap';
+}
+
+function getTypographyConfig() {
+  var df = findFont(selectedDisplay, DISPLAY_FONTS) || DISPLAY_FONTS[0];
+  var bf = findFont(selectedBody,    BODY_FONTS)    || BODY_FONTS[0];
+  var links = [];
+  var dfLink = getFontLink(df);
+  var bfLink = getFontLink(bf);
+  links.push(dfLink);
+  if (bfLink !== dfLink) links.push(bfLink);
+  return { displayFont: df.css, bodyFont: bf.css, fontLinks: links };
+}
+
+// ── FONT PICKER INIT ──────────────────────────────────────────────────────────
+var fontsInjected = false;
+
+function initFontPickers() {
+  if (!fontsInjected) {
+    fontsInjected = true;
+    var seen = {};
+    DISPLAY_FONTS.concat(BODY_FONTS).forEach(function(font) {
+      var url = getFontLink(font);
+      if (seen[url]) return;
+      seen[url] = true;
+      var link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = url;
+      document.head.appendChild(link);
+    });
+  }
+  buildFontPicker('display-font-picker', DISPLAY_FONTS, selectedDisplay, function(id) {
+    selectedDisplay = id; schedulePreview();
+  });
+  buildFontPicker('body-font-picker', BODY_FONTS, selectedBody, function(id) {
+    selectedBody = id; schedulePreview();
+  });
+  buildPairingGrid();
+  initLayoutOptions();
+}
+
+function buildFontPicker(containerId, fonts, selId, onChange) {
+  var c = document.getElementById(containerId);
+  if (!c || c.children.length) return;
+  fonts.forEach(function(font) {
+    var card = document.createElement('div');
+    card.className = 'font-preview-card' + (font.id === selId ? ' selected' : '');
+    card.dataset.fontId = font.id;
+    card.innerHTML =
+      '<div class="font-preview-text">' +
+        '<div class="font-preview-name">' + esc(font.label) + '</div>' +
+        '<div class="font-preview-sample" style="font-family:' + font.css + '">' + esc(font.sample) + '</div>' +
+        '<div class="font-preview-meta">' + esc(font.meta) + '</div>' +
+      '</div>';
+    card.addEventListener('click', function() {
+      c.querySelectorAll('.font-preview-card').forEach(function(fc) { fc.classList.remove('selected'); });
+      card.classList.add('selected');
+      onChange(font.id);
+    });
+    c.appendChild(card);
+  });
+}
+
+function buildPairingGrid() {
+  var c = document.getElementById('pairing-grid');
+  if (!c || c.children.length) return;
+  FONT_PAIRINGS.forEach(function(p) {
+    var df = findFont(p.display, DISPLAY_FONTS);
+    var btn = document.createElement('button');
+    btn.className = 'pairing-btn';
+    btn.innerHTML =
+      '<div class="pairing-name">' + esc(p.name) + '</div>' +
+      '<div class="pairing-fonts" style="font-family:' + (df ? df.css : '') + '">' + esc(p.desc.split(' + ')[0]) + '</div>' +
+      '<div class="pairing-fonts">' + esc(p.desc.split(' + ')[1] || '') + '</div>';
+    btn.addEventListener('click', function() { applyPairing(p); });
+    c.appendChild(btn);
+  });
+}
+
+function applyPairing(p) {
+  selectedDisplay = p.display;
+  selectedBody    = p.body;
+  document.querySelectorAll('#display-font-picker .font-preview-card').forEach(function(card) {
+    card.classList.toggle('selected', card.dataset.fontId === p.display);
+  });
+  document.querySelectorAll('#body-font-picker .font-preview-card').forEach(function(card) {
+    card.classList.toggle('selected', card.dataset.fontId === p.body);
+  });
+  schedulePreview();
+}
+
+// ── LAYOUT OPTIONS INIT ───────────────────────────────────────────────────────
+function initLayoutOptions() {
+  buildOptionGrid('spacing-options', SPACING_OPTIONS, selectedSpacing, false, function(id) {
+    selectedSpacing = id; schedulePreview();
+  });
+  buildOptionGrid('radius-options', RADIUS_OPTIONS, selectedRadius, true, function(id) {
+    selectedRadius = id; schedulePreview();
+  });
+  buildOptionGrid('width-options', WIDTH_OPTIONS, selectedWidth, false, function(id) {
+    selectedWidth = id; schedulePreview();
+  });
+}
+
+function buildOptionGrid(containerId, options, selId, showRadius, onChange) {
+  var c = document.getElementById(containerId);
+  if (!c || c.children.length) return;
+  options.forEach(function(opt) {
+    var btn = document.createElement('button');
+    btn.className = 'option-btn' + (opt.id === selId ? ' active' : '');
+    btn.dataset.optId = opt.id;
+    var html = '';
+    if (showRadius) html += '<div class="radius-preview ' + opt.rClass + '"></div>';
+    html += '<span class="option-btn-label">' + esc(opt.label) + '</span>';
+    html += '<span class="option-btn-desc">' + esc(opt.desc) + '</span>';
+    btn.innerHTML = html;
+    btn.addEventListener('click', function() {
+      c.querySelectorAll('.option-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      onChange(opt.id);
+    });
+    c.appendChild(btn);
+  });
+}
+
+// Lazy-init pickers when tab is first opened
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+  if (btn.dataset.tab === 'typography' || btn.dataset.tab === 'layout') {
+    btn.addEventListener('click', initFontPickers, { once: false });
+  }
+});
+
+// ── REPEATABLE ITEM BUILDERS ──────────────────────────────────────────────────
+function makeItem(container, html, onremove) {
+  var card = document.createElement('div');
+  card.className = 'item-card';
+  card.innerHTML = html;
+  card.querySelector('.item-remove').addEventListener('click', function() {
+    card.remove();
+    schedulePreview();
+    if (onremove) onremove();
+  });
+  container.appendChild(card);
+}
+
+// Nav links
+function addNavLink(label, href) {
+  var c = document.getElementById('nav-links-list');
+  var i = c.children.length + 1;
+  makeItem(c, [
+    '<div class="item-header"><span class="item-num">Link ' + i + '</span><button class="item-remove">Remove</button></div>',
+    '<div class="field-row">',
+      '<div class="field-group"><label class="field-label">Label</label>',
+        '<input class="field-input nav-link-label" value="' + esc(label||'') + '" placeholder="Services" oninput="schedulePreview()"></div>',
+      '<div class="field-group"><label class="field-label">Link</label>',
+        '<input class="field-input nav-link-href" value="' + esc(href||'') + '" placeholder="#services" oninput="schedulePreview()"></div>',
+    '</div>'
+  ].join(''));
+}
+
+// Services
+function addService(icon, title, desc) {
+  var c = document.getElementById('services-list');
+  var i = c.children.length + 1;
+  makeItem(c, [
+    '<div class="item-header"><span class="item-num">Service ' + i + '</span><button class="item-remove">Remove</button></div>',
+    '<div class="field-row">',
+      '<div class="field-group"><label class="field-label">Lucide Icon</label>',
+        '<input class="field-input svc-icon" value="' + esc(icon||'') + '" placeholder="layout-panel-left" oninput="schedulePreview()"></div>',
+      '<div class="field-group"><label class="field-label">Title</label>',
+        '<input class="field-input svc-title" value="' + esc(title||'') + '" placeholder="Service Name" oninput="schedulePreview()"></div>',
+    '</div>',
+    '<div class="field-group"><label class="field-label">Description</label>',
+      '<textarea class="field-textarea svc-desc" style="min-height:60px" oninput="schedulePreview()">' + esc(desc||'') + '</textarea></div>'
+  ].join(''));
+}
+
+// About stats
+function addAboutStat(value, label) {
+  var c = document.getElementById('about-stats-list');
+  var i = c.children.length + 1;
+  makeItem(c, [
+    '<div class="item-header"><span class="item-num">Stat ' + i + '</span><button class="item-remove">Remove</button></div>',
+    '<div class="field-row">',
+      '<div class="field-group"><label class="field-label">Value</label>',
+        '<input class="field-input stat-value" value="' + esc(value||'') + '" placeholder="150+" oninput="schedulePreview()"></div>',
+      '<div class="field-group"><label class="field-label">Label</label>',
+        '<input class="field-input stat-label" value="' + esc(label||'') + '" placeholder="Projects Completed" oninput="schedulePreview()"></div>',
+    '</div>'
+  ].join(''));
+}
+
+// Work items
+function addWorkItem(d) {
+  d = d || {};
+  var c = document.getElementById('work-list');
+  var i = c.children.length + 1;
+  makeItem(c, [
+    '<div class="item-header"><span class="item-num">Project ' + i + '</span><button class="item-remove">Remove</button></div>',
+    '<div class="field-row">',
+      '<div class="field-group"><label class="field-label">Project Name</label>',
+        '<input class="field-input work-title" value="' + esc(d.title||'') + '" placeholder="Project Name" oninput="schedulePreview()"></div>',
+      '<div class="field-group"><label class="field-label">Category</label>',
+        '<input class="field-input work-cat" value="' + esc(d.category||'') + '" placeholder="Residential" oninput="schedulePreview()"></div>',
+    '</div>',
+    '<div class="field-row">',
+      '<div class="field-group"><label class="field-label">Year</label>',
+        '<input class="field-input work-year" value="' + esc(d.year||'') + '" placeholder="2024" oninput="schedulePreview()"></div>',
+      '<div class="field-group"><label class="field-label">Card Color</label>',
+        '<input type="color" class="field-input work-hex" value="' + (d.hex||'#5C6E8C') + '" style="height:38px;padding:4px 6px;cursor:pointer" oninput="schedulePreview()"></div>',
+    '</div>',
+    '<div class="field-group"><label class="field-label">Image URL <span style="font-weight:400;letter-spacing:0;text-transform:none;color:var(--mid)">(optional — uses color if blank)</span></label>',
+      '<input class="field-input work-img" value="' + esc(d.imageSrc||'') + '" placeholder="assets/project.jpg" oninput="schedulePreview()"></div>'
+  ].join(''));
+}
+
+// Testimonials
+function addTestimonial(d) {
+  d = d || {};
+  var c = document.getElementById('testi-list');
+  var i = c.children.length + 1;
+  makeItem(c, [
+    '<div class="item-header"><span class="item-num">Quote ' + i + '</span><button class="item-remove">Remove</button></div>',
+    '<div class="field-group"><label class="field-label">Quote</label>',
+      '<textarea class="field-textarea testi-quote" style="min-height:72px" oninput="schedulePreview()">' + esc(d.quote||'') + '</textarea></div>',
+    '<div class="field-row">',
+      '<div class="field-group"><label class="field-label">Client Name</label>',
+        '<input class="field-input testi-name" value="' + esc(d.name||'') + '" placeholder="Jane Smith" oninput="schedulePreview()"></div>',
+      '<div class="field-group"><label class="field-label">Project / Role</label>',
+        '<input class="field-input testi-title" value="' + esc(d.title||'') + '" placeholder="Marin Residence, 2024" oninput="schedulePreview()"></div>',
+    '</div>'
+  ].join(''));
+}
+
+// Social
+function addSocial(d) {
+  d = d || {};
+  var c = document.getElementById('social-list');
+  var i = c.children.length + 1;
+  makeItem(c, [
+    '<div class="item-header"><span class="item-num">Social ' + i + '</span><button class="item-remove">Remove</button></div>',
+    '<div class="field-row">',
+      '<div class="field-group"><label class="field-label">Platform</label>',
+        '<input class="field-input social-platform" value="' + esc(d.platform||'') + '" placeholder="Instagram" oninput="schedulePreview()"></div>',
+      '<div class="field-group"><label class="field-label">Icon Name</label>',
+        '<input class="field-input social-icon" value="' + esc(d.icon||'') + '" placeholder="instagram" oninput="schedulePreview()"></div>',
+    '</div>',
+    '<div class="field-group"><label class="field-label">URL</label>',
+      '<input class="field-input social-href" value="' + esc(d.href||'') + '" placeholder="https://instagram.com/..." oninput="schedulePreview()"></div>'
+  ].join(''));
+}
+
+// Footer links
+function addFooterLink(label, href) {
+  var c = document.getElementById('footer-links-list');
+  var i = c.children.length + 1;
+  makeItem(c, [
+    '<div class="item-header"><span class="item-num">Link ' + i + '</span><button class="item-remove">Remove</button></div>',
+    '<div class="field-row">',
+      '<div class="field-group"><label class="field-label">Label</label>',
+        '<input class="field-input footer-link-label" value="' + esc(label||'') + '" placeholder="Services" oninput="schedulePreview()"></div>',
+      '<div class="field-group"><label class="field-label">Link</label>',
+        '<input class="field-input footer-link-href" value="' + esc(href||'') + '" placeholder="#services" oninput="schedulePreview()"></div>',
+    '</div>'
+  ].join(''));
+}
+
+// ── POPULATE DEFAULTS ─────────────────────────────────────────────────────────
+function populateDefaults() {
+  var D = DEFAULTS;
+  document.getElementById('brand-name').value        = D.brand.name;
+  document.getElementById('brand-tagline').value     = D.brand.tagline;
+  document.getElementById('brand-logo').value        = D.brand.logo;
+  setColor(D.brand.accentColor || '#B8962E');
+  document.getElementById('brand-darkmode').checked = D.brand.darkMode;
+
+  document.getElementById('nav-cta-label').value = D.nav.ctaLabel;
+  document.getElementById('nav-cta-href').value  = D.nav.ctaHref;
+  D.nav.links.forEach(function(l) { addNavLink(l.label, l.href); });
+
+  document.getElementById('hero-eyebrow').value     = D.hero.eyebrow;
+  document.getElementById('hero-headline').value    = D.hero.headline;
+  document.getElementById('hero-sub').value         = D.hero.subheadline;
+  document.getElementById('hero-cta1-label').value  = D.hero.cta1.label;
+  document.getElementById('hero-cta1-href').value   = D.hero.cta1.href;
+  document.getElementById('hero-cta2-label').value  = D.hero.cta2.label;
+  document.getElementById('hero-cta2-href').value   = D.hero.cta2.href;
+  document.getElementById('hero-image').value       = D.hero.imageSrc;
+  document.getElementById('hero-image-alt').value   = D.hero.imageAlt;
+
+  document.getElementById('services-eyebrow').value  = D.services.eyebrow;
+  document.getElementById('services-headline').value = D.services.headline;
+  D.services.items.forEach(function(s) { addService(s.icon, s.title, s.desc); });
+
+  document.getElementById('about-eyebrow').value  = D.about.eyebrow;
+  document.getElementById('about-headline').value = D.about.headline;
+  document.getElementById('about-body').value     = D.about.body;
+  document.getElementById('about-image').value    = D.about.imageSrc;
+  D.about.stats.forEach(function(s) { addAboutStat(s.value, s.label); });
+
+  document.getElementById('work-eyebrow').value  = D.work.eyebrow;
+  document.getElementById('work-headline').value = D.work.headline;
+  D.work.items.forEach(function(w) { addWorkItem(w); });
+
+  document.getElementById('testi-eyebrow').value  = D.testimonials.eyebrow;
+  document.getElementById('testi-headline').value = D.testimonials.headline;
+  D.testimonials.items.forEach(function(t) { addTestimonial(t); });
+
+  document.getElementById('contact-eyebrow').value   = D.contact.eyebrow;
+  document.getElementById('contact-headline').value  = D.contact.headline;
+  document.getElementById('contact-subtext').value   = D.contact.subtext;
+  document.getElementById('contact-email').value     = D.contact.email;
+  document.getElementById('contact-phone').value     = D.contact.phone;
+  document.getElementById('contact-address').value   = D.contact.address;
+  document.getElementById('contact-formspree').value = D.contact.formspreeId;
+
+  D.social.forEach(function(s) { addSocial(s); });
+
+  document.getElementById('footer-tagline').value     = D.footer.tagline;
+  document.getElementById('footer-year').value        = D.footer.year;
+  document.getElementById('footer-credit').value      = D.footer.credit;
+  document.getElementById('footer-credit-href').value = D.footer.creditHref;
+  D.footer.links.forEach(function(l) { addFooterLink(l.label, l.href); });
+}
+
+// ── BUILD CONFIG OBJECT FROM FORM ─────────────────────────────────────────────
+function buildConfig() {
+  function readList(containerSel, fields) {
+    var cards = document.querySelectorAll(containerSel + ' .item-card');
+    var arr = [];
+    cards.forEach(function(card) {
+      var obj = {};
+      fields.forEach(function(f) {
+        var el = card.querySelector('.' + f.cls);
+        if (el) obj[f.key] = el.type === 'checkbox' ? el.checked : el.value;
+      });
+      arr.push(obj);
+    });
+    return arr;
+  }
+
+  return {
+    brand: {
+      name:       document.getElementById('brand-name').value,
+      tagline:    document.getElementById('brand-tagline').value,
+      logo:        document.getElementById('brand-logo').value || null,
+      accentColor: document.getElementById('brand-color-hex').value.toUpperCase(),
+      darkMode:    document.getElementById('brand-darkmode').checked,
+    },
+    nav: {
+      ctaLabel: document.getElementById('nav-cta-label').value,
+      ctaHref:  document.getElementById('nav-cta-href').value,
+      links: readList('#nav-links-list', [{cls:'nav-link-label',key:'label'},{cls:'nav-link-href',key:'href'}]),
+    },
+    hero: {
+      eyebrow:     document.getElementById('hero-eyebrow').value,
+      headline:    document.getElementById('hero-headline').value,
+      subheadline: document.getElementById('hero-sub').value,
+      cta1: { label: document.getElementById('hero-cta1-label').value, href: document.getElementById('hero-cta1-href').value },
+      cta2: { label: document.getElementById('hero-cta2-label').value, href: document.getElementById('hero-cta2-href').value },
+      imageSrc: document.getElementById('hero-image').value || null,
+      imageAlt: document.getElementById('hero-image-alt').value,
+    },
+    services: {
+      eyebrow:  document.getElementById('services-eyebrow').value,
+      headline: document.getElementById('services-headline').value,
+      items: readList('#services-list', [{cls:'svc-icon',key:'icon'},{cls:'svc-title',key:'title'},{cls:'svc-desc',key:'desc'}]),
+    },
+    about: {
+      eyebrow:  document.getElementById('about-eyebrow').value,
+      headline: document.getElementById('about-headline').value,
+      body:     document.getElementById('about-body').value,
+      imageSrc: document.getElementById('about-image').value || null,
+      imageAlt: '',
+      stats: readList('#about-stats-list', [{cls:'stat-value',key:'value'},{cls:'stat-label',key:'label'}]),
+    },
+    work: {
+      eyebrow:  document.getElementById('work-eyebrow').value,
+      headline: document.getElementById('work-headline').value,
+      items: readList('#work-list', [
+        {cls:'work-title',key:'title'},{cls:'work-cat',key:'category'},{cls:'work-year',key:'year'},
+        {cls:'work-img',key:'imageSrc'},{cls:'work-hex',key:'hex'},
+      ]).map(function(w) { w.imageSrc = w.imageSrc || null; w.imageAlt = w.title; return w; }),
+    },
+    testimonials: {
+      eyebrow:  document.getElementById('testi-eyebrow').value,
+      headline: document.getElementById('testi-headline').value,
+      items: readList('#testi-list', [{cls:'testi-quote',key:'quote'},{cls:'testi-name',key:'name'},{cls:'testi-title',key:'title'}]),
+    },
+    contact: {
+      eyebrow:     document.getElementById('contact-eyebrow').value,
+      headline:    document.getElementById('contact-headline').value,
+      subtext:     document.getElementById('contact-subtext').value,
+      email:       document.getElementById('contact-email').value,
+      phone:       document.getElementById('contact-phone').value,
+      address:     document.getElementById('contact-address').value,
+      formspreeId: document.getElementById('contact-formspree').value,
+    },
+    social: readList('#social-list', [{cls:'social-platform',key:'platform'},{cls:'social-icon',key:'icon'},{cls:'social-href',key:'href'}]),
+    footer: {
+      tagline:    document.getElementById('footer-tagline').value,
+      year:       Number(document.getElementById('footer-year').value) || new Date().getFullYear(),
+      links: readList('#footer-links-list', [{cls:'footer-link-label',key:'label'},{cls:'footer-link-href',key:'href'}]),
+      credit:     document.getElementById('footer-credit').value,
+      creditHref: document.getElementById('footer-credit-href').value,
+    },
+    typography: getTypographyConfig(),
+    layout: {
+      spacing:      selectedSpacing,
+      radius:       selectedRadius,
+      contentWidth: selectedWidth,
+    },
+    colors: getColorsConfig(),
+  };
+}
+
+// ── CONFIG.JS SERIALISATION ───────────────────────────────────────────────────
+function configToString(cfg) {
+  return [
+    '// ─────────────────────────────────────────────────────────────────────────────',
+    '//  CLIENT CONFIG — generated by LBM Config Editor',
+    '//  DO NOT add API keys. DO NOT add secrets of any kind.',
+    '// ─────────────────────────────────────────────────────────────────────────────',
+    '',
+    'const CLIENT = ' + JSON.stringify(cfg, null, 2) + ';',
+    '',
+  ].join('\n');
+}
+
+// ── PREVIEW ───────────────────────────────────────────────────────────────────
+var indexTemplate = null;
+var previewTimer  = null;
+var currentBlobUrl = null;
+
+fetch('index.html')
+  .then(function(r) { return r.text(); })
+  .then(function(html) {
+    indexTemplate = html;
+    updatePreview();
+  })
+  .catch(function() {
+    document.getElementById('preview-frame').srcdoc = '<body style="background:#090909;color:#666;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase">Could not load index.html preview</body>';
+  });
+
+function schedulePreview() {
+  clearTimeout(previewTimer);
+  document.getElementById('preview-loading').classList.add('show');
+  previewTimer = setTimeout(updatePreview, 600);
+}
+
+function buildFontLinkTags(cfg) {
+  if (!cfg.typography || !cfg.typography.fontLinks) return '';
+  return cfg.typography.fontLinks.map(function(href) {
+    return '<link rel="stylesheet" href="' + href + '">';
+  }).join('');
+}
+
+function updatePreview() {
+  if (!indexTemplate) return;
+  var cfg       = buildConfig();
+  var fontLinks = buildFontLinkTags(cfg);
+  var script    = '<script>const CLIENT = ' + JSON.stringify(cfg) + ';<\/script>';
+  var injection = fontLinks + script;
+  var html      = indexTemplate.replace('<script src="config.js"><\/script>', injection);
+  document.getElementById('preview-frame').srcdoc = html;
+  setTimeout(function() {
+    document.getElementById('preview-loading').classList.remove('show');
+  }, 800);
+}
+
+// ── OPEN IN NEW TAB ───────────────────────────────────────────────────────────
+function openPreviewTab() {
+  if (!indexTemplate) return;
+  var cfg       = buildConfig();
+  var fontLinks = buildFontLinkTags(cfg);
+  var script    = '<script>const CLIENT = ' + JSON.stringify(cfg) + ';<\/script>';
+  var html      = indexTemplate.replace('<script src="config.js"><\/script>', fontLinks + script);
+  var blob      = new Blob([html], { type: 'text/html' });
+  var url       = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+}
+window.openPreviewTab = openPreviewTab;
+
+// ── DOWNLOAD config.js ────────────────────────────────────────────────────────
+function downloadConfig() {
+  var cfg  = buildConfig();
+  var text = configToString(cfg);
+  var blob = new Blob([text], { type: 'text/javascript' });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'config.js';
+  a.click();
+  setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+}
+window.downloadConfig = downloadConfig;
+
+// ── COPY config.js ────────────────────────────────────────────────────────────
+function copyConfig() {
+  var text = configToString(buildConfig());
+  navigator.clipboard.writeText(text).then(function() {
+    var t = document.getElementById('copy-toast');
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 2000);
+  });
+}
+window.copyConfig = copyConfig;
+
+// ── ESCAPE UTIL ───────────────────────────────────────────────────────────────
+function esc(str) {
+  return String(str || '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// Expose adders to inline onclick handlers
+window.addNavLink      = addNavLink;
+window.addService      = addService;
+window.addAboutStat    = addAboutStat;
+window.addWorkItem     = addWorkItem;
+window.addTestimonial  = addTestimonial;
+window.addSocial       = addSocial;
+window.addFooterLink   = addFooterLink;
+window.schedulePreview = schedulePreview;
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+populateDefaults();
+
+}());
+</script>
+</body>
+</html>
