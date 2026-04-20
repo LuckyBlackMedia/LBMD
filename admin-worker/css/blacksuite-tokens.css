@@ -1,0 +1,306 @@
+/*
+ * LBMD Design System — Colors & Typography
+ * Lucky Black Media & Design · Est. 2013
+ * Source: LuckyBlackMedia/LBMD codebase
+ *
+ * FONTS IN USE:
+ *   Display: Cormorant Garamond (Google Fonts — wght 400,600,700 + italic)
+ *   Body/UI: Satoshi (Fontshare — wght 400,500,700)
+ *   Labels (homepage): Montserrat (Google Fonts — wght 700)
+ *
+ * Load with:
+ *   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+ *   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+ */
+
+/* ─────────────────────────────────────────
+   COLOR TOKENS — BASE PALETTE
+   Source: lbm-admin-hub.html :root vars
+───────────────────────────────────────── */
+:root {
+  /* Gold scale — exact from codebase */
+  --gold:        #B8962E;   /* ← PRIMARY BRAND GOLD */
+  --gold-light:  #D4AF5A;   /* hover state */
+  --gold-pale:   #E8D49A;   /* light tint */
+  --gold-dark:   #8C6D1F;   /* active/pressed */
+
+  /* Derived gold scale (for gradients/tints) */
+  --gold-10:  rgba(184,150,46,0.10);
+  --gold-15:  rgba(184,150,46,0.15);
+  --gold-20:  rgba(184,150,46,0.20);
+  --gold-25:  rgba(184,150,46,0.25);
+
+  /* Blacks / Darks — exact from codebase */
+  --black:     #080808;   /* deepest bg */
+  --charcoal:  #111111;   /* elevated surface */
+  --dark:      #2A2A2A;   /* inputs, panels */
+
+  /* Neutrals */
+  --silver:    #999999;   /* secondary text */
+  --mid:       #6B6B6B;   /* muted text */
+  --off-white: #F7F4EE;   /* primary text on dark */
+  --text:      #CDCCCA;   /* body copy on dark */
+
+  /* Navy (used in admin featured cards) */
+  --navy:      #0D1B33;
+  --navy-mid:  #152544;
+
+  /* ─────────────────────────────────────────
+     COLOR TOKENS — SEMANTIC
+  ───────────────────────────────────────── */
+
+  /* Brand */
+  --color-brand:        var(--gold);
+  --color-brand-light:  var(--gold-light);
+  --color-brand-dark:   var(--gold-dark);
+  --color-brand-pale:   var(--gold-pale);
+
+  /* Backgrounds */
+  --color-bg-base:      var(--black);
+  --color-bg-elevated:  var(--charcoal);
+  --color-bg-surface:   var(--dark);
+  --color-bg-navy:      var(--navy);
+
+  /* Foreground / Text */
+  --color-fg-primary:   var(--off-white);
+  --color-fg-body:      var(--text);
+  --color-fg-secondary: var(--silver);
+  --color-fg-muted:     var(--mid);
+  --color-fg-accent:    var(--gold);
+
+  /* Borders */
+  --color-border:        rgba(184,150,46,0.15);  /* --border in codebase */
+  --color-border-strong: rgba(184,150,46,0.35);
+  --color-border-subtle: rgba(255,255,255,0.05);
+  --color-surface-tint:  rgba(255,255,255,0.03);
+
+  /* States */
+  --color-hover:        var(--gold-light);
+  --color-active:       var(--gold-dark);
+  --color-focus-ring:   var(--gold);
+  --color-error:        #B91C1C;   /* used in admin for delete/error states */
+
+  /* ─────────────────────────────────────────
+     TYPOGRAPHY TOKENS
+  ───────────────────────────────────────── */
+
+  /* Font families */
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'Satoshi', 'Helvetica Neue', Arial, sans-serif;
+  --font-label:   'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono:    'Courier New', Courier, monospace;
+
+  /* Font weights */
+  --fw-light:    300;
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  /* Fluid type scale — clamp(min, fluid, max) — from admin hub */
+  --text-xs:   clamp(.75rem,   .7rem  + .25vw, .875rem);   /* ~12–14px */
+  --text-sm:   clamp(.875rem,  .8rem  + .35vw, 1rem);      /* ~14–16px */
+  --text-base: clamp(1rem,     .95rem + .25vw, 1.125rem);  /* ~16–18px */
+  --text-lg:   clamp(1.125rem, 1rem   + .75vw, 1.5rem);    /* ~18–24px */
+  --text-xl:   clamp(1.5rem,   1.2rem + 1.25vw, 2.25rem);  /* ~24–36px */
+  --text-2xl:  clamp(2rem,     1.6rem + 2vw,   3.5rem);    /* ~32–56px */
+  --text-3xl:  clamp(2.5rem,   2rem   + 3vw,   5rem);      /* ~40–80px */
+
+  /* Line heights */
+  --lh-tight:   1.1;
+  --lh-snug:    1.25;
+  --lh-normal:  1.5;
+  --lh-relaxed: 1.65;
+  --lh-loose:   1.82;
+
+  /* Letter spacing */
+  --ls-tight:   -.01em;
+  --ls-normal:   0;
+  --ls-wide:     .06em;
+  --ls-wider:    .2em;
+  --ls-widest:   .4em;   /* ← eyebrow / all-caps labels */
+
+  /* ─────────────────────────────────────────
+     BORDER RADIUS — from admin hub
+  ───────────────────────────────────────── */
+  --radius-sm:   .375rem;   /* 6px */
+  --radius-md:   .5rem;     /* 8px  — default for inputs, cards */
+  --radius-lg:   .75rem;    /* 12px — panels, larger cards */
+  --radius-xl:   1rem;      /* 16px — modals */
+  --radius-full: 9999px;    /* pills */
+
+  /* Homepage / marketing site uses sharper radius (0) for service cards */
+  --radius-card-marketing: 0;
+  --radius-card-portal: var(--radius-md);
+
+  /* ─────────────────────────────────────────
+     SPACING TOKENS
+  ───────────────────────────────────────── */
+  --space-1:  .25rem;    /* 4px  */
+  --space-2:  .5rem;     /* 8px  */
+  --space-3:  .75rem;    /* 12px */
+  --space-4:  1rem;      /* 16px */
+  --space-6:  1.5rem;    /* 24px */
+  --space-8:  2rem;      /* 32px */
+  --space-12: 3rem;      /* 48px */
+  --space-16: 4rem;      /* 64px */
+
+  /* ─────────────────────────────────────────
+     SHADOWS
+  ───────────────────────────────────────── */
+  --shadow-sm:   0 2px 6px rgba(0,0,0,.35);
+  --shadow-md:   0 4px 12px rgba(0,0,0,.4);
+  --shadow-lg:   0 12px 32px rgba(0,0,0,.5);
+  --shadow-gold: 0 0 24px rgba(184,150,46,.18);
+
+  /* ─────────────────────────────────────────
+     TRANSITIONS
+  ───────────────────────────────────────── */
+  --transition:      180ms cubic-bezier(.16,1,.3,1);
+  --transition-slow: 350ms cubic-bezier(.16,1,.3,1);
+}
+
+/* ─────────────────────────────────────────
+   SEMANTIC CLASS HELPERS
+───────────────────────────────────────── */
+
+/* Eyebrow / all-caps label — used everywhere in both products */
+.lbm-eyebrow {
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-widest);
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+/* Display headline — Cormorant Garamond */
+.lbm-display {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--fw-bold);
+  color: var(--off-white);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-wide);
+}
+
+/* Section heading — Cormorant Garamond medium */
+.lbm-heading {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--fw-semibold);
+  color: var(--off-white);
+  line-height: var(--lh-snug);
+}
+
+/* Body copy */
+.lbm-body {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-relaxed);
+  color: var(--text);
+}
+
+/* Caption / small */
+.lbm-caption {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-normal);
+  color: var(--silver);
+  letter-spacing: .03em;
+}
+
+/* Gold horizontal rule */
+.lbm-gold-rule {
+  width: 60px;
+  height: 1px;
+  background: var(--gold);
+  margin: 20px auto;
+}
+.lbm-gold-rule.left { margin-left: 0; }
+
+/* ─────────────────────────────────────────
+   BUTTONS — from homepage codebase patterns
+───────────────────────────────────────── */
+
+.lbm-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--black);
+  background: var(--gold);
+  border: 1px solid var(--gold);
+  padding: 13px 28px;
+  border-radius: 0;
+  text-decoration: none;
+  transition: background var(--transition), border-color var(--transition);
+  cursor: pointer;
+}
+.lbm-btn-primary:hover {
+  background: var(--gold-light);
+  border-color: var(--gold-light);
+  color: var(--black);
+}
+
+.lbm-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-label);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: transparent;
+  border: 1px solid var(--gold);
+  padding: 13px 28px;
+  border-radius: 0;
+  text-decoration: none;
+  transition: all var(--transition);
+  cursor: pointer;
+}
+.lbm-btn-outline:hover {
+  background: rgba(184,150,46,.08);
+  color: var(--gold-light);
+}
+
+/* Portal-style rounded buttons (admin hub) */
+.lbm-btn-gold {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  padding: var(--space-2) var(--space-6);
+  background: var(--gold);
+  border: 1px solid var(--gold);
+  border-radius: var(--radius-md);
+  color: var(--black);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.lbm-btn-gold:hover { background: var(--gold-light); border-color: var(--gold-light); }
+
+.lbm-btn-ghost {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  padding: var(--space-2) var(--space-4);
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--silver);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.lbm-btn-ghost:hover { border-color: var(--silver); color: var(--off-white); }

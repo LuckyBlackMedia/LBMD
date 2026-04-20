@@ -5,6 +5,9 @@
 // D1: lbmd-portal-db | KV: LBMD_SESSIONS
 // ============================================================
 
+import { Storage }                from '../shared/storage.js';
+import { ensureBlackSuiteSchema } from '../shared/schema.js';
+
 const ADMIN_PW_HASH = '109d554dd51d67da8e3e42bebe5035fe165c4e449f5acc9cdd8ecb47c1734f17';
 const SALT = 'lbmd_salt_2026';
 const REVIEW_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzcRA1TzD-t4Dj7EK6eisPuJa9xrN25N_fGxY6aBKV6QbgfAHpxoulMH7KUHSJJZJme/exec';
@@ -2430,6 +2433,80 @@ async function handleAPI(request, env, path, method) {
         }
       }
       return json({ success: true });
+    }
+
+    // ── BLACKSUITE FILE PROXY (client-scoped) ──
+    // Streams a bs_files row (or legacy client_files fallback) only if the
+    // authenticated client owns it. Accepts Authorization: Bearer <token>
+    // OR ?t=<token> query param (required for <video src> tags).
+    {
+      const bsStreamMatch   = path.match(/^\/api\/bs\/stream\/(\d+)$/);
+      const bsDownloadMatch = path.match(/^\/api\/bs\/download\/(\d+)$/);
+      if (method === 'GET' && (bsStreamMatch || bsDownloadMatch)) {
+        const fileId     = Number((bsStreamMatch || bsDownloadMatch)[1]);
+        const isDownload = !!bsDownloadMatch;
+
+        const url = new URL(request.url);
+        const token = extractToken(request) || url.searchParams.get('t') || '';
+        const session = await getClientSession(token, env);
+        if (!session) return json({ error: 'Unauthorized.' }, 401);
+        const clientId = session.clientId;
+
+        // Ensure BlackSuite tables exist (portal-side cold start may precede admin).
+        try { await ensureBlackSuiteSchema(env.DB); } catch (_) {}
+
+        // 1) bs_files direct ownership
+        let row = await env.DB.prepare(
+          `SELECT id, storage_backend, storage_key, label, mime_type, owner_type, owner_id
+             FROM bs_files WHERE id = ?`,
+        ).bind(fileId).first().catch(() => null);
+
+        let allowed = false;
+        if (row) {
+          if (row.owner_type === 'client' && String(row.owner_id) === String(clientId)) {
+            allowed = true;
+          } else if (row.owner_type === 'delivery') {
+            const d = await env.DB.prepare(
+              'SELECT client_id FROM bs_deliveries WHERE id = ?',
+            ).bind(row.owner_id).first().catch(() => null);
+            if (d && String(d.client_id) === String(clientId)) allowed = true;
+          }
+        } else {
+          // 2) Legacy client_files fallback
+          const legacy = await env.DB.prepare(
+            'SELECT id, client_id, label, subtitle, drive_url FROM client_files WHERE id = ?',
+          ).bind(fileId).first().catch(() => null);
+          if (legacy && String(legacy.client_id) === String(clientId)) {
+            const synth = Storage.legacyDriveFileFromUrl(legacy);
+            if (synth) { row = synth; allowed = true; }
+          }
+        }
+        if (!row || !allowed) return json({ error: 'Not found.' }, 404);
+
+        const range       = request.headers.get('range') || undefined;
+        const ifNoneMatch = request.headers.get('if-none-match') || undefined;
+        const storage     = new Storage(env);
+        const { body, status, headers } = await storage.get(row.storage_key, { range, ifNoneMatch });
+
+        if (row.mime_type && !headers.get('content-type')) {
+          headers.set('content-type', row.mime_type);
+        }
+        if (isDownload) {
+          const safeLabel = (row.label || `file-${fileId}`).replace(/["\\\r\n]/g, '_');
+          headers.set('content-disposition', `attachment; filename="${safeLabel}"`);
+        } else if (!headers.get('cache-control')) {
+          headers.set('cache-control', 'private, max-age=60');
+        }
+        return new Response(body, { status, headers });
+      }
+    }
+
+    // ── ZIP DOWNLOAD (stub — Phase 2) ──
+    {
+      const zipMatch = path.match(/^\/api\/bs\/delivery\/(\d+)\/zip$/);
+      if (method === 'GET' && zipMatch) {
+        return json({ error: 'ZIP download not implemented in Phase 1.' }, 501);
+      }
     }
 
     // ── PASSWORD RESET REQUEST ──

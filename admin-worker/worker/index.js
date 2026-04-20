@@ -55,6 +55,11 @@ import { sendConfirmationEmail, sendReminderEmail,
 import { squareCharge, paypalGetToken,
          paypalCreateOrder, paypalCaptureOrder } from './helpers/payments.js';
 
+// ── BlackSuite (shared with portal worker) ────────────────────────────────────
+
+import { ensureBlackSuiteSchema } from '../shared/schema.js';
+import { Storage }                from '../shared/storage.js';
+
 // ── CONSTANTS ────────────────────────────────────────────────────────────────
 
 const SESSION_PREFIX = 'lbm_admin:';
@@ -464,6 +469,52 @@ async function handleAPI(request, env, url, method) {
     return json({ ok: true });
   }
 
+  // ── BLACKSUITE FILE PROXY ────────────────────────────────────────────────
+  // Admin-only preview/download of any bs_files row. Client-facing variant
+  // with token auth lives in the portal worker. Supports legacy client_files
+  // rows (Drive URLs) via Storage.legacyDriveFileFromUrl().
+  const bsStreamMatch   = path.match(/^\/api\/bs\/stream\/(\d+)$/);
+  const bsDownloadMatch = path.match(/^\/api\/bs\/download\/(\d+)$/);
+  if (method === 'GET' && (bsStreamMatch || bsDownloadMatch)) {
+    const fileId   = Number((bsStreamMatch || bsDownloadMatch)[1]);
+    const isDownload = !!bsDownloadMatch;
+
+    // 1) Try bs_files first.
+    let row = await env.DB.prepare(
+      'SELECT id, storage_backend, storage_key, label, mime_type FROM bs_files WHERE id = ?',
+    ).bind(fileId).first().catch(() => null);
+
+    // 2) Fallback: legacy client_files with a Drive URL.
+    if (!row) {
+      const legacy = await env.DB.prepare(
+        'SELECT id, client_id, label, subtitle, drive_url FROM client_files WHERE id = ?',
+      ).bind(fileId).first().catch(() => null);
+      if (legacy) {
+        const synth = Storage.legacyDriveFileFromUrl(legacy);
+        if (synth) row = synth;
+      }
+    }
+    if (!row) return json({ error: 'Not found' }, 404);
+
+    const range        = request.headers.get('range') || undefined;
+    const ifNoneMatch  = request.headers.get('if-none-match') || undefined;
+    const storage      = new Storage(env);
+    const { body, status, headers } = await storage.get(row.storage_key, { range, ifNoneMatch });
+
+    if (row.mime_type && !headers.get('content-type')) {
+      headers.set('content-type', row.mime_type);
+    }
+    if (isDownload) {
+      const safeLabel = (row.label || `file-${fileId}`).replace(/["\\\r\n]/g, '_');
+      headers.set('content-disposition', `attachment; filename="${safeLabel}"`);
+    }
+    // Cache: short for previews, none for downloads
+    if (!isDownload && !headers.get('cache-control')) {
+      headers.set('cache-control', 'private, max-age=60');
+    }
+    return new Response(body, { status, headers });
+  }
+
   return json({ error: 'Not found' }, 404);
 }
 
@@ -840,6 +891,10 @@ async function ensureSchema(db) {
       ins('Photo + Video',8,'Non-Profit Rate',null,'Custom Quote',null,1,'Discounted photo and video combo for registered non-profit organizations. Assessed case-by-case.',['For registered non-profits only','Assessed case-by-case','Photo + video coverage','All deliverables included','Location/studio fees not included'],2),
     ]);
   }
+
+  // BlackSuite tables — delegated to the shared module so admin + portal
+  // stay in lockstep. Idempotent.
+  await ensureBlackSuiteSchema(db);
 
   _schemaReady = true;
 }

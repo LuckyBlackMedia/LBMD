@@ -16,6 +16,11 @@ database_id  = "3f49abe8-644f-4df0-a79a-ba4acf7402ea"
 binding = "SESSIONS"
 id      = "006815380b47486c8c47928265161ae2"
 
+# ── R2 — BlackSuite media (deliveries, proofs, invoices) ─────────────────────
+[[r2_buckets]]
+binding     = "MEDIA"
+bucket_name = "lbm-blacksuite-media"
+
 # ── Custom Domains ────────────────────────────────────────────────────────────
 [[routes]]
 pattern       = "admin.myluckyblackmedia.com"
@@ -57,3 +62,10 @@ crons = ["0 9 * * *"]
 # wrangler secret put SQUARE_ACCESS_TOKEN    # server-side token from Square Dev dashboard
 # wrangler secret put PAYPAL_CLIENT_ID       # same client ID as in book.html
 # wrangler secret put PAYPAL_CLIENT_SECRET   # from PayPal Developer dashboard
+#
+# BlackSuite storage (Storj — optional; empty today):
+# wrangler secret put STORJ_PUBLIC_PREFIX
+# wrangler secret put STORJ_ACCESS_KEY
+# wrangler secret put STORJ_SECRET_KEY
+# wrangler secret put STORJ_ENDPOINT
+# wrangler secret put STORJ_BUCKET
