@@ -28,9 +28,17 @@ binding     = "MEDIA"
 bucket_name = "lbm-blacksuite-media"
 
 # ── Secrets (set via wrangler secret put) ────────────────────────────────────
-# Storj (S3-compatible) — optional; empty today
-# wrangler secret put STORJ_PUBLIC_PREFIX    # e.g. https://gateway.storjshare.io/<bucket>
-# wrangler secret put STORJ_ACCESS_KEY       # future SigV4 uploads
-# wrangler secret put STORJ_SECRET_KEY
-# wrangler secret put STORJ_ENDPOINT
-# wrangler secret put STORJ_BUCKET
+# B2 overflow — optional; provision when R2 free tier (10 GB) is exceeded
+# wrangler secret put B2_ENDPOINT      # e.g. https://s3.us-west-004.backblazeb2.com
+# wrangler secret put B2_ACCESS_KEY    # B2 application key ID
+# wrangler secret put B2_SECRET_KEY    # B2 application key
+# wrangler secret put B2_BUCKET        # bucket name
+# wrangler secret put B2_REGION        # e.g. us-west-004 (default if omitted)
+#
+# NAS archive tier — optional; for backup/archive, not client-facing delivery
+# Enable S3-compatible API on your NAS (Synology/TrueNAS Minio/QNAP HBS) first
+# wrangler secret put NAS_ENDPOINT     # e.g. https://nas.yourdomain.com:9000
+# wrangler secret put NAS_ACCESS_KEY
+# wrangler secret put NAS_SECRET_KEY
+# wrangler secret put NAS_BUCKET
+# wrangler secret put NAS_REGION       # default: us-east-1

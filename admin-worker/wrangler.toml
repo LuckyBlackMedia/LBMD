@@ -63,9 +63,20 @@ crons = ["0 9 * * *"]
 # wrangler secret put PAYPAL_CLIENT_ID       # same client ID as in book.html
 # wrangler secret put PAYPAL_CLIENT_SECRET   # from PayPal Developer dashboard
 #
-# BlackSuite storage (Storj — optional; empty today):
-# wrangler secret put STORJ_PUBLIC_PREFIX
-# wrangler secret put STORJ_ACCESS_KEY
-# wrangler secret put STORJ_SECRET_KEY
-# wrangler secret put STORJ_ENDPOINT
-# wrangler secret put STORJ_BUCKET
+# BlackSuite storage — B2 overflow (optional; provision when R2 free tier exceeded):
+# wrangler secret put B2_ENDPOINT      # e.g. https://s3.us-west-004.backblazeb2.com
+# wrangler secret put B2_ACCESS_KEY    # B2 application key ID
+# wrangler secret put B2_SECRET_KEY    # B2 application key
+# wrangler secret put B2_BUCKET        # bucket name
+# wrangler secret put B2_REGION        # e.g. us-west-004 (default if omitted)
+#
+# BlackSuite storage — NAS archive tier (optional; for local backup/archive only):
+# Enable S3-compatible API on your NAS first:
+#   Synology: Package Center → S3-compatible API in DSM
+#   TrueNAS:  System → Minio (built-in)
+#   QNAP:     HBS 3 / QuObjects S3 gateway
+# wrangler secret put NAS_ENDPOINT     # e.g. https://nas.yourdomain.com:9000
+# wrangler secret put NAS_ACCESS_KEY
+# wrangler secret put NAS_SECRET_KEY
+# wrangler secret put NAS_BUCKET
+# wrangler secret put NAS_REGION       # default: us-east-1
