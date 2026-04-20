@@ -11,6 +11,8 @@ import { ensureBlackSuiteSchema } from '../shared/schema.js';
 const ADMIN_PW_HASH = '109d554dd51d67da8e3e42bebe5035fe165c4e449f5acc9cdd8ecb47c1734f17';
 const SALT = 'lbmd_salt_2026';
 const REVIEW_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzcRA1TzD-t4Dj7EK6eisPuJa9xrN25N_fGxY6aBKV6QbgfAHpxoulMH7KUHSJJZJme/exec';
+const MAX_CLIENT_LOGIN_ATTEMPTS = 5;
+const CLIENT_LOCKOUT_TTL        = 15 * 60; // seconds
 
 // ── HTML PAGES (embedded) ──
 const PORTAL_HTML = `<!DOCTYPE html>
@@ -516,15 +518,15 @@ function renderJobsDashboard(jobs) {
   jobs.forEach((job, idx) => {
     const deliverables = (job.files || []).filter(function(f){ return f.access_level !== 'review_folder'; });
     html += (idx > 0 ? '<hr style="border:none;border-top:1px solid var(--border);margin:36px 0">' : '');
-    html += '<div class="section-eyebrow" style="margin-bottom:6px">' + job.title + '</div>';
-    html += '<div class="phase-badge ' + (phaseCls[job.phase]||'in_progress') + '" style="margin-bottom:20px"><span class="phase-dot"></span><span>' + (phaseMap[job.phase]||job.phase) + '</span></div>';
+    html += '<div class="section-eyebrow" style="margin-bottom:6px">' + esc(job.title) + '</div>';
+    html += '<div class="phase-badge ' + (phaseCls[job.phase]||'in_progress') + '" style="margin-bottom:20px"><span class="phase-dot"></span><span>' + esc(phaseMap[job.phase]||job.phase) + '</span></div>';
     if (deliverables.length) {
       html += '<div class="files-grid">' + deliverables.map(function(f){
-        return '<a class="file-card ' + (f.access_level==='locked'?'locked':'') + '" href="' + f.drive_url + '" target="_blank" rel="noopener">'
-          + '<div class="file-icon">' + (f.icon||'📁') + '</div>'
-          + '<div class="file-label">' + f.label + '</div>'
-          + (f.subtitle ? '<div class="file-subtitle">' + f.subtitle + '</div>' : '')
-          + (f.description ? '<div class="file-desc">' + f.description + '</div>' : '')
+        return '<a class="file-card ' + (f.access_level==='locked'?'locked':'') + '" href="' + safeUrl(f.drive_url) + '" target="_blank" rel="noopener">'
+          + '<div class="file-icon">' + esc(f.icon||'📁') + '</div>'
+          + '<div class="file-label">' + esc(f.label) + '</div>'
+          + (f.subtitle ? '<div class="file-subtitle">' + esc(f.subtitle) + '</div>' : '')
+          + (f.description ? '<div class="file-desc">' + esc(f.description) + '</div>' : '')
           + '<div class="file-arrow">→</div></a>';
       }).join('') + '</div>';
     } else {
@@ -542,18 +544,20 @@ function renderJobsReview(jobs) {
     const hasFolder = (job.files || []).some(function(f){ return f.access_level === 'review_folder'; });
     if (!hasManual && !hasFolder) return;
     html += (idx > 0 ? '<hr style="border:none;border-top:1px solid var(--border);margin:36px 0">' : '');
-    html += '<div class="job-review-section" id="job-review-' + job.id + '">'
-      + '<div style="font-size:15px;font-weight:600;color:var(--gold);margin-bottom:4px">' + job.title + '</div>'
-      + '<div class="review-progress-bar" style="margin:10px 0 4px"><div class="review-progress-fill" id="prog-fill-' + job.id + '" style="width:0%"></div></div>'
-      + '<div class="progress-label" style="margin-bottom:16px"><span id="prog-count-' + job.id + '">0</span> / <span id="prog-total-' + job.id + '">0</span> rated</div>'
-      + '<div class="review-cats hidden" id="review-cats-' + job.id + '"></div>'
-      + '<div class="review-items-list" id="review-list-' + job.id + '"><div class="review-empty"><h3>Loading...</h3></div></div>'
-      + '<div class="submit-area hidden" id="submit-area-' + job.id + '">'
+    const jid    = esc(job.id);
+    const jidNum = parseInt(job.id, 10) || 0;
+    html += '<div class="job-review-section" id="job-review-' + jid + '">'
+      + '<div style="font-size:15px;font-weight:600;color:var(--gold);margin-bottom:4px">' + esc(job.title) + '</div>'
+      + '<div class="review-progress-bar" style="margin:10px 0 4px"><div class="review-progress-fill" id="prog-fill-' + jid + '" style="width:0%"></div></div>'
+      + '<div class="progress-label" style="margin-bottom:16px"><span id="prog-count-' + jid + '">0</span> / <span id="prog-total-' + jid + '">0</span> rated</div>'
+      + '<div class="review-cats hidden" id="review-cats-' + jid + '"></div>'
+      + '<div class="review-items-list" id="review-list-' + jid + '"><div class="review-empty"><h3>Loading...</h3></div></div>'
+      + '<div class="submit-area hidden" id="submit-area-' + jid + '">'
       + '<p>When you\\'re done rating, click below to send your review to your producer.</p>'
-      + '<div class="unrated-warn hidden" id="unrated-warn-' + job.id + '"></div>'
-      + '<button class="submit-btn" id="submit-btn-' + job.id + '" onclick="submitJobReview(' + job.id + ')">Send My Review to LBMD →</button>'
-      + '<div class="submit-success hidden" id="submit-success-' + job.id + '">✓ Review submitted! Your producer will be in touch shortly.</div>'
-      + '<div class="submit-error hidden" id="submit-error-' + job.id + '"></div>'
+      + '<div class="unrated-warn hidden" id="unrated-warn-' + jid + '"></div>'
+      + '<button class="submit-btn" id="submit-btn-' + jid + '" onclick="submitJobReview(' + jidNum + ')">Send My Review to LBMD →</button>'
+      + '<div class="submit-success hidden" id="submit-success-' + jid + '">✓ Review submitted! Your producer will be in touch shortly.</div>'
+      + '<div class="submit-error hidden" id="submit-error-' + jid + '"></div>'
       + '</div></div>';
   });
   if (!html) html = '<div class="review-empty"><h3>No items to review yet.</h3><p>Your producer will add deliverables here shortly.</p></div>';
@@ -802,10 +806,10 @@ function renderLegacyDashboard(files) {
   files = files.filter(function(f){ return f.access_level !== 'review_folder'; });
   if (!files.length) { container.innerHTML = '<p style="color:#555;font-size:13px;padding:20px 0">No files available yet.</p>'; return; }
   container.innerHTML = '<div class="section-eyebrow">Access Your Files</div><div class="files-grid">' + files.map(function(f){
-    return '<a class="file-card ' + (f.access_level==='locked'?'locked':'') + '" href="' + f.drive_url + '" target="_blank" rel="noopener">'
-      + '<div class="file-icon">' + (f.icon||'📁') + '</div><div class="file-label">' + f.label + '</div>'
-      + (f.subtitle?'<div class="file-subtitle">'+f.subtitle+'</div>':'')
-      + (f.description?'<div class="file-desc">'+f.description+'</div>':'')
+    return '<a class="file-card ' + (f.access_level==='locked'?'locked':'') + '" href="' + safeUrl(f.drive_url) + '" target="_blank" rel="noopener">'
+      + '<div class="file-icon">' + esc(f.icon||'📁') + '</div><div class="file-label">' + esc(f.label) + '</div>'
+      + (f.subtitle?'<div class="file-subtitle">'+esc(f.subtitle)+'</div>':'')
+      + (f.description?'<div class="file-desc">'+esc(f.description)+'</div>':'')
       + '<div class="file-arrow">→</div></a>';
   }).join('') + '</div>';
 }
@@ -905,11 +909,11 @@ function renderFiles(files) {
   files = files.filter(f => f.access_level !== 'review_folder');
   if (!files.length) { grid.innerHTML = '<p style="color:#555;font-size:13px;padding:20px 0">No files available yet.</p>'; return; }
   grid.innerHTML = files.map(f => \`
-    <a class="file-card \${f.access_level==='locked'?'locked':''}" href="\${f.drive_url}" target="_blank" rel="noopener">
-      <div class="file-icon">\${f.icon||'📁'}</div>
-      <div class="file-label">\${f.label}</div>
-      \${f.subtitle?\`<div class="file-subtitle">\${f.subtitle}</div>\`:''}
-      \${f.description?\`<div class="file-desc">\${f.description}</div>\`:''}
+    <a class="file-card \${f.access_level==='locked'?'locked':''}" href="\${safeUrl(f.drive_url)}" target="_blank" rel="noopener">
+      <div class="file-icon">\${esc(f.icon||'📁')}</div>
+      <div class="file-label">\${esc(f.label)}</div>
+      \${f.subtitle?\`<div class="file-subtitle">\${esc(f.subtitle)}</div>\`:''}
+      \${f.description?\`<div class="file-desc">\${esc(f.description)}</div>\`:''}
       <div class="file-arrow">→</div>
     </a>\`).join('');
 }
@@ -2289,7 +2293,8 @@ async function deleteJobReviewItem(id, jobId, clientId) {
 
 function showModal(){document.getElementById('modal-overlay').classList.remove('hidden');}
 function closeModal(){document.getElementById('modal-overlay').classList.add('hidden');}
-function esc(s){return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function safeUrl(u){const s=String(u||'');return s.startsWith('https://')?s:'#';}
 
 // ── AUTO-LOGIN ──
 (async function(){
@@ -2360,7 +2365,7 @@ function json(data, status=200) {
 
 function corsHeaders() {
   return {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': 'https://portal.myluckyblackmedia.com',
     'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type,Authorization'
   };
@@ -2396,7 +2401,9 @@ export default {
 
     // CORS preflight
     if (method === 'OPTIONS') {
-      return new Response(null, { status: 204, headers: corsHeaders() });
+      const origin = request.headers.get('origin') || '';
+      const acao = origin === 'https://portal.myluckyblackmedia.com' ? origin : '';
+      return new Response(null, { status: 204, headers: { ...corsHeaders(), 'Access-Control-Allow-Origin': acao } });
     }
 
     // API routes
@@ -2426,10 +2433,28 @@ async function handleAPI(request, env, path, method) {
     if (path === '/api/auth/login' && method === 'POST') {
       const { clientId, password } = await request.json();
       if (!clientId || !password) return json({ error: 'Missing fields.' }, 400);
+
+      const lockKey  = 'rl:lock:' + clientId;
+      const attKey   = 'rl:att:' + clientId;
+      const isLocked = await env.SESSIONS.get(lockKey).catch(() => null);
+      if (isLocked) return json({ error: 'Too many failed attempts. Try again in 15 minutes.' }, 429);
+
       const client = await env.DB.prepare('SELECT * FROM clients WHERE id = ?').bind(clientId).first();
       if (!client) return json({ error: 'Incorrect access code.' }, 401);
       const { ok, needsUpgrade } = await verifyPassword(password, client.password_hash);
-      if (!ok) return json({ error: 'Incorrect access code.' }, 401);
+      if (!ok) {
+        const prev = parseInt(await env.SESSIONS.get(attKey).catch(() => '0') || '0', 10);
+        const attempts = prev + 1;
+        if (attempts >= MAX_CLIENT_LOGIN_ATTEMPTS) {
+          await env.SESSIONS.put(lockKey, '1', { expirationTtl: CLIENT_LOCKOUT_TTL });
+          await env.SESSIONS.delete(attKey);
+          return json({ error: 'Too many failed attempts. Try again in 15 minutes.' }, 429);
+        }
+        await env.SESSIONS.put(attKey, String(attempts), { expirationTtl: CLIENT_LOCKOUT_TTL });
+        const left = MAX_CLIENT_LOGIN_ATTEMPTS - attempts;
+        return json({ error: `Incorrect access code. ${left} attempt${left !== 1 ? 's' : ''} remaining.` }, 401);
+      }
+      await env.SESSIONS.delete(attKey).catch(() => {});
       if (needsUpgrade) {
         const upgraded = await hashPassword(password);
         await env.DB.prepare('UPDATE clients SET password_hash=? WHERE id=?').bind(upgraded, clientId).run();

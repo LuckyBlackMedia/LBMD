@@ -67,11 +67,19 @@ const SESSION_TTL    = 4 * 60 * 60;   // 4 hours in seconds
 const MAX_ATTEMPTS   = 5;
 const LOCKOUT_TTL    = 15 * 60;       // 15 minutes in seconds
 
-const CORS = {
-  'Access-Control-Allow-Origin':  '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
+const ALLOWED_ORIGINS = new Set([
+  'https://admin.myluckyblackmedia.com',
+  'https://services.myluckyblackmedia.com',
+]);
+
+function corsHeaders(request) {
+  const origin = request?.headers?.get('origin') || '';
+  return {
+    'Access-Control-Allow-Origin':  ALLOWED_ORIGINS.has(origin) ? origin : '',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  };
+}
 
 // ── MAIN HANDLER ─────────────────────────────────────────────────────────────
 
@@ -81,14 +89,14 @@ export default {
     const method = request.method;
 
     if (method === 'OPTIONS') {
-      return new Response(null, { status: 204, headers: CORS });
+      return new Response(null, { status: 204, headers: corsHeaders(request) });
     }
 
     if (url.pathname.startsWith('/api/')) {
       try {
         const res = await handleAPI(request, env, url, method);
         const h   = new Headers(res.headers);
-        for (const [k, v] of Object.entries(CORS)) h.set(k, v);
+        for (const [k, v] of Object.entries(corsHeaders(request))) h.set(k, v);
         return new Response(res.body, { status: res.status, headers: h });
       } catch (e) {
         return json({ error: String(e) }, 500);
@@ -1597,6 +1605,6 @@ async function syncSquareServices(env) {
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { 'Content-Type': 'application/json', ...CORS },
+    headers: { 'Content-Type': 'application/json' },
   });
 }
