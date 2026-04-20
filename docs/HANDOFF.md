@@ -24,16 +24,11 @@ Last updated: 2026-04-19. Branch: `phase-1-bones-upgrade`.
   and `bs_deliveries.client_id`, with legacy `client_files.client_id` fallback. R2 binding
   + Storj secret docs added to `portal-worker/wrangler.toml`.
 
-### 🟡 In progress
+### ✅ Done (continued)
 - **Phase 1-B** — Unified admin hub shell in `admin-worker/lbm-admin-hub.html`.
-  - Sidebar CSS has been **added** (grep for `/* ── BLACKSUITE SIDEBAR SHELL ──`).
-  - Sidebar **markup** and **router JS** have **NOT** been added yet. File still renders
-    identically to before — the new CSS is dormant.
+  Sidebar markup + router wired; `.nav` shifted to `left:220px` to clear sidebar.
 
 ### ⚪ Pending
-- **Phase 1-B** (finish) — Insert `<aside class="bs-sidebar">` markup + wrap existing
-  `.content` contents in `<div class="bs-section" data-section="…">` blocks + add router
-  script. See "Resume plan" below.
 - **Phase 1-C** — Visual upgrade of portal worker inline HTML (Cormorant/Satoshi/gold,
   BlackSuite footer on every page).
 - **Phase 1-F** — Replace SHA-256+`lbmd_salt_2026` with PBKDF2-SHA-256 (100k iter,
@@ -45,84 +40,58 @@ Last updated: 2026-04-19. Branch: `phase-1-bones-upgrade`.
 - **Deploy** — `wrangler deploy` both workers, create R2 bucket `lbm-blacksuite-media`,
   verify all checklist items, push branch to `github.com/LuckyBlackMedia/LBMD`.
 
-## Storage decision change (2026-04-19)
+## Storage decision (finalized)
 
-User flagged Storj's 25 GB cap as too small. **Drop Storj for Phase 1.** Keep R2 as
-primary. If a secondary is needed later, **Backblaze B2** is the pick ($6/TB/mo, free
-egress via Cloudflare Bandwidth Alliance, S3-compatible — nearly identical code path to
-the current Storj stub in `shared/storage.js`).
+- **R2 (primary)** — bucket `lbm-blacksuite-media`, binding `MEDIA`. Client-facing delivery.
+- **B2 (overflow)** — S3-compatible, $6/TB, free egress via Cloudflare Bandwidth Alliance.
+  Secrets stubbed in both wrangler.toml files: `B2_ENDPOINT`, `B2_ACCESS_KEY`,
+  `B2_SECRET_KEY`, `B2_BUCKET`, `B2_REGION`.
+- **NAS (archive)** — S3-compatible via Synology/TrueNAS Minio/QNAP HBS. Backup tier only,
+  never client-facing. Secrets stubbed: `NAS_ENDPOINT`, `NAS_ACCESS_KEY`, `NAS_SECRET_KEY`,
+  `NAS_BUCKET`, `NAS_REGION`.
+- **Drive (legacy)** — read-only proxy for existing `client_files.drive_url` rows.
 
-**Action next session:** rename `storj` branch in `shared/storage.js` to `b2`, or leave
-Storj code as-is and add a `b2` branch alongside. Update plan + `docs/MIGRATION.md` to
-reference B2 instead of Storj.
+**Storj is dropped.** `shared/storage.js` still has a `storj` branch — replace with
+`b2` + `nas` branches (both are SigV4 on the same S3 code path) next session.
 
 ## Resume plan (pick up here)
 
-1. **Finish Phase 1-B sidebar shell** in `admin-worker/lbm-admin-hub.html`:
-   - Insert sidebar markup immediately after `<div id="admin-main">` open:
-     ```html
-     <div class="bs-shell">
-       <aside class="bs-sidebar">
-         <div class="bs-sidebar-brand">
-           <div class="bs-mark">The BlackSuite</div>
-           <div class="bs-sub">Admin</div>
-         </div>
-         <div class="bs-group">
-           <div class="bs-group-label">Client Work</div>
-           <div class="bs-nav-item active" data-nav="dashboard"><span class="bs-ico">◆</span><span>Dashboard</span></div>
-           <div class="bs-nav-item" data-nav="projects"><span class="bs-ico">▢</span><span>Projects</span></div>
-           <div class="bs-nav-item" data-nav="proofing"><span class="bs-ico">◇</span><span>Proofing</span></div>
-           <div class="bs-nav-item" data-nav="delivery"><span class="bs-ico">↗</span><span>Delivery</span></div>
-           <div class="bs-nav-item" data-nav="invoices"><span class="bs-ico">$</span><span>Invoices</span></div>
-         </div>
-         <div class="bs-group">
-           <div class="bs-group-label">Tools</div>
-           <div class="bs-nav-item" data-nav="booking"><span class="bs-ico">📅</span><span>Booking</span></div>
-           <div class="bs-nav-item" data-nav="links"><span class="bs-ico">🔗</span><span>Links</span></div>
-           <div class="bs-nav-item" data-nav="services"><span class="bs-ico">✦</span><span>Services</span></div>
-           <div class="bs-nav-item" data-nav="portfolio"><span class="bs-ico">▦</span><span>Portfolio</span></div>
-           <div class="bs-nav-item" data-nav="settings"><span class="bs-ico">⚙</span><span>Settings</span></div>
-         </div>
-       </aside>
-       <div class="bs-main">
-         <!-- existing <nav class="nav"> and <div class="content"> moves here -->
-       </div>
-     </div>
-     ```
-   - Wrap the current `.content` inner children into sections:
-     - `<div class="bs-section active" data-section="dashboard">` → hub-hero + stats + Quick Notes
-     - `<div class="bs-section" data-section="links">` → sections-container (the link grid)
-     - `<div class="bs-section" data-section="booking"><iframe src="lbm-booking-admin.html"></iframe></div>`
-     - `<div class="bs-section" data-section="services"><iframe src="services.html"></iframe></div>`
-     - `<div class="bs-section" data-section="portfolio"><iframe src="https://portfolio.myluckyblackmedia.com/admin"></iframe></div>`
-     - Projects / Proofing / Delivery / Invoices → `.bs-stub` "Coming in Phase 2" blocks
-     - Settings → simple inline panel (password change instructions + R2/Storj default toggle placeholder)
-   - Add router JS at end of `<script>`:
-     ```js
-     function showSection(name) {
-       document.querySelectorAll('.bs-nav-item').forEach(n => n.classList.toggle('active', n.dataset.nav === name));
-       document.querySelectorAll('.bs-section').forEach(s => s.classList.toggle('active', s.dataset.section === name));
-       localStorage.setItem('lbm_active_section', name);
-     }
-     document.querySelectorAll('.bs-nav-item').forEach(n => n.addEventListener('click', () => showSection(n.dataset.nav)));
-     showSection(localStorage.getItem('lbm_active_section') || 'dashboard');
-     ```
-   - Note: portfolio iframe needs `X-Frame-Options: ALLOWALL` or a `Content-Security-Policy:
-     frame-ancestors https://admin.myluckyblackmedia.com` header on the portfolio worker.
-     Add that when touching portfolio-app.
+0. **Rewrite `shared/storage.js`** — replace `storj` branch with `b2` + `nas`
+   S3-compatible SigV4 implementations. Shared signer since both are S3v4. Key format
+   becomes `r2:…` / `b2:…` / `nas:…` / `drive:…`. Update `parseStorageKey` allow-list.
 
-2. **Phase 1-C portal visual upgrade** — same tokens CSS pattern inlined into
-   `portal-worker/worker.js` PORTAL_HTML (60px top nav with monogram, Cormorant hero,
-   2-col project cards, "Powered by The BlackSuite" footer).
+1. **Phase 1-C portal visual upgrade** — inline BlackSuite tokens into
+   `portal-worker/worker.js` PORTAL_HTML: 60px sticky top nav with monogram + session dot,
+   Cormorant hero, 2-col project cards (`repeat(2,1fr)`, 3px gap, hover lift, gold
+   `::after` reveal, pill status badges), "Powered by The BlackSuite" footer on every
+   template. Mobile ≤720px = single column.
 
-3. **Phase 1-F PBKDF2** — rewrite `hashPassword()` in `portal-worker/worker.js` (line
-   ~2380 area) to PBKDF2 via `crypto.subtle.deriveBits`. On login, detect if
-   `client.password_hash` starts with `pbkdf2:` — if not, compare via legacy SHA-256,
-   and on match rewrite row to new format. Same for admin hash in KV
-   (`admin_pw_hash`). Same for admin worker's `ADMIN_PASSWORD` secret (but that one is
-   a Worker Secret, not in DB — harder to rotate; document only).
+2. **Portfolio worker CSP for iframe** — add
+   `Content-Security-Policy: frame-ancestors 'self' https://admin.myluckyblackmedia.com`
+   response header so the hub's Portfolio section iframe renders.
 
-4. **Phase 1-I docs + deploy** — straightforward once the code is stable.
+3. **Phase 1-F PBKDF2** — rewrite `hashPassword()` in `portal-worker/worker.js` (~line 2380)
+   to PBKDF2-SHA-256 via `crypto.subtle.deriveBits` (100k iter, per-user salt). Format:
+   `pbkdf2:100000:<salt-b64>:<hash-b64>`. On login, detect if `client.password_hash`
+   starts with `pbkdf2:` — if not, compare via legacy SHA-256+`lbmd_salt_2026`, and on
+   match rewrite row to new format. Same lazy-upgrade for admin hash in KV
+   (`admin_pw_hash`). Admin worker's `ADMIN_PASSWORD` is a Worker Secret — document
+   rotation via `wrangler secret put` only.
+
+4. **CORS tightening** — both workers currently use permissive CORS. Restrict admin APIs
+   to `https://admin.myluckyblackmedia.com` + `https://portal.myluckyblackmedia.com`
+   origins only.
+
+5. **Unparameterised prepare() audit** — grep both workers for `.prepare(\`.*\${` patterns.
+
+6. **Phase 1-I docs** — write `docs/SECURITY_REVIEW.md`, `docs/MIGRATION.md` (Drive → R2/B2),
+   `docs/DEPLOY.md` (wrangler commands, vault discipline, CSP note).
+
+7. **Deploy + verify** — create R2 bucket `lbm-blacksuite-media`, `wrangler deploy` both
+   workers, run the 12-item verification checklist from the plan.
+
+8. **Push to GitHub** — `git remote add origin git@github.com:LuckyBlackMedia/LBMD.git &&
+   git push -u origin phase-1-bones-upgrade` (needs user's GitHub auth).
 
 ## Key paths
 
