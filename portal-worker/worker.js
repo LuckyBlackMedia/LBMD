@@ -2307,10 +2307,42 @@ function esc(s){return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;')
 </html>`;
 
 // ── HELPERS ──
+
+function _hexEncode(buf) {
+  return Array.from(buf).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function _pbkdf2Derive(password, saltBytes) {
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', hash: 'SHA-256', salt: saltBytes, iterations: 100000 },
+    key, 256
+  );
+  return new Uint8Array(bits);
+}
+
+// Produces a new PBKDF2 hash: "pbkdf2:v1:<salt32hex>:<hash32hex>"
 async function hashPassword(password) {
+  const salt = crypto.getRandomValues(new Uint8Array(32));
+  const hash = await _pbkdf2Derive(password, salt);
+  return 'pbkdf2:v1:' + _hexEncode(salt) + ':' + _hexEncode(hash);
+}
+
+// Verifies against PBKDF2 or legacy SHA-256+SALT hashes.
+// Returns { ok: boolean, needsUpgrade: boolean }
+async function verifyPassword(password, stored) {
+  if (stored.startsWith('pbkdf2:v1:')) {
+    const parts = stored.split(':');
+    const saltBytes = new Uint8Array(parts[2].match(/.{2}/g).map(b => parseInt(b, 16)));
+    const hash = await _pbkdf2Derive(password, saltBytes);
+    return { ok: _hexEncode(hash) === parts[3], needsUpgrade: false };
+  }
+  // Legacy: plain SHA-256 with static salt
   const enc = new TextEncoder();
   const buf = await crypto.subtle.digest('SHA-256', enc.encode(password + SALT));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+  const legacyHash = _hexEncode(new Uint8Array(buf));
+  return { ok: legacyHash === stored, needsUpgrade: true };
 }
 
 function generateToken() {
@@ -2396,8 +2428,12 @@ async function handleAPI(request, env, path, method) {
       if (!clientId || !password) return json({ error: 'Missing fields.' }, 400);
       const client = await env.DB.prepare('SELECT * FROM clients WHERE id = ?').bind(clientId).first();
       if (!client) return json({ error: 'Incorrect access code.' }, 401);
-      const hash = await hashPassword(password);
-      if (hash !== client.password_hash) return json({ error: 'Incorrect access code.' }, 401);
+      const { ok, needsUpgrade } = await verifyPassword(password, client.password_hash);
+      if (!ok) return json({ error: 'Incorrect access code.' }, 401);
+      if (needsUpgrade) {
+        const upgraded = await hashPassword(password);
+        await env.DB.prepare('UPDATE clients SET password_hash=? WHERE id=?').bind(upgraded, clientId).run();
+      }
       const token = generateToken();
       await env.SESSIONS.put('client_' + token, JSON.stringify({ clientId, name: client.name }), { expirationTtl: 28800 }); // 8h
       const portal = await buildPortalData(client, env);
@@ -2583,11 +2619,15 @@ async function handleAPI(request, env, path, method) {
     // ── ADMIN LOGIN ──
     if (path === '/api/admin/login' && method === 'POST') {
       const { password } = await request.json();
-      const hash = await hashPassword(password);
       // Check KV first for runtime-reset password, fall back to hardcoded constant
       const kvHash = await env.SESSIONS.get('admin_pw_hash').catch(() => null);
       const expectedHash = kvHash || ADMIN_PW_HASH;
-      if (hash !== expectedHash) return json({ error: 'Incorrect password.' }, 401);
+      const { ok: adminOk, needsUpgrade: adminUpgrade } = await verifyPassword(password, expectedHash);
+      if (!adminOk) return json({ error: 'Incorrect password.' }, 401);
+      if (adminUpgrade) {
+        const upgraded = await hashPassword(password);
+        await env.SESSIONS.put('admin_pw_hash', upgraded);
+      }
       const token = generateToken();
       await env.SESSIONS.put('admin_' + token, '1', { expirationTtl: 86400 }); // 24h
       return json({ token });
