@@ -193,6 +193,29 @@ img{display:block;max-width:100%}
 .bs-stub-title{font-family:var(--font-display);font-size:var(--text-xl);color:var(--off-white);margin-bottom:var(--space-3)}
 .bs-stub-sub{font-size:var(--text-sm);color:var(--silver);line-height:1.75;max-width:520px;margin:0 auto}
 .bs-footer-bs{max-width:1200px;margin:0 auto;padding:var(--space-6) var(--space-8);text-align:center;font-size:10px;letter-spacing:.28em;color:var(--mid);text-transform:uppercase;border-top:1px solid rgba(184,150,46,.08);font-family:var(--font-body)}
+/* ── CONTENT PANELS ── */
+.bs-content-pad{max-width:920px;margin:0 auto;padding:var(--space-12) var(--space-8)}
+.hub-section-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:var(--space-8);gap:16px}
+.section-eyebrow{font-size:10px;letter-spacing:.42em;color:var(--gold);text-transform:uppercase;margin-bottom:4px}
+.section-heading{font-family:var(--font-display);font-size:clamp(22px,3vw,32px);color:var(--off-white);font-weight:400}
+.hub-btn{background:transparent;border:1px solid var(--gold);color:var(--gold);font-family:var(--font-body);font-size:11px;letter-spacing:.22em;text-transform:uppercase;padding:8px 18px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.hub-btn:hover{background:var(--gold);color:var(--dark)}
+.hub-btn-ghost{border-color:var(--border);color:var(--silver)}
+.hub-btn-ghost:hover{background:var(--border);color:var(--off-white)}
+.hub-btn-danger{border-color:#c0392b;color:#c0392b}
+.hub-btn-danger:hover{background:#c0392b;color:#fff}
+.hub-input{width:100%;box-sizing:border-box;background:var(--dark);border:1px solid var(--border);color:var(--off-white);font-family:var(--font-body);font-size:13px;padding:8px 12px;outline:none;transition:border-color .2s}
+.hub-input:focus{border-color:var(--gold)}
+.svc-label{display:block;font-size:10px;letter-spacing:.16em;color:var(--mid);text-transform:uppercase;margin-bottom:5px}
+.hub-loading{color:var(--mid);font-size:13px;padding:32px 0}
+.svc-card{background:var(--charcoal);border:1px solid var(--border);padding:20px 24px;margin-bottom:10px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}
+.svc-card-body{min-width:0}
+.svc-card-name{font-size:15px;color:var(--off-white);margin-bottom:4px}
+.svc-card-meta{font-size:12px;color:var(--silver);display:flex;flex-wrap:wrap;gap:12px;margin-bottom:6px}
+.svc-card-desc{font-size:12px;color:var(--mid);line-height:1.6}
+.svc-card-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.svc-price-input{width:80px;background:var(--dark);border:1px solid var(--border);color:var(--gold);font-size:13px;padding:5px 8px;text-align:right;outline:none;font-family:var(--font-body)}
+.svc-price-input:focus{border-color:var(--gold)}
 @media(max-width:960px){
   .bs-sidebar{width:64px;padding:80px 6px var(--space-4)}
   .bs-sidebar-brand,.bs-group-label,.bs-nav-item span:not(.bs-ico){display:none}
@@ -351,7 +374,55 @@ img{display:block;max-width:100%}
 
       <!-- SERVICES -->
       <div class="bs-section" data-section="services">
-        <iframe src="services.html" title="Services"></iframe>
+        <div class="bs-content-pad" id="services-panel">
+          <div class="hub-section-header">
+            <div>
+              <div class="section-eyebrow">Admin</div>
+              <h2 class="section-heading">Services</h2>
+            </div>
+            <button class="hub-btn" onclick="svcOpenAdd()">+ Add Service</button>
+          </div>
+
+          <!-- Add form (hidden by default) -->
+          <div id="svc-add-form" style="display:none;background:var(--charcoal);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:24px">
+            <div class="section-eyebrow" style="margin-bottom:16px">New Service</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+              <div>
+                <label class="svc-label">Name *</label>
+                <input id="svc-name" class="hub-input" placeholder="e.g. Brand Strategy Session">
+              </div>
+              <div>
+                <label class="svc-label">Price ($)</label>
+                <input id="svc-price" class="hub-input" type="number" min="0" step="0.01" placeholder="0">
+              </div>
+              <div>
+                <label class="svc-label">Duration (min)</label>
+                <input id="svc-duration" class="hub-input" type="number" min="15" step="15" placeholder="60">
+              </div>
+              <div>
+                <label class="svc-label">Max per day</label>
+                <input id="svc-max" class="hub-input" type="number" min="1" placeholder="Leave blank for unlimited">
+              </div>
+            </div>
+            <div style="margin-bottom:12px">
+              <label class="svc-label">Description</label>
+              <textarea id="svc-desc" class="hub-input" rows="2" placeholder="Short description shown on the booking page" style="resize:vertical"></textarea>
+            </div>
+            <div style="margin-bottom:20px">
+              <label class="svc-label">Meeting address (optional)</label>
+              <input id="svc-addr" class="hub-input" placeholder="Leave blank for virtual/TBD">
+            </div>
+            <div style="display:flex;gap:10px">
+              <button class="hub-btn" onclick="svcSubmitAdd()">Save Service</button>
+              <button class="hub-btn hub-btn-ghost" onclick="svcCloseAdd()">Cancel</button>
+            </div>
+            <div id="svc-add-err" style="color:var(--red,#e05);margin-top:10px;font-size:13px"></div>
+          </div>
+
+          <div id="svc-list">
+            <div class="hub-loading">Loading services…</div>
+          </div>
+        </div>
       </div>
 
       <!-- PORTFOLIO -->
@@ -980,6 +1051,117 @@ async function doSettingsPasswordChange() {
   document.getElementById('settings-pw-new').value = '';
   document.getElementById('settings-pw-confirm').value = '';
 }
+
+// ── SERVICES ADMIN ──────────────────────────────────────────────────────────
+
+let _svcList = [];
+
+async function svcLoad() {
+  const el = document.getElementById('svc-list');
+  if (!el) return;
+  el.innerHTML = '<div class="hub-loading">Loading services…</div>';
+  try {
+    const res = await fetch('/api/services', { headers: _authHeaders() });
+    _svcList = await res.json();
+    svcRender();
+  } catch (e) {
+    el.innerHTML = '<div class="hub-loading" style="color:#c0392b">Failed to load services.</div>';
+  }
+}
+
+function svcRender() {
+  const el = document.getElementById('svc-list');
+  if (!el) return;
+  if (!_svcList.length) {
+    el.innerHTML = '<div class="hub-loading">No services yet — add one above.</div>';
+    return;
+  }
+  el.innerHTML = _svcList.map(s => `
+    <div class="svc-card" id="svc-card-${s.id}">
+      <div class="svc-card-body">
+        <div class="svc-card-name">${esc(s.name)}</div>
+        <div class="svc-card-meta">
+          <span>${s.duration} min</span>
+          ${s.max_per_day ? `<span>Max ${s.max_per_day}/day</span>` : ''}
+          ${s.meeting_address ? `<span>${esc(s.meeting_address)}</span>` : ''}
+        </div>
+        ${s.description ? `<div class="svc-card-desc">${esc(s.description)}</div>` : ''}
+      </div>
+      <div class="svc-card-actions">
+        <span style="font-size:11px;color:var(--mid);margin-right:4px">$</span>
+        <input class="svc-price-input" type="number" min="0" step="0.01"
+          value="${s.price}" id="svc-price-${s.id}"
+          onblur="svcSavePrice(${s.id})" onkeydown="if(event.key==='Enter')svcSavePrice(${s.id})">
+        <button class="hub-btn hub-btn-danger" style="padding:5px 10px;font-size:10px" onclick="svcDelete(${s.id})">Delete</button>
+      </div>
+    </div>`).join('');
+}
+
+async function svcSavePrice(id) {
+  const input = document.getElementById('svc-price-' + id);
+  if (!input) return;
+  const price = parseFloat(input.value);
+  if (isNaN(price) || price < 0) return;
+  await fetch('/api/services/' + id, {
+    method: 'PATCH',
+    headers: _authHeaders(),
+    body: JSON.stringify({ price }),
+  });
+  const svc = _svcList.find(s => s.id === id);
+  if (svc) svc.price = price;
+}
+
+async function svcDelete(id) {
+  if (!confirm('Delete this service? This cannot be undone.')) return;
+  await fetch('/api/services/' + id, { method: 'DELETE', headers: _authHeaders() });
+  _svcList = _svcList.filter(s => s.id !== id);
+  svcRender();
+}
+
+function svcOpenAdd() {
+  document.getElementById('svc-add-form').style.display = '';
+  document.getElementById('svc-name').focus();
+}
+
+function svcCloseAdd() {
+  document.getElementById('svc-add-form').style.display = 'none';
+  ['svc-name','svc-price','svc-duration','svc-max','svc-desc','svc-addr'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('svc-add-err').textContent = '';
+}
+
+async function svcSubmitAdd() {
+  const name     = document.getElementById('svc-name').value.trim();
+  const price    = parseFloat(document.getElementById('svc-price').value) || 0;
+  const duration = parseInt(document.getElementById('svc-duration').value) || 60;
+  const maxPerDay = parseInt(document.getElementById('svc-max').value) || null;
+  const desc     = document.getElementById('svc-desc').value.trim();
+  const addr     = document.getElementById('svc-addr').value.trim();
+  const errEl    = document.getElementById('svc-add-err');
+
+  if (!name) { errEl.textContent = 'Name is required.'; return; }
+  errEl.textContent = '';
+
+  const res = await fetch('/api/services', {
+    method: 'POST',
+    headers: _authHeaders(),
+    body: JSON.stringify({ name, price, duration, maxPerDay, desc, meetingAddress: addr }),
+  });
+  const data = await res.json();
+  if (!res.ok) { errEl.textContent = data.error || 'Failed to save.'; return; }
+  _svcList.push(data);
+  svcRender();
+  svcCloseAdd();
+}
+
+// Load services when that section becomes active
+const _origShowSection = showSection;
+showSection = function(name) {
+  _origShowSection(name);
+  if (name === 'services') svcLoad();
+};
 
 </script>
 </body>
