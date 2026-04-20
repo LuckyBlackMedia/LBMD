@@ -63,7 +63,7 @@ img{display:block;max-width:100%}
 #admin-main{display:none;min-height:100dvh}
 
 /* NAV */
-.nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:var(--space-4) var(--space-8);background:rgba(8,8,8,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.nav{position:fixed;top:0;left:220px;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:var(--space-4) var(--space-8);background:rgba(8,8,8,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
 .nav-brand{font-family:var(--font-display);font-size:var(--text-lg);font-weight:700;color:var(--gold);letter-spacing:.06em}
 .nav-brand span{color:var(--silver);font-size:var(--text-xs);font-weight:400;letter-spacing:.3em;text-transform:uppercase;display:block;margin-top:2px}
 .nav-actions{display:flex;align-items:center;gap:var(--space-4)}
@@ -198,6 +198,7 @@ img{display:block;max-width:100%}
   .bs-sidebar-brand,.bs-group-label,.bs-nav-item span:not(.bs-ico){display:none}
   .bs-nav-item{justify-content:center}
   .bs-main{margin-left:64px}
+  .nav{left:64px}
 }
 
 /* ── RECOVERY ── */
@@ -260,74 +261,181 @@ img{display:block;max-width:100%}
 
 <!-- ADMIN MAIN -->
 <div id="admin-main">
+<div class="bs-shell">
 
-  <!-- NAV -->
-  <nav class="nav">
-    <div class="nav-brand">
-      Lucky Black <span>Admin Hub</span>
+  <!-- SIDEBAR -->
+  <aside class="bs-sidebar" role="navigation" aria-label="BlackSuite navigation">
+    <div class="bs-sidebar-brand">
+      <div class="bs-mark">The BlackSuite</div>
+      <div class="bs-sub">Admin</div>
     </div>
-    <div class="nav-actions">
-      <div class="session-badge"><span class="session-dot"></span><span id="session-timer">Session active</span></div>
-      <a href="lbm-booking-admin.html" class="nav-pill" target="_blank">📅 Booking Admin</a>
-      <button class="lock-btn-sm" onclick="lockScreen()">Lock Screen</button>
+    <div class="bs-group">
+      <div class="bs-group-label">Client Work</div>
+      <div class="bs-nav-item active" data-nav="dashboard" role="button" tabindex="0" aria-label="Dashboard"><span class="bs-ico">◆</span><span>Dashboard</span></div>
+      <div class="bs-nav-item" data-nav="projects" role="button" tabindex="0" aria-label="Projects"><span class="bs-ico">▢</span><span>Projects</span></div>
+      <div class="bs-nav-item" data-nav="proofing" role="button" tabindex="0" aria-label="Proofing"><span class="bs-ico">◇</span><span>Proofing</span></div>
+      <div class="bs-nav-item" data-nav="delivery" role="button" tabindex="0" aria-label="Delivery"><span class="bs-ico">↗</span><span>Delivery</span></div>
+      <div class="bs-nav-item" data-nav="invoices" role="button" tabindex="0" aria-label="Invoices"><span class="bs-ico">$</span><span>Invoices</span></div>
     </div>
-  </nav>
+    <div class="bs-group">
+      <div class="bs-group-label">Tools</div>
+      <div class="bs-nav-item" data-nav="booking" role="button" tabindex="0" aria-label="Booking"><span class="bs-ico">📅</span><span>Booking</span></div>
+      <div class="bs-nav-item" data-nav="links" role="button" tabindex="0" aria-label="Links"><span class="bs-ico">🔗</span><span>Links</span></div>
+      <div class="bs-nav-item" data-nav="services" role="button" tabindex="0" aria-label="Services"><span class="bs-ico">✦</span><span>Services</span></div>
+      <div class="bs-nav-item" data-nav="portfolio" role="button" tabindex="0" aria-label="Portfolio"><span class="bs-ico">▦</span><span>Portfolio</span></div>
+      <div class="bs-nav-item" data-nav="settings" role="button" tabindex="0" aria-label="Settings"><span class="bs-ico">⚙</span><span>Settings</span></div>
+    </div>
+  </aside>
 
-  <div class="content">
+  <!-- MAIN AREA -->
+  <div class="bs-main">
 
-    <!-- HERO -->
-    <div class="hub-hero">
-      <div class="hub-eyebrow">Mission Control</div>
-      <div class="hub-title">Admin Command Center</div>
-      <div class="hub-sub">All your tools, one branded page. Click any card to launch.</div>
-      <div class="hub-stats">
-        <div class="stat">
-          <div class="stat-val" id="total-links">—</div>
-          <div class="stat-lbl">Total Links</div>
+    <!-- NAV -->
+    <nav class="nav">
+      <div class="nav-brand">
+        Lucky Black <span>Admin Hub</span>
+      </div>
+      <div class="nav-actions">
+        <div class="session-badge"><span class="session-dot"></span><span id="session-timer">Session active</span></div>
+        <button class="lock-btn-sm" onclick="lockScreen()">Lock Screen</button>
+      </div>
+    </nav>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="bs-section active" data-section="dashboard">
+        <div class="hub-hero">
+          <div class="hub-eyebrow">Mission Control</div>
+          <div class="hub-title">Admin Command Center</div>
+          <div class="hub-sub">All your tools, one branded page. Click any card to launch.</div>
+          <div class="hub-stats">
+            <div class="stat"><div class="stat-val" id="total-links">—</div><div class="stat-lbl">Total Links</div></div>
+            <div class="stat"><div class="stat-val" id="total-groups">—</div><div class="stat-lbl">Categories</div></div>
+            <div class="stat"><div class="stat-val" id="current-time">—</div><div class="stat-lbl">Local Time</div></div>
+          </div>
         </div>
-        <div class="stat">
-          <div class="stat-val" id="total-groups">—</div>
-          <div class="stat-lbl">Categories</div>
+        <div class="divider"></div>
+        <div class="page-section">
+          <div class="notes-area">
+            <div class="notes-header">
+              <div class="notes-label">Quick Notes</div>
+              <button class="notes-save" onclick="saveNotes()">Save</button>
+            </div>
+            <textarea class="notes-textarea" id="notes-area" placeholder="Reminders, tasks, quick thoughts... (session only)"></textarea>
+            <div class="notes-hint">Notes are session-only and reset when you close this tab.</div>
+          </div>
         </div>
-        <div class="stat">
-          <div class="stat-val" id="current-time">—</div>
-          <div class="stat-lbl">Local Time</div>
+        <footer class="hub-footer">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <img src="/images/logo-mark.png" alt="LBM" style="height:28px;width:auto;opacity:0.85;">
+            <div class="footer-brand">Lucky Black Media &amp; Design</div>
+          </div>
+          <div class="footer-meta">
+            Admin Hub · myluckyblackmedia.com<br>Session secured
+            <div style="margin-top:4px;font-size:9px;opacity:0.35;letter-spacing:0.12em;">Powered by The BlackSuite</div>
+          </div>
+        </footer>
+      </div>
+
+      <!-- LINKS -->
+      <div class="bs-section" data-section="links">
+        <div id="sections-container" class="page-section" style="display:flex;flex-direction:column;gap:var(--space-12)"></div>
+        <div class="bs-footer-bs">The BlackSuite · Lucky Black Media &amp; Design</div>
+      </div>
+
+      <!-- BOOKING -->
+      <div class="bs-section" data-section="booking">
+        <iframe src="lbm-booking-admin.html" title="Booking Admin"></iframe>
+      </div>
+
+      <!-- SERVICES -->
+      <div class="bs-section" data-section="services">
+        <iframe src="services.html" title="Services"></iframe>
+      </div>
+
+      <!-- PORTFOLIO -->
+      <div class="bs-section" data-section="portfolio">
+        <iframe src="https://portfolio.myluckyblackmedia.com/admin" title="Portfolio Admin"></iframe>
+      </div>
+
+      <!-- PROJECTS (Phase 2) -->
+      <div class="bs-section" data-section="projects">
+        <div class="bs-stub">
+          <div class="bs-stub-eyebrow">Coming in Phase 2</div>
+          <div class="bs-stub-title">Projects</div>
+          <div class="bs-stub-sub">Client project tracking, timelines, and deliverable status — launching soon.</div>
         </div>
       </div>
-    </div>
 
-    <div class="divider"></div>
-
-    <!-- LINK SECTIONS -->
-    <div id="sections-container" class="page-section" style="display:flex;flex-direction:column;gap:var(--space-12)"></div>
-
-    <div class="divider"></div>
-
-    <!-- QUICK NOTES -->
-    <div class="page-section">
-      <div class="notes-area">
-        <div class="notes-header">
-          <div class="notes-label">Quick Notes</div>
-          <button class="notes-save" onclick="saveNotes()">Save</button>
+      <!-- PROOFING (Phase 2) -->
+      <div class="bs-section" data-section="proofing">
+        <div class="bs-stub">
+          <div class="bs-stub-eyebrow">Coming in Phase 2</div>
+          <div class="bs-stub-title">Proofing</div>
+          <div class="bs-stub-sub">Review cycles, approval flows, and version history for client deliverables.</div>
         </div>
-        <textarea class="notes-textarea" id="notes-area" placeholder="Reminders, tasks, quick thoughts... (session only)"></textarea>
-        <div class="notes-hint">Notes are session-only and reset when you close this tab.</div>
       </div>
-    </div>
 
-    <footer class="hub-footer">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <img src="/images/logo-mark.png" alt="LBM" style="height:28px;width:auto;opacity:0.85;">
-        <div class="footer-brand">Lucky Black Media & Design</div>
+      <!-- DELIVERY (Phase 2) -->
+      <div class="bs-section" data-section="delivery">
+        <div class="bs-stub">
+          <div class="bs-stub-eyebrow">Coming in Phase 2</div>
+          <div class="bs-stub-title">Delivery</div>
+          <div class="bs-stub-sub">Secure file delivery, download tracking, and expiry controls via The BlackSuite.</div>
+        </div>
       </div>
-      <div class="footer-meta">
-        Admin Hub · myluckyblackmedia.com<br>Session secured
-        <div style="margin-top:4px;font-size:9px;opacity:0.35;letter-spacing:0.12em;">Powered by The BlackSuite</div>
-      </div>
-    </footer>
 
-  </div>
-</div>
+      <!-- INVOICES (Phase 2) -->
+      <div class="bs-section" data-section="invoices">
+        <div class="bs-stub">
+          <div class="bs-stub-eyebrow">Coming in Phase 2</div>
+          <div class="bs-stub-title">Invoices</div>
+          <div class="bs-stub-sub">Invoice generation, payment status, and billing history — integrated with Stripe.</div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="bs-section" data-section="settings">
+        <div class="page-section">
+          <div style="max-width:640px">
+            <div class="hub-eyebrow">Configuration</div>
+            <div class="hub-title" style="margin-bottom:var(--space-6)">Settings</div>
+            <div style="background:var(--charcoal);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-8);margin-bottom:var(--space-6)">
+              <div style="font-size:var(--text-sm);font-weight:700;color:var(--gold);letter-spacing:.2em;text-transform:uppercase;margin-bottom:var(--space-4)">Change Admin Password</div>
+              <form onsubmit="return false" style="display:flex;flex-direction:column;gap:var(--space-4)">
+                <div class="form-group">
+                  <label class="form-label" for="settings-pw-current">Current Password</label>
+                  <input type="password" class="form-input" id="settings-pw-current" placeholder="Current admin password" autocomplete="current-password">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="settings-pw-new">New Password</label>
+                  <input type="password" class="form-input" id="settings-pw-new" placeholder="Min 8 characters" autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="settings-pw-confirm">Confirm Password</label>
+                  <input type="password" class="form-input" id="settings-pw-confirm" placeholder="Repeat new password" autocomplete="new-password">
+                </div>
+                <div class="pw-feedback" id="settings-pw-feedback">&nbsp;</div>
+                <button class="lock-btn" onclick="doSettingsPasswordChange()" style="width:auto;align-self:flex-start;padding-left:var(--space-8);padding-right:var(--space-8)">Update Password</button>
+              </form>
+            </div>
+            <div style="background:var(--charcoal);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-8)">
+              <div style="font-size:var(--text-sm);font-weight:700;color:var(--gold);letter-spacing:.2em;text-transform:uppercase;margin-bottom:var(--space-4)">Storage Backend</div>
+              <div style="font-size:var(--text-sm);color:var(--silver);line-height:1.8">
+                <strong style="color:var(--off-white)">Primary:</strong> Cloudflare R2 (lbm-blacksuite-media)<br>
+                <strong style="color:var(--off-white)">Overflow:</strong> Backblaze B2 — S3-compatible, $6/TB/mo, free egress via Cloudflare Bandwidth Alliance<br>
+                <strong style="color:var(--off-white)">Legacy:</strong> Google Drive (read-only passthrough for pre-BlackSuite files)
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.content -->
+  </div><!-- /.bs-main -->
+</div><!-- /.bs-shell -->
+</div><!-- /#admin-main -->
 
 <!-- ADD CARD MODAL -->
 <div class="modal-overlay" id="add-modal">
@@ -821,6 +929,56 @@ async function saveEdit() {
   renderAll();
   closeEditModal();
   showToast('Card updated — ' + label);
+}
+
+// ── BLACKSUITE SIDEBAR ROUTER ─────────────────────────────────────────────
+function showSection(name) {
+  document.querySelectorAll('.bs-nav-item').forEach(n =>
+    n.classList.toggle('active', n.dataset.nav === name));
+  document.querySelectorAll('.bs-section').forEach(s =>
+    s.classList.toggle('active', s.dataset.section === name));
+  try { localStorage.setItem('lbm_active_section', name); } catch {}
+}
+document.querySelectorAll('.bs-nav-item').forEach(n => {
+  n.addEventListener('click', () => showSection(n.dataset.nav));
+  n.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showSection(n.dataset.nav); } });
+});
+(function initSection() {
+  let saved = null;
+  try { saved = localStorage.getItem('lbm_active_section'); } catch {}
+  showSection(saved || 'dashboard');
+})();
+
+// Settings page password change — calls /api/auth/change-password
+// Worker Secrets can't update at runtime; the endpoint returns the wrangler CLI command to run.
+async function doSettingsPasswordChange() {
+  const current     = document.getElementById('settings-pw-current').value;
+  const newPassword = document.getElementById('settings-pw-new').value;
+  const confirm     = document.getElementById('settings-pw-confirm').value;
+  const fb          = document.getElementById('settings-pw-feedback');
+  if (!current)            { fb.textContent = 'Enter your current password.'; fb.className = 'pw-feedback err'; return; }
+  if (newPassword.length < 8) { fb.textContent = 'New password must be at least 8 characters.'; fb.className = 'pw-feedback err'; return; }
+  if (newPassword !== confirm) { fb.textContent = 'Passwords do not match.'; fb.className = 'pw-feedback err'; return; }
+  fb.textContent = '…'; fb.className = 'pw-feedback';
+  let data;
+  try {
+    const res = await fetch(`${API_BASE}/api/auth/change-password`, {
+      method: 'POST', headers: _authHeaders(),
+      body: JSON.stringify({ current, newPassword, confirm }),
+    });
+    data = await res.json();
+  } catch { fb.textContent = 'Network error — check connection.'; fb.className = 'pw-feedback err'; return; }
+  if (data.ok) {
+    fb.textContent = 'Password updated.';
+    fb.className = 'pw-feedback ok';
+  } else {
+    // Worker Secrets require CLI — show the wrangler command prominently
+    fb.textContent = data.error || 'Failed.';
+    fb.className = 'pw-feedback err';
+  }
+  document.getElementById('settings-pw-current').value = '';
+  document.getElementById('settings-pw-new').value = '';
+  document.getElementById('settings-pw-confirm').value = '';
 }
 
 </script>
